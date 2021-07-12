@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="./files/logo.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"/>
+    <title>程序设计基础-2021秋</title>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="./files/bootstrap.min.css">
+    <link rel="stylesheet" href="./files/bootstrap-theme.min.css">
+
+    <!-- Google fonts -->
+    <link href="./files/css" rel="stylesheet" type="text/css">
+
+    <!-- Google Analytics -->
+    <script async="" src="./files/analytics.js"></script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-46895817-2', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="./files/style.css">
+</head>
+
+<body>
+
+
+
+<div id="header">
+    <h1>《程序设计基础》课程网站</h1>
+    <div style="clear:both;"></div>
+</div>
+
+
+
+<div class="sechighlight">
+    <div class="container sec">
+
+        <h2>课程简介</h2>
+        <br>
+        <p style="text-indent:2em">
+        数字经济在人工智能和大数据的赋能下正实现跨越式发展，熟练掌握一门编程语言已成为商学院各专业学生必备的技能，为今后应用数据分析方法挖掘各类大数据中的商业价值奠定了关键技术基础。近年来，Python的流行度屡创新高，作为大数据和人工智能时代的必备语言，其具有语言简洁、开发效率高、可移植性强等优点，经过多年的生态建设，已有了大量的函数库，尤其在数据分析和科学计算领域。因此，本课程将基于Python编程语言讲授程序设计基础知识。</p>
+        
+        <p style="text-indent:2em;text-align:justify">
+        本课程涵盖了Python程序设计的重要方面：首先从Python的安装开始，随后介绍Python的基础知识和基本概念，包括列表、元组、字符串、字典以及各种语句；然后循序渐进地介绍一些相对高级的主题，包括抽象、异常、魔法方法、属性、迭代器；此后探讨如何将Python与数据库、网络、C语言等工具结合使用，从而发挥出Python的强大功能，同时介绍Python程序测试、打包、发布等知识。结合上述知识点，课程将按照实际项目开发的步骤介绍几个具有实际意义的Python项目开发过程。
+</p>
+
+    </div>
+</div>
+
+<div class="container sec">
+    <section id="information">
+        <h2>课程信息</h2>
+        <br>
+        <dl class="dl-horizontal">
+            <dt>授课教师</dt>
+            <dd>
+                <p>
+                    <strong>张建章</strong> 博士 <br>
+                    邮箱：jianzhang.zhang@foxmail.com <br>
+                    钉钉：张建章 <br>
+                    办公室：仓前恕园2号楼1009</p>
+            </dd>
+            
+            <dt>互动平台</dt>
+            <dd>
+                <p>
+                <!--
+                <a href="https://qr.dingtalk.com/action/joingroup?code=v1,k1,XQ2WglSU9xNInsbfd/4sDb7C/PXdtTW/9zFRMUNbe/o=&_dt_no_comment=1&origin=11" target="_blank">课程钉钉群2021春</a>
+                -->
+                课程钉钉群2021春（请用钉钉客户端打开该链接）</p>
+
+
+            </dd>
+
+            <dt>授课对象</dt>
+            <dd>
+                <p>本科生，电子商务211；国际商务211、212</p>
+
+
+            </dd>
+
+
+            <dt>授课时间</dt>
+            <dd>
+                <p>
+                    周四1-2节（1-16周），08:05--09:35（无课间休息时间）[<a href="./files/materials/calendar.pdf", target="_blank">校历</a>]
+                    </br>
+                    周四4-5节（1-16周），10:40--12:10（无课间休息时间）
+                    
+                </p>
+            </dd>
+
+            <dt>授课地点</dt>
+            <dd>
+                <p>
+                    下沙A号楼201；下沙A号楼214
+                </p>
+
+
+            </dd>
+            <dt>推荐教材</dt>
+            <dd>
+                <p>
+                    《Python基础教程（第3版）》Magnus Lie Hetland 著，袁国忠 译，2018年，人民邮电出版社
+                </p>
+            </dd>
+            
+            <dt>常用工具</dt>
+            <dd>
+                <p>
+                <dd>Anaconda [<a href="https://www.anaconda.com/products/individual", target="_blank">官网</a>]
+                    </dd>
+                    <dd>PyCharm [<a href="https://www.jetbrains.com/pycharm/download/#section=windows", target="_blank">官网</a>]（请下载Community版本）</dd>
+                    <dd>Notepad++ [<a href="https://notepad-plus-plus.org/downloads/", target="_blank">官网</a>] </dd>
+                    <dd>开发者搜索引擎 [<a href="https://kaifa.baidu.com/", target="_blank">官网</a>] </dd>
+                    <dd>Free Online Jupyter [<a href="https://www.freeaihub.com/jupyter/test.html", target="_blank">官网</a>]（<a href="./files/materials/free_online_jupyter_instruction.pdf", target="_blank">使用说明</a>） </dd>
+                </p>
+            </dd>
+
+            <dt>成绩评定</dt>
+            <dd>
+                <p>本课程成绩主要由三部分组成，如下：</p>
+                <ul class="unstyled">
+                    
+                        <li>期末成绩-60%</li>
+                        <li>课程作业/测验-25%</li>
+                        <li>课堂表现-10%</li>
+                        <li>日常考勤-5%</li>
+                    
+                </ul>
+            </dd>
+
+        </dl>
+    </section>
+</div>
+
+<div class="container sec">
+    <h2>课程计划</h2>
+    <br>
+    <table class="table">
+        <tbody>
+        <tr class="info">
+            <th>课时</th>
+            <th>日期</th>
+            <th>内容</th>
+            <th>作业 / 思考题</th>
+            <th>资料</th>
+        </tr>
+        <tr>
+            <td>Week 1</td>
+
+            <td>03-05</td>
+
+            <td>
+
+              <li>信用的力量 <small>[<a href="./files/slides/introduction.pdf" target="_blank">pdf</a>, <a href="./files/slides/introduction.pptx" target="_blank">pptx</a>]</small></li>
+
+             <li>信用与信用管理概述 <small>[<a href="./files/slides/lecture_1.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_1.pptx" target="_blank">pptx</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                【概念】<a href="https://pan.baidu.com/s/1yoJMdMX2enpTrZZtYJ3LqQ" target="_blank">赊销</a>（提取码: 9cvg） <br>
+                【慕课】<a href="https://pan.baidu.com/s/1psoA0bT9XswOGouz6sa_ow" target="_blank">信用的本质、产生与发展</a>（提取码: 74ky） <br>
+                【慕课】<a href="https://pan.baidu.com/s/1cW167cTp0yjG5ZI3zdajnw" target="_blank">货币信用与金融_高利贷</a>（提取码: cbxk） <br>
+                【纪录片】<a href="https://www.bilibili.com/video/av840455037" target="_blank">华尔街如何玩垮美国经济？次贷危机全解析</a> <br>
+                【纪录片】《信用的秘密》 <a href="https://www.bilibili.com/video/BV1ki4y1M7zh?from=search&seid=8011682373841865700" target="_blank">第一集</a> 
+                <a href="https://www.bilibili.com/video/BV1m54y1U7w3/?spm_id_from=333.788.recommend_more_video.-1" target="_blank">第二集</a>
+              
+                <a href="https://www.bilibili.com/video/BV1Mf4y1D7CB/?spm_id_from=333.788.recommend_more_video.-1" target="_blank">第三集</a> 
+                <br>
+                【其他】<a href="https://pan.baidu.com/s/1o3MXwHM4tmmKvVUD8lleng" target="_blank">徙木立信</a>（提取码: i8gt） <br>
+                <p style="color:#FF0000";>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDERgJJWbZ23FbC1ZtA6ycd160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">我爱你 中国</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEeyGI0t5dUqx4W1ct18xL160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">春天的故事</a> <br></p>
+
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=Mzk0NDAwMDExMA==&mid=2247503535&idx=1&sn=118a96700ce8f08989a096b7699e3c13&exportkey=AdmgPX7HhE9QvEZN%2FkSZyrI%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0" target="_blank">一出版就轰动，有人为它奋斗了48年！这部巨著的思想火焰，在中国燎原……</a> </p>
+         </td>
+        </tr>
+        
+
+                                                          <!-- ----------分割线---------- -->
+
+            <tr>
+            <td>Week 2</td>
+
+            <td>03-12</td>
+
+            <td>
+
+              
+             <li>信用的经济学分析 <small>[<a href="./files/slides/lecture_2.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_2.pptx" target="_blank">pptx</a>]</small></li>
+             
+             <li>社会信用体系 <small>[<a href="./files/slides/lecture_3.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_3.pptx" target="_blank">pptx</a>]</small></li>
+
+
+            </td>
+
+            <td>
+                <a href="./files/materials/chapter_1/chapter_1_exercise.pdf" target="_blank">第一章思考题</a> <br>
+            </td>
+
+            <td>
+                【概念】<a href="https://pan.baidu.com/s/1Vqle3exjKMkv0jdsJ47sjQ" target="_blank">格雷欣法则：劣币驱逐良币</a>（提取码: ssxh） <br>
+                【概念】<a href="https://www.bilibili.com/video/av73799822/" target="_blank">老赖</a> <br>
+                【简介】<a href="https://www.acfun.cn/v/ac12405794" target="_blank">银行管理信用风险</a> <br>
+                【专栏】<a href="./files/materials/chapter_1/column_1-1.pdf" target="_blank">1-1：发达国家社会信用体系</a> <br>
+                【专栏】<a href="./files/materials/chapter_1/column_1-2.pdf" target="_blank">1-2：美国征信体系建设</a> <br>
+                【论文】<a href="./files/materials/chapter_1/zhu2020.pdf" target="_blank">《协同治理理念下电子商务信用失范现象及对策》</a> <br>
+                【案例】<a href="https://www.bilibili.com/video/BV1f441147Rn?from=search&seid=7499064939180757037" target="_blank">为什么4S店喜欢推荐贷款买车，到底能赚多少钱</a> <br>
+                【网站】<a href="https://www.creditchina.gov.cn/home/index.html" target="_blank">信用中国网站：政府褒扬诚信、惩戒失信的窗口</a> <br>
+                【新闻】<a href="https://pan.baidu.com/s/1XQR0Q_ZWlvrmT1Y0EppPuA" target="_blank">苏州文明码引争议</a>（提取码: avic） <br>
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEk3bks7XB4Bk6qTTqtK1B160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">在希望的田野上</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEh7ulQhyDL21RlqPSKkiw160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">走在小康路上</a> <br></p>
+    
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963422&idx=1&sn=80fd4d5511efbff3e5c3743e3ab0e8c9&chksm=841b8658b36c0f4ebaa5a3bb4780cf2042325c9cba1bbde9e3c73c0628017da464d695451bde&scene=0&xtrack=1&exportkey=AS8xf3bc3JPx7cS0CDkTEZw%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">40%利润给工人分红！98年前，这里的煤矿工人掀起买股热潮！</a> </p>
+         </td>
+        </tr>
+        
+        
+                                                           <!-- ----------分割线---------- -->
+        
+         <tr>
+            <td>Week 3</td>
+
+            <td>03-19</td>
+
+            <td>
+            
+             <li>中国信用体系建设 <small>[<a href="./files/slides/lecture_3_supliment.pdf" target="_blank">pdf</a>]</small></li>
+              
+             <li>信用评级 <small>[<a href="./files/slides/lecture_4.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_4.pptx" target="_blank">pptx</a>]</small></li>
+             
+             <li>征信概述 <small>[<a href="./files/slides/lecture_5.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_5.pptx" target="_blank">pptx</a>]</small></li>
+
+
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td>
+                
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E4%BF%A1%E7%94%A8%E5%B7%A5%E5%85%B7" target="_blank">信用工具</a> <br>
+                【概念】<a href="https://haokan.baidu.com/v?vid=9935486763421029805&tab=tiyu" target="_blank">融资租赁</a> <br>
+                【概念】<a href="https://pan.baidu.com/s/1RJ1eaoEmT25-OFaRi113iA" target="_blank">标普500指数</a>（提取码: 6vem） <br>
+                【慕课】<a href="https://open.163.com/newview/movie/free?pid=JFTLCOIU6&mid=JFTLCR0OR" target="_blank">信用评级</a> <br>
+                【专栏】<a href="./files/materials/chapter_2/column_2-1.pdf" target="_blank">2-1：美国信用评级监管制度</a> <br>
+                【专栏】<a href="./files/materials/chapter_2/column_2-2.pdf" target="_blank">2-2：国内外个人信用评分模型</a> <br>
+                【论文】<a href="./files/materials/chapter_2/wu2014.pdf" target="_blank">《国际信用评级业的美式评级：认识与思考》</a> <br>
+                【简介】<a href="https://wiki.mbalib.com/wiki/%E9%82%93%E7%99%BD%E6%B0%8F%E5%85%AC%E5%8F%B8" target="_blank">邓白氏公司</a> <br>
+                【简介】<a href="http://www.pbccrc.org.cn/zxzx/grzx/list.shtml" target="_blank">央行征信中心关于个人征信报告的介绍</a> <br>
+                【简介】<a href="https://pan.baidu.com/s/1TVPd8t9OjE79Pz8t9Oqzjw" target="_blank">个人征信报告怎么看</a>（提取码: fbwa） <br>
+                【简介】<a href="http://www.pbccrc.org.cn/zxzx/qyzx/list.shtml" target="_blank">央行征信中心关于企业征信报告的介绍</a> <br>
+                【简介】<a href="https://pan.baidu.com/s/1K1-vn0v0rJgCj2EstUUAPw" target="_blank">标准普尔企业信用评级简介</a>（提取码: gcft） <br>
+                【纪录片】<a href="https://open.163.com/newview/movie/free?pid=AFJGCBKT5&mid=NFJGCBKTH" target="_blank">三大评级机构的故事</a> <br>
+                【演讲】<a href="https://finance.sina.com.cn/money/bank/bank_hydt/2019-01-17/doc-ihqhqcis6928533.shtml" target="_blank">潘功胜：国际三大评级机构均已设立境内法律实体</a> <br>
+                【网站】<a href="http://www.qgxy.org/" target="_blank">全国企业信用信息数据库</a> <br>
+                【网站】<a href="https://www.cods.org.cn/" target="_blank">全国组织机构统一社会信用代码公示查询平台</a> <br>
+                【网站】<a href="http://www.gsxt.gov.cn/index.html" target="_blank">国家企业信用信息公示系统</a> <br>
+                【观点】<a href="https://www.bilibili.com/video/av372611931" target="_blank">马云：金融的本质是信用管理</a> <br>
+                【新闻】<a href="https://tv.cctv.com/2019/04/23/VIDEOX3Zbiz63rCgfbv9brIM190423.shtml" target="_blank">央视财经评论：个人征信 边界在哪里</a> <br>
+                【新闻】<a href="https://finance.sina.com.cn/china/gncj/2020-09-18/doc-iivhuipp5042617.shtml" target="_blank">国家税务总局优化纳税信用管理措施</a> <br>
+                【新闻】<a href="https://www.bilibili.com/s/video/BV1cV411e7FX/" target="_blank">315晚会：招聘平台大量简历流入黑市</a> <br>
+                【新闻】<a href="https://money.163.com/21/0315/20/G55HJ7CS00259HMG.html" target="_blank">315晚会：海量人脸信息被摄像头收集</a> <br>
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDE2UX8zhM7wNM8burKR0Gf160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">青春誓言</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDECHunsv3p4hCcw8lhrOiS160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">咱们工人有力量</a> <br></p>
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963427&idx=1&sn=f796376f60f6deebacdb51d82f45fb60&chksm=841b8665b36c0f731a5a40154c5778dc517614422a57ab74eb5a0dda36f8f9734b0d83c33eb4&scene=0&xtrack=1&exportkey=AWWkPSyCusWCQ3k%2BQV4u%2B1c%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">一元入会，借钱不要利息！揭秘全国第一个革命金融机构→</a> </p>
+         </td>
+        </tr>
+        
+
+                                                      <!-- ----------分割线---------- -->
+                                                          
+        <tr>
+            <td>Week 4</td>
+
+            <td>03-26</td>
+
+            <td>
+
+              
+             <li>信用风险计量模型 <small>[<a href="./files/slides/lecture_6.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_6.pptx" target="_blank">pptx</a>]</small></li>
+             
+             <li>企业信用管理概论 <small>[<a href="./files/slides/lecture_7.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_7.pptx" target="_blank">pptx</a>]</small></li>
+
+
+            </td>
+
+            <td>
+                <a href="./files/materials/chapter_2/chapter_2_exercise.pdf" target="_blank">第二章思考题</a> <br>
+            </td>
+
+            <td>
+                【概念】<a href="https://www.bilibili.com/video/av50484763/?spm_id_from=333.788.videocard.12" target="_blank">应收账款</a> <br>
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E7%8E%B0%E9%87%91%E6%B5%81%E9%87%8F" target="_blank">现金流</a> <br>
+                【概念】<a href="https://pan.baidu.com/s/1-RPastah6THikiIZqTygQQ" target="_blank">坏账及相关概念</a>（提取码: df14）<br>
+                【概念】<a href="https://www.bilibili.com/s/video/BV1u4411G76m" target="_blank">别除权和破产清偿顺序</a> <br>
+                【慕课】<a href="https://www.icourse163.org/learn/SCU-1002144004?tid=1463400450#/learn/content?type=detail&id=1241053736" target="_blank">现金流的概念及表示</a> <br>
+                【慕课】<a href="https://open.163.com/newview/movie/free?mid=UFC8GTL6C&pid=QFC8GTKQ9" target="_blank">Z评分模型</a> <br>
+                【论文】<a href="./files/materials/chapter_2/shen2010.pdf" target="_blank">基于支持向量机理论的中小企业信用风险预测研究</a> <br>
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEuzwcpBO8OJGYDQljFWAB160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">天下乡亲</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDErJoyLi1KRIgomPoXrhF5160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">没有共产党就没有新中国</a> <br></p>
+    
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963453&idx=1&sn=fa2eec387d327088ca8ab8f80b368049&chksm=841b867bb36c0f6dd153c70f25f43e62ef442e2ed73820e990506d4140462474fcceb06cd239&scene=0&xtrack=1&exportkey=AbTx5kMhGl1dTJlr%2Bo9rFWg%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">首次以“农民”命名的银行！货币靠手写！它，开创中国红色金融事业多个“第一”！</a> </p>
+         </td>
+        </tr>
+        
+
+                                                      <!-- ----------分割线---------- --> 
+                                                      
+       <tr>
+            <td>Week 5<br>
+                Week 6
+            </td>
+
+            <td>04-02<br>
+                04-09
+            </td>
+
+            <td>
+             
+             <li>企业信用管理制度 <small>[<a href="./files/slides/lecture_8.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_8.pptx" target="_blank">pptx</a>]</small></li>
+             <li>企业客户管理 <small>[<a href="./files/slides/lecture_9.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_9.pptx" target="_blank">pptx</a>]</small></li>
+
+
+            </td>
+
+            <td>
+              - <!-----  <a href="./files/homework/homework_1.pdf" target="_blank">第一次作业题</a> <br> ---->
+            </td>
+
+            <td>
+                
+                【概念】<a href="https://pan.baidu.com/s/1NYFqugPdpSn4cfT-ib_fgg" target="_blank">应收账款周转天数</a>（提取码: 3icm）<br>
+                【概念】<a href="https://www.bilibili.com/video/av200995086/" target="_blank">流动比率</a> <br>
+                【概念】<a href="https://www.bilibili.com/video/BV1K5411W7Bq" target="_blank">速动比率</a> <br>
+                【概念】<a href="https://www.bilibili.com/video/BV1Zg4y1i79W" target="_blank">销售现金比率</a> <br>
+                【概念】<a href="https://pan.baidu.com/s/1JLZ3XsEoTh8DLZCWDNrm6A" target="_blank">负债比率</a>（提取码: vdix）<br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-1.pdf" target="_blank">3-1：企业信用风险自检表</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-2.pdf" target="_blank">3-2：企业信用管理手册</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-3.pdf" target="_blank">3-3：可口可乐公司的危机管理</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-4.pdf" target="_blank">3-4：西门子公司的信用管理</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-5.pdf" target="_blank">3-5：客户信息调查案例</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-6.pdf" target="_blank">3-6：企业信用报告（概览）</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-7.pdf" target="_blank">3-7：DSO 与资金管理</a> <br>
+                【科普】<a href="https://v.qq.com/x/page/m30076af2qa.html" target="_blank">银行如何处理呆账坏账</a> <br>
+                【科普】<a href="https://www.mmdnb.com/data-and-analytics/data-analytics-capability/scores-and-ratings.html" target="_blank">邓白氏评分体系及指数</a> <br>
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDE0sVItjhwoArt8SV5pu6t160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">山丹丹开花红艳艳</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEUVeYH8Qmji1WWZqbbVou160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">绣红旗</a> <br></p>
+                
+    
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963478&idx=1&sn=ca1ee6b02ca71f84b2e1ff73a35024da&chksm=841b8610b36c0f064bd2ff654116861533a6600cc3350b1744de8f06bdfbd49ab944e84dfdf7&scene=0&xtrack=1&exportkey=AWNjaN9B%2BUrLTCNBoA70%2FIo%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">藏在墙缝中的钱币！带折痕的小小钱币，见证这段顽强不屈的经济斗争！</a><br>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963486&idx=1&sn=0ec996b8a2166e34e9abbbcfdd09a1c7&chksm=841b8618b36c0f0e727059da64233b19b5a86bc6dd1488752ab0b61c62878d1045041d194b84&scene=0&xtrack=1&exportkey=AUmsNsKzpqpUfjM3oIMBYNQ%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">揭秘全国第一批红色信用合作社！发行股票、纸币、提供低息贷款！</a>
+                 </p>
+         </td>
+        </tr>
+        
+                                                         <!-- ----------分割线---------- -->
+        
+        
+        <tr>
+            <td>Week 7<br>
+                Week 8
+            </td>
+
+            <td>04-16<br>
+                04-23
+            </td>
+
+            <td>
+
+              <li>企业赊销管理 <small>[<a href="./files/slides/lecture_10.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_10.pptx" target="_blank">pptx</a>]</small></li>
+
+              <li>应收账款管理 <small>[<a href="./files/slides/lecture_11.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_11.pptx" target="_blank">pptx</a>]</small></li>
+           
+            </td>
+
+            <td>
+                <a href="./files/materials/chapter_3/chapter_3_exercise.pdf" target="_blank">第三章思考题</a> <br>
+            </td>
+
+            <td> 
+                
+                【概念】<a href="https://pan.baidu.com/s/1kfFCXkpF9BvBVimSWlvCTA" target="_blank">杠杆</a>（提取码: ky9d）<br>
+                【概念】<a href="https://www.shuxuele.com/money/present-value.html" target="_blank">现值与终值</a> <br>
+                【概念】<a href="https://pan.baidu.com/s/1P-XCQqMLQ8X2URBtoS16sw" target="_blank">流动资金</a>（提取码: 5evr）<br>
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E9%94%80%E5%94%AE%E5%88%A9%E6%B6%A6%E7%8E%87" target="_blank">销售利润率</a> <br>
+                【概念】<a href="https://pan.baidu.com/s/1q6xqN3166WWUa86arRs2iA" target="_blank">债务重组</a>（提取码: uk52）<br>
+                【概念】现金流量表<a href="https://www.bilibili.com/video/BV1gt411G7Qe" target="_blank"> (1)</a> <a href="https://www.bilibili.com/video/BV1Jt411w71b" target="_blank">(2)</a><br>
+                【慕课】<a href="https://v.qq.com/x/page/l019007uwbt.html" target="_blank">企业应收账款管理与催收技巧</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-8.pdf" target="_blank">3-8：赊销与企业竞争力提升</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-9.pdf" target="_blank">3-9：公司资金的故事</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-10.pdf" target="_blank">3-10：赊销政策5P准则</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-11.pdf" target="_blank">3-11：警惕四种经销商</a> <br>
+                【专栏】<a href="./files/materials/chapter_3/column_3-12.pdf" target="_blank">3-12：电话追账时客户的常用伎俩</a> <br>
+                【科普】<a href="https://pan.baidu.com/s/1aKccNAWcCSzxz6ur9d4Q3A" target="_blank">福费廷业务</a>（提取码: md43）<br>
+                【科普】<a href="https://www.bilibili.com/video/av203229220/" target="_blank">应收账款催收技巧</a> <br>
+                【科普】<a href="https://www.bilibili.com/s/video/BV12J41137HW" target="_blank">雇佣“职业讨债人”追债合法吗</a> <br>
+                
+                【新闻】<a href="https://money.163.com/20/0103/16/F1VU6R2S00259DLP.html" target="_blank">起底"反催收"江湖</a> <br>
+                【新闻】<a href="https://www.weiyangx.com/271862.html" target="_blank">扒一扒现金贷催收的各种“诈”</a> <br>
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEWcpYF0WKhoNeEwfiI7hB160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">信念永恒</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEszl9FeJd4PgBCQsAcNRh160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">延安颂</a> <br></p>
+
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963819&idx=2&sn=18b4bf13699cb6e19972c782aaab49a5&chksm=841b87edb36c0efbd097ebe381fea76610001599c756b14943f9a603ee1751fe359825823fdd&scene=0&xtrack=1&exportkey=AbhaSzdJPw%2BCvBYREAbcEQA%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">银元有“工”字，纯度就有证明！揭秘中国红色政权制造的第一种钱币</a><br>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963855&idx=1&sn=4cabceea9ec20655c616b9375eb3f4ab&chksm=841b8789b36c0e9f86d5d460032fd068ba1ec9b5314c420d520c0320bb93f92586f89a454c03&scene=0&xtrack=1&exportkey=AQD8Qokbt3oI0%2B10aJjUCBg%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">打土豪，分田地！这里，诞生了中共第一部土地法</a>
+                 </p>
+         </td>
+        </tr>
+        
+
+                                                          <!-- ----------分割线---------- -->
+       
+       <tr>
+       
+            <td><strong>作业1</strong></td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+                第一次作业题 <small>[<a href="./files/homework/homework_1.pdf" target="_blank">题目</a>, <a href="https://wwe.lanzous.com/i7kM5nupwlg" target="_blank">材料</a>（密码:3ui9）]</small>
+               
+            </td>
+
+            <td>
+                <a href="./files/homework/homework_1_answer.xlsx" target="_blank">计算题答案</a>
+            </td>
+
+            <td> 
+                
+                <p style="color:#9932CC";>提交截止日期为2021年4月20日0点</p>
+
+            </td>
+            
+        </tr>                   
+
+                                                        <!-- ----------分割线---------- -->
+
+<tr>
+            <td>Week 9</td>
+
+            <td>04-30</td>
+
+            <td>
+
+              <li>政府信用及信用管理概论 <small>[<a href="./files/slides/lecture_12.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_12.pptx" target="_blank">pptx</a>]</small></li>
+
+              <li>公债信用及信用管理概论 <small>[<a href="./files/slides/lecture_13.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_13.pptx" target="_blank">pptx</a>]</small></li>
+           
+            </td>
+
+            <td>
+                <a href="./files/materials/chapter_4/chapter_4_exercise.pdf" target="_blank">第四章思考题</a> <br>
+            </td>
+
+            <td> 
+                
+                【概念】<a href="https://www.bilibili.com/video/av76612185/" target="_blank">公开市场业务（操作）</a><br>
+                【概念】<a href="./files/materials/chapter_4/yield_curve.pdf" target="_blank">收益率曲线</a><br>
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E5%AE%9E%E4%BD%93%E8%B5%84%E6%9C%AC" target="_blank">现实资本</a><br>
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E8%99%9A%E6%8B%9F%E8%B5%84%E6%9C%AC" target="_blank">虚拟资本</a><br>
+                【概念】<a href="https://tv.cctv.com/2019/09/06/VIDED9O9ZKulpspndUm8h6KL190906.shtml" target="_blank">地方专项债</a><br>
+                【概念】<a href="https://pan.baidu.com/s/1e-Vee1t1aTyc0h5b1L21Yg" target="_blank">流动性</a>（提取码: xkcu）<br>
+                【专栏】<a href="./files/materials/chapter_4/column_4-1.pdf" target="_blank">4-1：中国大公国际的国家信用评级</a> <br>
+                【专栏】<a href="./files/materials/chapter_4/column_4-2.pdf" target="_blank">4-2：三大评级机构国家主权信用评级方法比较研究</a> <br>
+                【慕课】<a href="https://open.163.com/newview/movie/courseintro?newurl=MA9RK9JBT" target="_blank">欧洲主权债务危机</a> <br>
+                【慕课】<a href="https://open.163.com/newview/movie/free?mid=MEGI6MHQJ&pid=MEGHMIQQQ" target="_blank">官本位</a> <br>
+                【科普】<a href="https://www.bilibili.com/s/video/BV1Di4y1x7w6" target="_blank">阿根廷面临第9次债务违约</a> <br>
+                【科普】<a href="https://open.163.com/newview/movie/free?mid=ADLBUBSHJ&pid=ADLBUBSIB" target="_blank">冰岛债务危机</a> <br>
+                【科普】<a href="https://www.bilibili.com/s/video/BV1Qp4y1B7JR" target="_blank">欧债危机</a> <br>
+                【科普】<a href="https://www.bilibili.com/video/av731062/" target="_blank">美国国债危机</a> <br>
+                【科普】<a href="https://pan.baidu.com/s/1RzSCfjR1Mr1oWS9_pFSKog" target="_blank">一级市场和二级市场</a>（提取码: mibi）<br>
+                【纪录片】<a href="https://tv.cctv.com/2021/01/21/VIDA9QxFuBL7wEBJ4gCQcjWp210121.shtml" target="_blank">正风反腐就在身边</a> <br>
+                【专题片】<a href="http://tv.cctv.com/2019/12/12/VIDEUII9pw8f4QBGk6k3XaIh191212.shtml" target="_blank">政府的诚信，法院判！</a> <br>
+                【数据】<a href="https://www.cbirc.gov.cn/cn/view/pages/index/guozhai.html" target="_blank">中国国债及其他债券收益率曲线</a> <br>
+                【观点】<a href="https://www.schroders.com/zh-cn/cn/public/insights/managers-views/six-reasons-chinas-bonds-are-appealing/" target="_blank">中国债券具有吸引力的六个原因</a> <br>
+                【新闻】<a href="https://www.weiyangx.com/325311.html" target="_blank">地方债柜台发售</a> <br>
+                【新闻】<a href="http://finance.sina.com.cn/zl/china/2018-08-22/zl-ihhzsnea6708431.shtml" target="_blank">监守自盗的万亿大生意</a> <br>
+                【电影】<a href="https://movie.douban.com/subject/26303622/" target="_blank">大空头 The Big Short (2015)</a> <br>
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEL0I4V5qraJvhV54m4RfO160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">我们走在大路上</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDE5Ni0tzDuIg8wPW1BhwcN160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">唱支山歌给党听</a> <br></p>
+
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963860&idx=1&sn=299b8bb3e14a5cb894320114ccc2ab17&chksm=841b8792b36c0e84fb098639f255bdbcada06fdca07699e21b69c651dc177cfbe60a2b178497&scene=0&xtrack=1&exportkey=Ae3%2BY2b2L%2BQEHEau4hsldD8%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">揭秘！这家银行，发行中央苏区第一张纸币</a> </p>
+         </td>
+        </tr>
+        
+
+                                                          <!-- ----------分割线---------- -->                       
+                                                   
+            <tr>
+            <td>Week 10</td>
+
+            <td>05-07</td>
+
+            <td>
+
+              <li>消费信用概论 <small>[<a href="./files/slides/lecture_14.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_14.pptx" target="_blank">pptx</a>]</small></li>
+
+              <li>消费信用管理概论 <small>[<a href="./files/slides/lecture_15.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_15.pptx" target="_blank">pptx</a>]</small></li>
+              
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                【概念】<a href="./files/materials/chapter_5/MPC.pdf" target="_blank">边际消费倾向</a><br>
+                【概念】<a href="./files/materials/chapter_5/multiplier_effect.pdf" target="_blank">乘数效应</a><br>
+                【概念】<a href="https://pan.baidu.com/s/1NpstofQSV4om0TODfzIkqg" target="_blank">担保</a>（提取码: wkq7）<br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-1.pdf" target="_blank">5-1：小额信用消费贷款借款合同</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-2.pdf" target="_blank">5-2：卡奴</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-3.pdf" target="_blank">5-3：新加坡消费信用贷款管理</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-4.pdf" target="_blank">5-4：身份冒用与假冒阻止法</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-5.pdf" target="_blank">5-5：信用卡的选择</a> <br>
+                【论文】<a href="./files/materials/chapter_5/zhu2021.pdf" target="_blank">基于大数据的线上快贷业务应用实例研究</a> <br>
+                【科普】<a href="https://www.bilibili.com/video/BV1vx411W7jn/?spm_id_from=333.788.videocard.1" target="_blank">芝麻信用分原来都有这些好处</a><br>
+                【科普】<a href="https://pan.baidu.com/s/1jqk2nGiT8ZkkHFLTG-HW8g" target="_blank">信用卡之王 - 黑卡</a>（提取码: bwp1）<br>
+                【科普】<a href="https://www.bilibili.com/video/BV15K411P7Ht?from=search&seid=14416062517340309210" target="_blank">花呗、信用卡分期还款真实年华利率</a><br>
+                【科普】<a href="https://www.shuxuele.com/money/internal-rate-return.html" target="_blank">内部收益率</a><br>
+                【科普】<a href="./files/materials/chapter_5/irr_example.pdf" target="_blank">采用内部收益率法计算贷款年化利率示例</a><br>
+                【科普】<a href="https://www.bilibili.com/video/BV1UJ411N79S/?spm_id_from=333.788.recommend_more_video.17" target="_blank">大数据征信降低消费信贷经营成本</a><br>
+                【科普】<a href="https://www.bilibili.com/video/av969397800" target="_blank">为什么说消费贷款比你想象的更贵</a><br>
+                
+                【科普】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963940&idx=1&sn=5acb20f27863a0b424652732c298d8b2&chksm=841b8462b36c0d74fce3b5d809b59518d74044ecfdc6597438a2b8ab28b4d29f69b42cb3783d&scene=0&xtrack=1&exportkey=ATEmxYhr4nOhboZKka8arj4%3D&pass_ticket=rqItT7XrINkz4gu52q33eJM%2BNtLeXn4lUfqGTYtu7DiCXVKrfwgtd1k5AJnha%2BKw&wx_header=0#rd" target="_blank">珍爱征信记录 享受幸福人生</a><br>
+                【科普】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963949&idx=1&sn=8327d031af865c4a2213a487cde86551&chksm=841b846bb36c0d7de6b5159249707515bc3437ad11527a60d3e7a0019cc7c216e6ab49a607b6&scene=0&xtrack=1&exportkey=AcHK1GGwC%2FeWD2Yviy4K1H0%3D&pass_ticket=rqItT7XrINkz4gu52q33eJM%2BNtLeXn4lUfqGTYtu7DiCXVKrfwgtd1k5AJnha%2BKw&wx_header=0#rd" target="_blank">防范征信诈骗</a><br>
+                
+                【新闻】<a href="http://bj.people.com.cn/n2/2021/0112/c82839-34522930.html" target="_blank">采集个人信用信息应经本人同意</a> <br>
+                【新闻】<a href="http://www.eeo.com.cn/2020/0702/388517.shtml" target="_blank">美国个人征信体系抗疫经验及启示</a> <br>
+                【新闻】<a href="https://finance.sina.com.cn/videonews/2020-07-29/doc-iivhvpwx8061096.shtml" target="_blank">大学生参加课外培训班应警惕培训贷</a> <br>
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEYMnXkbIBytX3GibpNIoY160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">光荣与梦想</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEWhSPfnI2DHw5EsBAdxf2160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">为了谁</a> <br></p>
+
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963865&idx=1&sn=ac9f1c0da3914fc8b2b41e07bd58d4e4&chksm=841b879fb36c0e89203416b83f5296352ccb8fd2ab16861a1a5ef7b3578ad263a915793b280a&scene=0&xtrack=1&exportkey=AajnH14%2BhvwMoaGTPoCI%2B0A%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">掀起认股热潮！3个月募股十几万！揭秘红色政权的第一只银行股票</a> </p>
+         </td>
+        </tr>
+        
+                                                      <!-- ----------分割线---------- --> 
+      
+      <tr>
+       
+            <td><strong>作业2</strong></td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+                第二次作业题 <small>[<a href="./files/homework/homework_2.pdf" target="_blank">题目</a>, <a href="./files/materials/chapter_3/chapter_3_exercise.pdf" target="_blank">材料</a>]</small>
+               
+            </td>
+
+            <td>
+                <a href="./files/homework/homework_2_answer.xlsx" target="_blank">计算题答案</a>
+            </td>
+
+            <td> 
+                
+                <p style="color:#9932CC";>提交截止日期为2021年5月20日0点</p>
+
+            </td>
+            
+        </tr>
+        
+                                                           <!-- ----------分割线---------- --> 
+        
+        <tr>
+            <td>Week 11</td>
+
+            <td>05-14</td>
+
+            <td>
+
+              
+              <li>消费信用评级体系 <small>[<a href="./files/slides/lecture_16.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_16.pptx" target="_blank">pptx</a>]</small></li>
+              <li>循环信用和内部收益率 <small>[<a href="./files/slides/lecture_17.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_17.pptx" target="_blank">pptx</a>]</small></li>
+              
+            </td>
+
+            <td>
+                <a href="./files/materials/chapter_5/chapter_5_exercise.pdf" target="_blank">第五章思考题</a> <br>
+            </td>
+
+            <td> 
+                
+                
+                【概念】<a href="https://www.shuxuele.com/money/compound-interest-periodic.html" target="_blank">定期（连续）复利</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-6.pdf" target="_blank">5-6：德国个人信用体系</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-7.pdf" target="_blank">5-7：芝麻信用分</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-8.pdf" target="_blank">5-8：大卫·杜兰德信用计分模型</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-9.pdf" target="_blank">5-9：德国个人信用体系建设及应用</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-10.pdf" target="_blank">5-10：益百利消费者个人信用调查报告样本</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-11.pdf" target="_blank">5-11：客户消费信用评级</a> <br>
+                【专栏】<a href="./files/materials/chapter_5/column_5-12.pdf" target="_blank">5-12：擅查个人信用银行被告上法庭</a> <br>
+                【计算表】<a href="./files/materials/chapter_5/IRR_calculation.xlsx" target="_blank">内部收益率计算Excel示例</a> <br>
+                【计算表】<a href="./files/materials/chapter_5/parking_space_loan.xlsx" target="_blank">计算车位贷款的内部收益率</a> <br>
+                【科普】<a href="https://www.bilibili.com/video/BV1Rf4y1z7eU?from=search&seid=832847667170124830" target="_blank">免息？信用卡、花呗们到底是怎么从你身上挣钱的？</a> <br>
+                【科普】<a href="https://www.rong360.com/baike/14258-b6916m3or.html#:~:text=%E5%BB%BA%E8%AE%BE%E9%93%B6%E8%A1%8C%E7%9A%84%E5%85%8D%E6%81%AF,50%E5%A4%A9%EF%BC%8C%E6%9C%80%E7%9F%AD20%E5%A4%A9%E3%80%82&text=%E4%B8%AD%E5%9B%BD%E5%BB%BA%E8%AE%BE%E9%93%B6%E8%A1%8C%E4%BF%A1%E7%94%A8%E5%8D%A1%E7%9A%84,%E4%B8%BA6%E6%9C%8823%E6%97%A5%E3%80%82" target="_blank">信用卡免息期（以建行为例）</a> <br>
+                【新闻】<a href="https://finance.sina.com.cn/money/bank/dsfzf/2019-11-20/doc-iihnzahi2210680.shtml" target="_blank">考拉征信等7家公司被查 4亿条个人信息泄露</a> <br>
+                【新闻】<a href="http://tv.cctv.com/2019/04/06/VIDEFJjxspLSslNvI9cZYW4D190406.shtml" target="_blank">大学生被“套路贷” 借款1800元 8个月后涨到14万</a> <br>
+                【新闻】<a href="https://huacheng.gz-cmc.com/pages/2021/04/18/0a47946549d849e7a8be235ffbb8d168.html" target="_blank">借款10.6万到手8.9万！“砍头息”要不要还？</a> <br>
+                【新闻】<a href="http://www.xinhuanet.com/fortune/2021-04/25/c_1127370969.htm" target="_blank">各种APP都告诉我：你没钱，你得借钱，跟我借！
+</a> <br>
+
+【新闻】<a href="https://pan.baidu.com/s/12EDu0RnJTNuBMpVN9usTKQ" target="_blank">信贷公司恶意篡改个人信息</a>（提取码: 4q6a） <br>
+                
+                
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDE5CCPvZFRcQckDTFrezso160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">老阿姨</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEOacE6kO983NK3GkR62ah160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">推开这扇门</a> <br></p>
+
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963870&idx=1&sn=5e5c41209811587059dc73a71857c4ff&chksm=841b8798b36c0e8e604d56ae69e4b91477d969c52d3281b2a8591fd73d611a90d0289c230790&scene=0&xtrack=1&exportkey=AZTE4jJeCt2Pg4Sa1ZzYyis%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">统一货币，支持设立国营企业！揭秘中共苏区第一家股份制银行</a> </p>
+         </td>
+        </tr>
+        
+                                                   <!-- ----------分割线---------- --> 
+        
+        <tr>
+            <td>Week 12<br>
+                Week 13
+            </td>
+
+            <td>05-21<br>
+            05-28
+            </td>
+            
+            <td>
+
+              
+              <li>银行信用及信用管理概论 <small>[<a href="./files/slides/lecture_18.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_18.pptx" target="_blank">pptx</a>]</small></li>
+              <li>银行信用产品 <small>[<a href="./files/slides/lecture_19.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_19.pptx" target="_blank">pptx</a>]</small></li>
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                【概念】<a href="./files/materials/chapter_6/Risk_Premium.pdf" target="_blank">风险溢价</a> <br>
+                【概念】<a href="https://baike.baidu.com/item/%E8%A1%A8%E5%A4%96%E4%B8%9A%E5%8A%A1#:~:text=%E8%A1%A8%E5%A4%96%E4%B8%9A%E5%8A%A1%E6%98%AF%E6%8C%87,%E7%8B%AD%E4%B9%89%E5%92%8C%E5%B9%BF%E4%B9%89%E4%B9%8B%E5%88%86%E3%80%82" target="_blank">表外业务</a> <br>
+                【概念】<a href="https://www.ixigua.com/6761193516103107075" target="_blank">市场风险</a> <br>
+                【概念】<a href="https://baike.baidu.com/item/%E6%B5%81%E5%8A%A8%E6%80%A7%E9%A3%8E%E9%99%A9#:~:text=2009%E5%B9%B4%E9%93%B6%E7%9B%91%E4%BC%9A%E5%8D%B0%E5%8F%91%E7%9A%84,%E5%88%B0%E6%9C%9F%E5%80%BA%E5%8A%A1%E7%9A%84%E9%A3%8E%E9%99%A9%E3%80%82" target="_blank">流动性风险</a> <br>
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E5%95%86%E4%B8%9A%E9%93%B6%E8%A1%8C%E8%B5%84%E6%9C%AC%E9%87%91#:~:text=%E5%95%86%E4%B8%9A%E9%93%B6%E8%A1%8C%E8%B5%84%E6%9C%AC%E9%87%91%E5%B0%B1%E6%98%AF,%E6%80%A7%E4%B9%9F%E9%9A%8F%E4%B9%8B%E6%8F%90%E9%AB%98%E3%80%82" target="_blank">商业银行资本金</a> <br>
+                【概念】<a href="./files/materials/chapter_6/Monetary_policy.pdf" target="_blank">货币政策</a> <br>
+                【概念】<a href="./files/materials/chapter_6/discounting.pdf" target="_blank">贴现</a> <br>
+                【概念】<a href="https://baike.baidu.com/item/%E5%BE%AA%E7%8E%AF%E4%BF%A1%E8%B4%B7" target="_blank">循环信贷（循环使用限额贷款）</a> <br>
+                【概念】<a href="./files/materials/chapter_6/financial_lease.pdf" target="_blank">融资租赁</a> <br>
+                【概念】<a href="https://pan.baidu.com/s/1MiNwq4YDzbaxOjJfSdmDfw" target="_blank">信用证</a>（提取码: runp） <br>
+                【概念】<a href="https://pan.baidu.com/s/1SIG4gRvpxdSeoTLhms3Tnw" target="_blank">备用信用证</a>（提取码: m73k） <br>
+                【概念】<a href="./files/materials/chapter_6/factoring.pdf" target="_blank">保理</a> <br>
+                【概念】<a href="./files/materials/chapter_6/Derivative.pdf" target="_blank">金融衍生工具</a> <br>
+                【概念】<a href="https://pan.baidu.com/s/1QrWvipubSlQaLZirNdY9Ow" target="_blank">看涨期权与看跌期权</a>（提取码: tfwe） <br>
+                
+                【研报】<a href="./files/materials/chapter_6/cds_report.pdf" target="_blank">境内外信用违约互换发展与现状研究</a> <br>
+                
+                【国标】<a href="./files/materials/chapter_6/internal_control_guideline.pdf" target="_blank">商业银行内部控制评价指南</a> <br>
+                
+                【慕课】<a href="https://pan.baidu.com/s/1KLYvc8h5Z7pZP8yJG7zLrg" target="_blank">货币政策</a>（提取码: hxkw） <br>
+                【慕课】<a href="https://pan.baidu.com/s/1kFfT1b-JyNH8H_hUGrnYaQ" target="_blank">巴塞尔协议</a>（提取码: 6n49） <br>
+                【慕课】<a href="https://pan.baidu.com/s/157WWKOZV0zE8aynEwU6rfw" target="_blank">信用违约互换及其他互换</a>（提取码: pnuj） <br>
+                【慕课】<a href="https://pan.baidu.com/s/1lUISOc18DNGAK25bXIkK_w" target="_blank">金融衍生工具</a>（提取码: tmrd） <br>
+                【科普】<a href="https://pan.baidu.com/s/1c3nikYaML8-WGb6dfZR_Og" target="_blank">贴现与再贴现</a>（提取码: meyg） <br>
+                【科普】<a href="./files/materials/chapter_6/2019-china-bond-market.pdf" target="_blank">2019 中国债券承销行业市场研究</a> <br>
+                【科普】<a href="https://data.eastmoney.com/cjsj/ckzbj.html" target="_blank">存款准备金率</a> <br>
+                【科普】<a href="https://www.jianshu.com/p/a558a3f4b84a" target="_blank">银行信用风险的左偏分布</a> <br>
+                【科普】<a href="https://www.bilibili.com/s/video/BV1Ti4y1P72D" target="_blank">在银行风险管理部工作是怎样一种体验？</a> <br>
+                【科普】《中国金融》70年70人特别谈（请自行搜索）<br>
+                【科普】<a href="https://www.bilibili.com/video/BV1vi4y1M7Pb" target="_blank">期权</a> <br>
+                【科普】<a href="https://www.bilibili.com/video/BV1Bf4y1q7MJ?from=search&seid=2635446217759884991" target="_blank">深度解读巴塞尔协议</a> <br>
+                【科普】<a href="https://www.bilibili.com/video/av752775468/" target="_blank">你应该担心"信用违约掉期"吗？</a> <br>
+                【科普】<a href="https://www.zhihu.com/question/52078025/answer/560390043" target="_blank">通俗理解看涨看跌期权</a> <br>
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDED7uz4KTlbrzF2XBXP4Ol160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">我们是共产主义接班人</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/10/13/VIDEo7kr88ukuq7vVBcBsYE3161013.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">南湖的船党的摇篮</a> <br></p>
+
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963928&idx=1&sn=a9bf1acb2e37f796956ebc87b705e3d4&chksm=841b845eb36c0d48f11d76677fcd91c421de70ee77bfd1c53fc2ffe2fb00b6324c9cb226c31e&scene=0&xtrack=1&exportkey=Ab58Io7c9L%2BdKhCWThSXkLc%3D&pass_ticket=9hW8RNQpw9JoV4HtWj%2F9jP1pkH9mwidsEiLw3z45JWRtb0mpHyR9hjpHBY2OC3GY&wx_header=0#rd" target="_blank">这种植物，竟在革命建设中扮演重要角色！十斤黄金党费，背后少不了它…</a><br>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963940&idx=2&sn=112c27bf44fa1eb001134787cf1dd385&chksm=841b8462b36c0d7433b79017184a9a0edbcc893da08c221682edecaf871cdb0d115a72075a7d&mpshare=1&scene=1&srcid=0615Rs95aA0FBjoFV6fnrJjm&sharer_sharetime=1623747959652&sharer_shareid=a73e5a30b4610acd3945e4555e2292ca&exportkey=AVbB%2BcwguowJbTri2KAu2xw%3D&pass_ticket=rqItT7XrINkz4gu52q33eJM%2BNtLeXn4lUfqGTYtu7DiCXVKrfwgtd1k5AJnha%2BKw&wx_header=0#rd" target="_blank">揭秘“世界上最小的国家银行”！神秘金库竟藏在...</a>
+                 </p>
+         </td>
+        </tr>
+        
+                                                      <!-- ----------分割线---------- --> 
+              
+        
+        <tr>
+            <td>Week 14<br>
+                Week 15
+            </td>
+
+            <td>05-28<br>
+                06-11
+            </td>
+            
+            <td>
+
+              
+              <li>银行信用风险管理 <small>[<a href="./files/slides/lecture_20.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_20.pptx" target="_blank">pptx</a>]</small></li>
+              <li>授信管理 <small>[<a href="./files/slides/lecture_21.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_21.pptx" target="_blank">pptx</a>]</small></li>
+            </td>
+
+            <td>
+                <a href="./files/materials/chapter_6/chapter_6_exercise.pdf" target="_blank">第六章思考题</a> <br>
+            </td>
+
+            <td> 
+                
+                【概念】<a href="https://www.econ.sdu.edu.cn/info/1385/25106.htm" target="_blank">风险敞口</a>（<a href="https://www.zhihu.com/question/22822476/answer/22796711" target="_blank">示例</a>）<br>
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E8%B4%B7%E6%AC%BE%E9%99%90%E9%A2%9D#:~:text=%E8%B4%B7%E6%AC%BE%E9%99%90%E9%A2%9D%EF%BC%88Credit%20ceilings%EF%BC%89%E6%8C%87,%E7%9A%84%E4%B8%80%E7%A7%8D%E7%AE%A1%E7%90%86%E6%89%8B%E6%AE%B5%E3%80%82" target="_blank">贷款限额</a> <br>
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E5%A5%97%E6%9C%9F%E4%BF%9D%E5%80%BC" target="_blank">套期保值</a> <br>
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E8%B5%84%E6%9C%AC%E5%85%85%E8%B6%B3%E7%8E%87" target="_blank">资本充足率</a> <br>
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E5%86%85%E9%83%A8%E7%A8%BD%E6%A0%B8%E5%88%B6%E5%BA%A6" target="_blank">稽核制度</a> <br>
+                【概念】<a href="https://wiki.mbalib.com/wiki/%E4%BF%A1%E7%94%A8%E5%A2%9E%E7%BA%A7" target="_blank">信用增级</a> <br>
+                【示例】<a href="./files/materials/chapter_6/hedge_example.pdf" target="_blank">买入套期保值的例子</a> <br>
+                【专栏】<a href="./files/materials/chapter_6/column_6-1.pdf" target="_blank">6-1：X银行企业信用等级评定</a> <br>
+                【专栏】<a href="./files/materials/chapter_6/column_6-2.pdf" target="_blank">6-2：小企业贷款的信用风险度量</a> <br>
+                【专栏】<a href="./files/materials/chapter_6/column_6-3.pdf" target="_blank">6-3：阿里金融客户信用风险管理</a> <br>
+                【专栏】<a href="./files/materials/chapter_6/column_6-4.pdf" target="_blank">6-4：蓝田股份授信审查</a> <br>
+                【专栏】<a href="./files/materials/chapter_6/column_6-5.pdf" target="_blank">6-5：企业授信申请书</a> <br>
+                【专栏】<a href="./files/materials/chapter_6/column_6-6.pdf" target="_blank">6-6：某高速授信审查</a> <br>
+                【专栏】<a href="./files/materials/chapter_6/column_6-7.pdf" target="_blank">6-7：银行综合授信合同</a> <br>
+                
+                【慕课】<a href="https://open.163.com/newview/movie/free?mid=OFDMDLF34&pid=CFDMDLCE3" target="_blank">巴塞尔协议与资本监管</a><br>
+                【慕课】<a href="https://www.icourse163.org/course/CUFE-1002245008#/info" target="_blank">资产证券化专题</a>（模块4中的4-7单元）<br>
+                【概念】<a href="https://wiki.mbalib.com/zh-tw/KMV%E6%A8%A1%E5%9E%8B" target="_blank">KMV模型</a> <br>
+                【科普】<a href="https://www.bilibili.com/s/video/BV1tr4y1F7F6" target="_blank">巴塞尔协议是怎么来的</a><br>
+                【科普】<a href="./files/materials/chapter_6/Securitization_faq.pdf" target="_blank">资产证券化业务知识问答</a><br>
+                
+                【科普】<a href="https://zhuanlan.zhihu.com/p/347124081" target="_blank">银行层级</a>，<a href="https://www.bankofchina.com/sourcedb/operations2021/" target="_blank">中国银行机构网点（层级）查询</a><br>
+                
+                【科普】<a href="https://www.weiyangx.com/360157.html" target="_blank">AI助力金融风控降本增效</a> <br>
+                【科普】<a href="./files/materials/chapter_6/lu_internal_credit_rating.pdf" target="_blank">陆金所内部信用评级管理实施细则（2016版）</a> <br>
+                【科普】中国平安2021年第一季度<a href="./files/materials/chapter_6/pingan_performance_report.pdf" target="_blank">业绩报告</a>，<a href="./files/materials/chapter_6/quarterly_report.pdf" target="_blank">季报</a> <br>
+                【科普】<a href="https://www.bilibili.com/s/video/BV1D54y1U7Sn" target="_blank">金融科技将如何改变你我生活？</a> <br>
+                
+                【科普】<a href="https://pan.baidu.com/s/1jICpE-0o99INlx545HtKHQ" target="_blank">资产证券化如何导致美国次贷危机？</a>（提取码: xmvr） <br>
+                【科普】<a href="https://www.bilibili.com/video/BV1AK41137Ls?from=search" target="_blank">ABS到底是什么？能让蚂蚁将30亿变成3000亿？</a> <br>
+                【科普】<a href="https://pan.baidu.com/s/1dz1m9qgHbyUCmRAUsVvsUw" target="_blank">《大空头》解读</a> （提取码: aswr）<br>
+                【科普】<a href="https://open.163.com/newview/movie/free?mid=JFJH0MAN2&pid=NFJGE0MEF" target="_blank">蓝田事件</a> <br>
+                【科普】<a href="./files/materials/chapter_6/lantian.pdf" target="_blank">《蓝田之谜》全文</a> <br>
+                【纪录片】<a href="https://open.163.com/newview/movie/free?pid=NFJGE0MEF&mid=QFJGHGURB" target="_blank">中国股市记忆</a> <br>
+                
+                
+                
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2021/02/04/VIDEXS6Ot1CwZvmG8lzuXdWn210204.shtml?spm=C55953877151.PXOm6vuQzEhV.E0R5beUzIdJ2.70" target="_blank">脱贫宣言</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDE2UX8zhM7wNM8burKR0Gf160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">召唤</a> <br></p>
+
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963949&idx=2&sn=a88edade5f1debc12b2f12cff6e3d316&exportkey=AUCyqmHZtvCT8Y%2F9wCRXfbg%3D&pass_ticket=rqItT7XrINkz4gu52q33eJM%2BNtLeXn4lUfqGTYtu7DiCXVKrfwgtd1k5AJnha%2BKw&wx_header=0" target="_blank">中国共产党建立的第一个国有企业！打跑山大王！矿工翻身做主人...</a><br>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651963997&idx=3&sn=f6291ee218602294c23e42b6f756ab37&chksm=841b841bb36c0d0d127f91345e2d61b7c3d375620098d083e31be0467ad735bedb9e56851567&scene=0&xtrack=1&exportkey=Afugq2Qgl9pMJ1ylTWyFsZs%3D&pass_ticket=pcfNHXT%2Bvm61QBqIOJDvYYdKYlE90R9Kgn5iHmrI1kwkGJGMUCiR4cmJPclR8WDf&wx_header=0#rd" target="_blank">废除苛捐杂税、设置多项免税规定！这个机构的设立，减轻农民负担</a>
+                 </p>
+         </td>
+        </tr>
+        
+                                                       <!-- ----------分割线---------- --> 
+        
+        <tr>
+            <td>Week 16</td>
+
+            <td>06-04</td>
+            
+            <td>
+
+              
+              <li>信用监管概论 <small>[<a href="./files/slides/lecture_22.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_22.pptx" target="_blank">pptx</a>]</small></li>
+              <li>政府信用监管 <small>[<a href="./files/slides/lecture_23.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_23.pptx" target="_blank">pptx</a>]</small></li>
+              <li>个人信用监管 <small>[<a href="./files/slides/lecture_24.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_24.pptx" target="_blank">pptx</a>]</small></li>
+              <li>信用监管法律体系 <small>[<a href="./files/slides/lecture_25.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_25.pptx" target="_blank">pptx</a>]</small></li>
+              <li>信用监管配套体系 <small>[<a href="./files/slides/lecture_26.pdf" target="_blank">pdf</a>, <a href="./files/slides/lecture_26.pptx" target="_blank">pptx</a>]</small></li>
+            </td>
+
+            <td>
+                <a href="./files/materials/chapter_7/chapter_7_exercise.pdf" target="_blank">第七章思考题</a> <br>
+            </td>
+
+            <td> 
+                
+                【概念】<a href="https://pan.baidu.com/s/10W3v9DcJT0n69-XS-VKaxQ" target="_blank">社会资本</a>（提取码: v68m）<br>
+                【专栏】<a href="./files/materials/chapter_7/column_7-1.pdf" target="_blank">7-1：美国信用监管体系</a> <br>
+                【专栏】<a href="./files/materials/chapter_7/column_7-2.pdf" target="_blank">7-2：资产证券化过程中的信用增级</a><br>
+                【科普】<a href="https://www.bilibili.com/video/BV1BC4y1a7Ns/?spm_id_from=333.788.videocard.0" target="_blank">外部信用增级</a><br>
+                【新闻】<a href="https://finance.sina.com.cn/tech/2021-03-24/doc-ikkntiam7577787.shtml" target="_blank">六年仅有两家公司获得牌照，个人征信行业将往何处去</a> <br>
+                【网站】<a href="https://www.11315.com/" target="_blank">绿盾企业征信系统</a> <br>
+                
+                <p style="color:#FF0000";>【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2021/02/03/VIDEWN02ZbFUBmWneqLMH8LE210203.shtml?spm=C53173422422.PeNHW0nqLPpx.0.0" target="_blank">一个承诺 暖了中国</a> <br>
+                【庆祝建党100周年课间音乐欣赏】<a href="https://tv.cctv.com/2016/07/01/VIDEBgeyvtcJZ1wnheDFfiB3160701.shtml?spm=C55953877151.PXOm6vuQzEhV.0.0" target="_blank">保卫黄河</a> <br></p>
+
+            </td>
+        </tr>
+        
+        <tr>
+        <td colspan="5">
+        <p style="color:#FF0000";>
+                【红色金融路】<a href="https://mp.weixin.qq.com/s?__biz=MzA4Mjg4MzM2OQ==&mid=2651964015&idx=3&sn=c63be1f5a38d1541fee126830eb815ea&chksm=841b8429b36c0d3f7957bea0d7c6b01334ad58bcf95f66ddde407f10cfab26de962761233547&scene=0&xtrack=1&exportkey=AbzssDw4NZO%2BhHI0gmARNng%3D&pass_ticket=pcfNHXT%2Bvm61QBqIOJDvYYdKYlE90R9Kgn5iHmrI1kwkGJGMUCiR4cmJPclR8WDf&wx_header=0#rd" target="_blank">揭秘！这家银行，只存在了两年，却为支援革命建设，提供强有力的经济支撑</a> </p>
+         </td>
+        </tr>
+        
+                                                  <!-- ----------分割线---------- --> 
+        
+        <tr>
+       
+            <td><strong>作业3</strong></td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+                第三次作业题 <small>[<a href="./files/homework/homework_3.pdf" target="_blank">题目</a>, <a href="./files/homework/calculation_3.xlsx" target="_blank">计算题Excel模板</a>]</small>
+               
+            </td>
+
+            <td>
+               <a href="./files/homework/homework_3_answer.xlsx" target="_blank">计算题答案</a>
+            </td>
+
+            <td> 
+                
+                <p style="color:#9932CC";>提交截止日期为2021年6月18日0点</p>
+
+            </td>
+            
+        </tr>
+        
+                                                 <!-- ----------分割线---------- --> 
+        
+        <tr>
+       
+            <td><strong>期末</strong></td>
+
+            <td>
+            1. <a href="./files/materials/final_exam/final_assignment.pdf" target="_blank">要求</a> <br>
+            2. <a href="./files/materials/final_exam/course_paper_template.doc" target="_blank">模板</a> <br>
+            </td>
+
+            <td>
+
+                辅助工具：<br>
+                
+                <li><a href="http://tscheck.cnki.net/cm/" target="_blank">知网作业查重网站入口</a> <br></li>
+                <li><a href="./files/materials/final_exam/table_of_contents.pdf" target="_blank">课程目录</a> <br></li>
+                <li><a href="./files/materials/final_exam/CSSCI_journal_list.pdf" target="_blank">CSSCI期刊列表</a> <br></li>
+                <li><a href="./files/materials/final_exam/ssci_journal_list.xlsx" target="_blank">SSCI期刊列表</a> <br></li>
+                <li><a href="https://apps.webofknowledge.com/" target="_blank">Web of Science</a>（需用校园网） <br></li>
+                <li><a href="https://www.cnki.net/" target="_blank">知网</a>（需用校园网） <br></li>
+                <li><a href="https://sci-hub.do/" target="_blank">SCI-HUB</a> <br></li>
+                
+               
+            </td>
+
+            <td>
+               <!-- ----------  <a href="./files/homework/homework_3_answer.xlsx" target="_blank">计算题答案</a>  ---------- --> 
+            </td>
+
+            <td> 
+                
+                <p style="color:#9932CC";>提交截止日期为2021年6月25日0点</p>
+
+            </td>
+            
+        </tr>
+                       
+                             <!-- ----------分割线---------- -->                                                                   
+                                                          
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+
+
+        </tbody>
+    </table>
+</div>
+
+<!-- jQuery and Boostrap -->
+<script src="./files/jquery.min.js"></script>
+<script src="./files/bootstrap.min.js"></script>
+
+
+</body>
+</html>
