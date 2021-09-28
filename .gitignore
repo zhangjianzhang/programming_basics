@@ -1,5 +1,6 @@
 # video files
 
+*.docx
 *.mp4
 *.flv
 others/
