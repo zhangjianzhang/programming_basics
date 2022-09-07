@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """
-@project: text_mining_course
-@file   : hac_plot.py
+@project: programming_basics_course
+@file   : BMI_calculation.py
 @version: 1.0
-@time   : 2022-03-23
+@time   : 2022-09-01
 @author : Jianzhang Zhang, <jianzhang.zhang@foxmail.com>
 """
 
-#BMI指数计算
+# BMI指数计算
 
 Height = float(input("请输入身高(m): "))
 Weight = float(input("请输入体重(kg): "))
