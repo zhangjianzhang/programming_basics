@@ -14,6 +14,6 @@ _locale._getdefaultlocale = (lambda *args: ['zh_CN', 'utf8'])
 basepath = os.path.abspath(__file__)
 folder = os.path.dirname(basepath)
 data_path = os.path.join(folder, AREA_DICT)
-with open(data_path) as f:
+with open(data_path, encoding = 'utf-8') as f:
     area_dict = eval(f.read())
 
