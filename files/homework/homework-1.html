@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一次作业</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', "Helvetica Neue", "Hiragino Sans GB", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif;
+            /* 使用flexbox在较高的屏幕上居中内容 */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div class="container mx-auto px-4 py-4 sm:py-6 max-w-3xl">
+        <!-- 网页头部 -->
+        <header class="text-center mb-4">
+            <h1 class="text-2xl font-bold text-gray-900">第一次作业</h1>
+        </header>
+
+        <!-- 主要内容区域 -->
+        <main class="bg-white p-4 sm:p-5 rounded-xl shadow-lg space-y-3">
+            
+            <!-- 欢迎语 -->
+            <div>
+                <p class="text-sm text-gray-700 leading-snug">
+                    本次作业旨在帮助大家了解计算机、编程语言以及这门课程的主角——Python语言的“前世今生”，并熟悉即将使用的编程环境。请大家按要求完成以下任务。
+                </p>
+            </div>
+
+            <!-- 任务一：观看视频 -->
+            <div id="task1">
+                <h3 class="text-base font-semibold text-gray-800 mb-2 flex items-center">
+                    <span class="bg-blue-500 text-white rounded-full h-6 w-6 text-xs flex items-center justify-center mr-2 font-bold">1</span>
+                    学习任务：观看背景知识视频
+                </h3>
+                <p class="text-sm text-gray-600 mb-2 pl-8">请观看以下三个视频，了解计算机、编程语言及Python的发展历史。这些背景知识将为后续的学习打下坚实的基础。</p>
+                <ul class="space-y-1 pl-8 text-sm">
+                    <li>
+                        <span class="font-medium text-gray-700">计算机发展史：</span>
+                        <a href="https://www.bilibili.com/video/BV1ru411M7Hc/" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline break-all transition-colors">https://www.bilibili.com/video/BV1ru411M7Hc/</a>
+                    </li>
+                    <li>
+                        <span class="font-medium text-gray-700">编程语言发展史：</span>
+                        <a href="https://www.bilibili.com/video/BV1NN4y1s7AM/" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline break-all transition-colors">https://www.bilibili.com/video/BV1NN4y1s7AM/</a>
+                    </li>
+                    <li>
+                        <span class="font-medium text-gray-700">Python语言发展史：</span>
+                        <a href="https://www.bilibili.com/video/BV14dhBz7Ej1/" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline break-all transition-colors">https://www.bilibili.com/video/BV14dhBz7Ej1/</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 任务二：熟悉工具 -->
+            <div id="task2">
+                <h3 class="text-base font-semibold text-gray-800 mb-2 flex items-center">
+                    <span class="bg-blue-500 text-white rounded-full h-6 w-6 text-xs flex items-center justify-center mr-2 font-bold">2</span>
+                    学习任务：熟悉Jupyter Notebook
+                </h3>
+                <p class="text-sm text-gray-600 pl-8">
+                    Jupyter Notebook 是课程中进行代码编写和练习的主要工具。请大家主动查阅网络资料，学习并熟悉其常用快捷键，这将极大地提高你未来的编程效率。
+                </p>
+                 <p class="mt-1 text-xs text-gray-500 pl-8">
+                    提示：可以搜索“Jupyter Notebook 快捷键”等关键词。
+                </p>
+            </div>
+
+            <!-- 作业提交说明 -->
+            <div id="submission" class="border-t border-gray-200 pt-3">
+                 <h3 class="text-base font-semibold text-gray-800 mb-2">作业提交说明</h3>
+                 <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-3 rounded-r-lg text-sm">
+                    <p class="font-medium">完成以上两个学习任务后，请登录 <a href="https://hznu.fanya.chaoxing.com/portal" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline"><strong class="font-semibold">“超星学习通”</strong></a> 平台，在对应的作业链接中完成本次测验。</p>
+                    <ul class="list-disc list-inside mt-1 space-y-0.5">
+                        <li><strong>题目形式：</strong>25道单选题</li>
+                        <li><strong>分值：</strong>每题4分，共100分</li>
+                        <li><strong>内容来源：</strong>全部题目均出自以上两个学习任务。</li>
+                    </ul>
+                 </div>
+            </div>
+
+            <!-- 教师寄语 -->
+            <div class="mt-3 text-xs text-gray-600 bg-gray-100 p-3 rounded-lg">
+                <p><strong class="font-semibold text-gray-800">教师寄语：</strong> 对商科的同学来说，编程可能是一个全新的领域。请不要畏惧，把它看作一种解决问题的新工具和新思维。关键在于理解、实践和坚持。祝大家学习愉快！</p>
+            </div>
+        </main>
+        
+        
+    </div>
+</body>
+</html>
+
+
