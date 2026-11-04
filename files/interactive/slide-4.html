@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="通过跨境订单文本，动手理解元组、字符串清洗、拆分连接、查询判断和格式化输出。">
+  <meta name="color-scheme" content="light">
+  <title>文本与元组实验室｜Python 第四讲</title>
+  <style>:root {
+  --bg:#f2f5fa; --surface:#fff; --ink:#17283d; --muted:#536477;
+  --accent:#245fc4; --accent-ink:#fff; --selected:#e4edfc; --line:#d6dfeb;
+  --changed:#6d4c00; --changed-bg:#fff0c9; --error:#a32d32; --error-bg:#fff0f0;
+  --soft:#f6f8fc; --code-bg:#eef3fa; --code-ink:#17314d;
+  --token-str:#236242; --token-kw:#754b9a; --token-num:#9a4a0f;
+  --radius:10px; --tile-radius:12px; --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono","PingFang SC","Microsoft YaHei",monospace;
+  font-family:var(--font); color:var(--ink); font-synthesis:none; font-size:17px; color-scheme:light;
+}
+* {box-sizing:border-box}
+body {margin:0;background:var(--bg);color:var(--ink);line-height:1.7;min-width:320px}
+button,input,select {font:inherit;color:inherit}
+button,summary,a,input,select {-webkit-tap-highlight-color:transparent}
+button {cursor:pointer}
+button:disabled {cursor:default;opacity:.5}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+a {color:var(--accent);text-decoration-thickness:1px;text-underline-offset:4px}
+h1,h2,h3,p {margin:0}
+button,input,select {border-radius:var(--radius)}
+button {transition:background-color .15s,border-color .15s}
+button:hover:not(:disabled) {filter:brightness(.98)}
+code,pre,.mono {font-family:var(--mono)}
+code {font-size:.95em}
+.skip-link {position:fixed;left:16px;top:-100px;z-index:30;padding:12px 20px;background:var(--surface)}
+.skip-link:focus {top:10px}
+.topbar {display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:92px;padding:18px 36px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand {display:flex;gap:13px;align-items:center;color:var(--ink);text-decoration:none;font-size:21px;font-weight:750;line-height:1.25;white-space:nowrap}
+.brand small {display:block;font-weight:500;color:var(--muted);font-size:12px;letter-spacing:.06em;margin-top:7px}
+.brand-mark {display:flex;align-items:center;justify-content:center;gap:2px;color:var(--accent);font:700 36px/1 var(--mono);width:48px;height:48px;background:var(--selected);border-radius:12px}
+.brand-mark b {font-weight:500}
+.top-actions {display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.theme-options {display:flex;gap:5px;padding:4px;background:var(--soft);border:1px solid var(--line);border-radius:12px}
+.theme-options button {display:flex;align-items:center;gap:8px;min-height:42px;padding:7px 12px;background:transparent;border:1px solid transparent;font-size:14px;white-space:nowrap}
+.theme-options button[aria-pressed=true] {background:var(--surface);border-color:var(--line);font-weight:700}
+.theme-dot {width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.2)}
+.dot-a {background:#245fc4}.dot-b {background:#086a5b}.dot-c {background:#173a58;outline:1px solid #83d8f3}
+.btn {display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:9px 17px;border:1px solid var(--line);background:var(--surface);font-size:15px;font-weight:600;line-height:1.5;text-align:center}
+.btn-primary {background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-subtle {background:transparent;color:var(--muted)}
+.btn-small {font-size:13px;padding:7px 12px;min-height:38px}
+.shell {display:grid;grid-template-columns:218px minmax(0,1fr);max-width:1580px;margin:auto}
+.sidebar {padding:36px 22px 26px 28px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:29px}
+.course-name span {font-size:13px;color:var(--muted)}
+.course-name strong {display:block;font-size:22px;line-height:1.5;font-weight:650;margin-top:8px;letter-spacing:-.03em}
+.lesson-nav {display:flex;flex-direction:column;gap:9px}
+.lesson-nav a {position:relative;display:flex;gap:13px;align-items:center;min-height:48px;padding:10px 12px;text-decoration:none;color:var(--muted);font-size:16px;border-radius:7px}
+.lesson-nav a[aria-current=page] {background:var(--selected);color:var(--accent);font-weight:700}
+.nav-index {font:500 13px/1 var(--mono);opacity:.8}
+.nav-done {margin-left:auto;font-size:14px;color:var(--accent)}
+.sidebar-bottom {margin-top:auto;padding-top:36px;color:var(--muted);font-size:13px}
+.progress-note {display:block;margin-top:12px;font-size:12px}
+.lesson {min-width:0;padding:31px 34px 38px}
+.lesson-heading {display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}
+.source-tag {color:var(--muted);font-size:13px;margin-bottom:7px}
+h1 {font-size:32px;line-height:1.35;font-weight:750;letter-spacing:-.035em}
+.lesson-question {font-size:17px;line-height:1.7;color:var(--muted);margin-top:10px;max-width:800px}
+.lesson-heading>.btn {flex-shrink:0;margin-top:7px}
+.workbench {display:grid;grid-template-columns:minmax(225px,.72fr) minmax(0,2.4fr);gap:20px;align-items:stretch}
+.control-panel {display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);padding:22px;border-radius:var(--radius);min-width:0}
+.visual-panel {min-width:0;display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:25px 25px 22px}
+.control-label {display:block;font-size:14px;font-weight:700;line-height:1.5;margin-bottom:8px}
+.hint {font-size:13px;color:var(--muted);line-height:1.75}
+.field-row {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.field-row label {font-size:13px;display:flex;flex-direction:column;gap:5px;color:var(--muted)}
+.field-row input {width:100%;min-height:46px;border:1px solid var(--line);background:var(--soft);font-family:var(--mono);font-size:18px;padding:7px 9px;color:var(--ink)}
+.single-field input,.single-field select,.control-panel select,.control-panel>input {width:100%;min-height:46px;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.segmented {display:flex;gap:5px;flex-wrap:wrap}
+.segmented button {min-height:42px;padding:8px 12px;flex:1 0 auto;background:var(--soft);border:1px solid var(--line);font-size:14px;line-height:1.4}
+.segmented button[aria-pressed=true],.segmented .is-active,.segmented .active {color:var(--accent);border-color:var(--accent);background:var(--selected);font-weight:700}
+.action-stack {display:flex;flex-direction:column;gap:8px}
+.action-stack .btn {width:100%;justify-content:flex-start;font-size:14px}
+.action-stack .btn[aria-pressed=true] {color:var(--accent);border-color:var(--accent);background:var(--selected)}
+.preset-row {display:flex;gap:6px;flex-wrap:wrap}
+.preset-row button {border:1px solid var(--line);background:var(--surface);padding:6px 10px;min-height:38px;font-size:13px}
+.preset-row button:hover {border-color:var(--accent)}
+.control-panel hr {border:0;border-top:1px solid var(--line);margin:0}
+.visual-header {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.visual-header h2 {font-size:17px;font-weight:650;line-height:1.4}
+.visual-header code {font-size:17px;font-weight:650}
+.pill {font-size:12px;line-height:1.4;padding:5px 8px;border-radius:5px;background:var(--soft);color:var(--muted)}
+.pill.changed {background:var(--changed-bg);color:var(--changed)}
+.rail-scroll {overflow-x:auto;padding:6px 2px 7px;max-width:100%}
+.list-rail {display:flex;gap:8px;align-items:stretch;min-width:min-content;padding:8px 0}
+.list-tile {display:flex;flex:1 0 90px;min-width:0;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:var(--tile-radius);background:var(--soft);position:relative;text-align:center;overflow:hidden}
+.pos-index,.neg-index {font-family:var(--mono);font-size:13px;line-height:1.4;padding:7px 7px 6px;color:var(--muted);width:100%;background:var(--surface)}
+.pos-index {border-bottom:1px solid var(--line)}
+.neg-index {border-top:1px solid var(--line)}
+.tile-value {display:flex;align-items:center;justify-content:center;flex:1;padding:17px 9px;min-height:70px;font-size:17px;font-weight:650;white-space:nowrap}
+.list-tile.selected {border:2px solid var(--accent);background:var(--selected)}
+.list-tile.selected .pos-index,.list-tile.selected .neg-index {background:var(--selected);color:var(--accent)}
+.list-tile.changed {border-color:var(--changed);background:var(--changed-bg)}
+.list-tile.changed .pos-index {background:var(--changed-bg);color:var(--changed)}
+.list-tile.stop {border-style:dashed;border-color:var(--muted)}
+.take-order {font-size:11px;font-weight:650;color:var(--accent);padding:3px 5px 5px}
+.stop-flag {font-size:11px;padding:3px 5px 5px;color:var(--muted)}
+.list-legend {display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px}
+.list-legend span {display:flex;gap:6px;align-items:center}
+.legend-swatch {display:inline-block;width:11px;height:11px;border:1px solid var(--accent);background:var(--selected)}
+.sublist {display:flex;gap:5px;align-items:center;padding:0 5px;font-size:14px;font-family:var(--mono)}
+.sublist-item {padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:4px;white-space:nowrap;font-family:var(--font)}
+.list-tile.nested {min-width:180px;flex:1.5 0 180px}
+.empty-list {font:22px/1.5 var(--mono);padding:20px;color:var(--muted);background:var(--soft);border:1px dashed var(--line);border-radius:var(--radius);width:100%}
+.selection-result {border-top:1px solid var(--line);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.result-title {font-size:14px;color:var(--muted);font-weight:500}
+.result-value {font-size:18px;line-height:1.6;color:var(--accent);overflow-wrap:anywhere}
+.path {display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.path b {border:1px solid var(--line);border-radius:5px;min-width:28px;padding:1px 6px;text-align:center;background:var(--surface);color:var(--accent)}
+.result-pair {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.result-cell {min-width:0;padding:15px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);font-size:14px}
+.result-cell h3,.result-cell strong {font-size:14px;display:block;margin-bottom:7px}
+.result-cell code,.result-cell pre {display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin:0}
+.compare-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.comparison {min-width:0;display:flex;flex-direction:column;gap:12px}
+.comparison+ .comparison {border-left:1px solid var(--line);padding-left:20px}
+.comparison h3 {font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)}
+.comparison .list-tile {flex-basis:65px}
+.comparison .tile-value {font-size:15px;min-height:62px;padding:12px 7px}
+.comparison .list-rail {gap:5px}
+.return-line {display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;border-top:1px solid var(--line);padding-top:10px;color:var(--muted)}
+.return-line code {color:var(--ink);font-size:16px;font-weight:650;white-space:pre-wrap;overflow-wrap:anywhere}
+.evidence {display:grid;grid-template-columns:minmax(230px,.9fr) minmax(0,1.5fr);gap:20px;margin-top:20px;align-items:start}
+.rule-panel {padding:6px 2px;min-width:0;font-size:16px;line-height:1.85}
+.rule-panel p+p {margin-top:11px}
+.rule-note {line-height:1.8}
+.rule-note strong {color:var(--accent)}
+.rule-note .hint {display:block;margin-top:9px}
+.code-panel {min-width:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--code-bg)}
+.code-toolbar {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 15px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.code-toolbar .btn {min-height:31px;font-size:12px;padding:4px 9px}
+.code-panel pre {font-size:15px;line-height:1.8;color:var(--code-ink);padding:16px 18px;margin:0;overflow-x:auto}
+.code-line {display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;min-height:1.8em}
+.line-no {color:var(--muted);font-size:11px;user-select:none;line-height:2.4}
+.line-text {white-space:pre-wrap;overflow-wrap:anywhere}
+.token-str {color:var(--token-str)}.token-kw {color:var(--token-kw)}.token-num {color:var(--token-num)}.token-comment {color:var(--muted)}
+.error-message {padding:14px 17px;border-radius:var(--radius);background:var(--error-bg);color:var(--error);line-height:1.7;font-size:14px;border:1px solid currentColor}
+.status-note {font-size:14px;line-height:1.7;color:var(--muted)}
+.notice {padding:11px 14px;background:var(--changed-bg);color:var(--changed);border-radius:var(--radius);font-size:14px;line-height:1.7}
+.try-next {display:flex;gap:12px;font-size:14px;color:var(--muted);padding:20px 0 16px;border-bottom:1px solid var(--line);margin-top:2px}
+.try-next strong {flex-shrink:0;color:var(--ink);font-size:14px}
+.check-panel {margin-top:17px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.check-panel summary {cursor:pointer;padding:15px 20px;font-size:15px;font-weight:650}
+.check-content {padding:0 20px 20px}
+.check-question {font-size:17px;line-height:1.7;margin:8px 0 12px}
+.quiz-code {white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.8 var(--mono);padding:12px 15px;background:var(--soft);border-radius:7px;margin:0 0 14px;color:var(--muted)}
+.quiz-options {display:grid;gap:9px}
+.quiz-option {display:flex;gap:12px;text-align:left;align-items:flex-start;padding:12px 14px;background:var(--surface);border:1px solid var(--line);min-height:46px;font-size:14px;line-height:1.65}
+.quiz-letter {font-family:var(--mono);font-size:12px;flex-shrink:0;padding-top:2px;color:var(--muted)}
+.quiz-option[aria-pressed=true] {border-color:var(--accent);background:var(--selected)}
+.quiz-feedback {margin-top:13px;padding:12px 15px;line-height:1.8;font-size:14px;background:var(--selected);border-radius:var(--radius)}
+.quiz-feedback.incorrect {background:var(--changed-bg);color:var(--changed)}
+.chart-bars {display:flex;flex-direction:column;gap:10px;padding:8px 0}
+.bar-line {display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center}
+.bar-index {font:11px/1 var(--mono);color:var(--muted);text-align:right}
+.bar-track {position:relative;min-height:31px;display:flex;align-items:center;background:var(--soft)}
+.bar-fill {position:absolute;left:0;top:0;bottom:0;background:var(--selected);border-left:2px solid var(--accent)}
+.bar-label {position:relative;padding:2px 9px;font-size:13px;font-family:var(--mono);color:var(--ink);white-space:nowrap}
+.bar-scale {display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-left:40px;border-top:1px solid var(--line);padding-top:2px}
+.raw-value {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+.sort-trap {margin-top:8px;border-top:1px solid var(--line);padding-top:15px}
+.sort-trap summary {font-size:14px;color:var(--muted);cursor:pointer}
+.sort-trap .notice {margin-top:12px}
+.copy-graph {width:100%;height:auto;display:block}
+.copy-graph text {font-family:var(--font)}
+.memory-graph {width:100%;overflow-x:auto}
+.data-table {width:100%;border-collapse:separate;border-spacing:0;font-size:16px}
+.data-table th {font-size:12px;font-weight:500;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+.data-table td {padding:0;border-bottom:1px solid var(--line);background:var(--surface)}
+.data-table td:first-child {padding:10px 12px;color:var(--muted);font-family:var(--mono);font-size:13px;width:55px}
+.data-table button {width:100%;min-height:56px;display:block;text-align:left;padding:12px;border:2px solid transparent;background:transparent;border-radius:0;font-size:16px}
+.data-table tr.selected-row td,.data-table tr.is-row td {background:var(--soft)}
+.data-table button.selected,.data-table button[aria-pressed=true],.data-table .is-cell button {background:var(--selected);border-color:var(--accent);color:var(--accent);font-weight:700}
+.table-wrap {overflow-x:auto;width:100%}
+.table-scroll {overflow-x:auto;width:100%}
+.table-edit-row {display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}
+.table-edit-row input {min-height:46px;min-width:100px;flex:1;width:100%;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.table-edit-controls>.control-label {margin-top:12px}
+.table-lookup-results {margin-top:24px}
+.table-lookup-results .python-value {margin:12px 0 4px;overflow-wrap:anywhere;font-family:var(--mono);font-size:17px}
+.data-table .is-selected-row td {background:var(--soft)}
+.data-table tbody th {border-bottom:1px solid var(--line)}
+.data-table .is-selected-row th {background:var(--soft)}
+.practice-actions {display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.practice-step-title {font-size:17px}
+.practice-panel summary>.hint {display:block;margin-top:4px}
+.practice-data-table {min-width:265px}
+.practice-data-table td {padding:8px;font-size:12px}
+.practice-data-table th {font-size:10px;padding:7px}
+.practice-comparison h4 {font-size:14px;margin:0 0 10px}
+.practice-statistics .result-cell>strong {font-size:28px;color:var(--accent)}
+.sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.copy-diagram {overflow-x:auto;width:100%}
+.table-path {font-size:22px;font-family:var(--mono);padding:12px 0;color:var(--accent)}
+.table-reading {display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.practice-panel {margin-top:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.practice-panel summary {padding:13px 16px;cursor:pointer;font-weight:650;font-size:15px}
+.practice-body {padding:0 16px 18px;font-size:14px}
+.practice-body p {margin:8px 0}
+.practice-body pre {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;background:var(--code-bg);padding:12px;margin:12px 0;border-radius:7px}
+.practice-controls {display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.practice-panel .result-pair {grid-template-columns:repeat(2,minmax(0,1fr))}
+.site-footer {display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-top:1px solid var(--line);max-width:1580px;margin:auto;padding:20px 36px;font-size:12px;color:var(--muted)}
+.site-guide {max-width:680px;min-width:160px}
+.site-guide summary {cursor:pointer;text-align:right;color:var(--muted)}
+.site-guide>div {padding:18px 0;font-size:14px}
+.site-guide p+p {margin-top:12px}
+.site-guide .btn {margin-top:14px}
+.toast {position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:8px;font-size:14px;z-index:40;pointer-events:none;opacity:0;transition:opacity .15s}
+.toast.visible {opacity:1}
+.noscript {padding:30px;background:var(--error-bg);color:var(--error)}
+
+/* A: the list is the main blackboard; the controls sit directly below it. */
+body[data-theme=whiteboard] .workbench {grid-template-columns:1fr}
+body[data-theme=whiteboard] .visual-panel {grid-row:1}
+body[data-theme=whiteboard] .control-panel {display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;padding:18px 22px}
+body[data-theme=whiteboard] .control-panel>div {flex:1 1 160px}
+body[data-theme=whiteboard] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=whiteboard] .control-panel>.btn {flex:0 0 auto}
+body[data-theme=whiteboard] .control-panel hr {display:none}
+body[data-theme=whiteboard] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=whiteboard] .action-stack .btn {width:auto;justify-content:center;flex:1 1 auto}
+body[data-theme=whiteboard] .list-tile {flex-basis:85px}
+body[data-theme=whiteboard] .tile-value {font-size:21px;min-height:74px}
+
+/* B: a green business desk with horizontal navigation and a task column. */
+body[data-theme=workbench] {--bg:#ecf3f0;--surface:#fff;--ink:#173c36;--muted:#4d6860;--accent:#086a5b;--accent-ink:#fff;--selected:#dcefe8;--line:#ccdcd5;--soft:#f3f8f5;--changed:#745200;--changed-bg:#fcedbc;--code-bg:#edf4f0;--code-ink:#193f35;--token-str:#236242;--token-kw:#7b4283;--token-num:#91501c;--radius:4px;--tile-radius:4px}
+body[data-theme=workbench] .shell {grid-template-columns:1fr}
+body[data-theme=workbench] .sidebar {padding:14px 36px;border-right:0;border-bottom:1px solid var(--line);flex-direction:row;align-items:center;gap:30px;background:var(--surface)}
+body[data-theme=workbench] .course-name,body[data-theme=workbench] .sidebar-bottom {display:none}
+body[data-theme=workbench] .lesson-nav {flex-direction:row;flex-wrap:wrap;gap:9px;width:100%}
+body[data-theme=workbench] .lesson-nav a {flex:1;justify-content:center;font-size:15px;border-radius:3px;min-height:43px;white-space:nowrap}
+body[data-theme=workbench] .nav-done {margin-left:0}
+body[data-theme=workbench] .lesson {padding:28px 44px 40px}
+body[data-theme=workbench] .workbench {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .control-panel {border-top:3px solid var(--accent)}
+body[data-theme=workbench] .evidence {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .brand-mark {border-radius:4px}
+body[data-theme=workbench] .comparison h3 {font-size:22px}
+
+/* C: an object diagram on a deep-blue laboratory bench. */
+body[data-theme=blueprint] {--bg:#101b2d;--surface:#17253a;--ink:#f0f5fc;--muted:#b4c5db;--accent:#83d8f3;--accent-ink:#112339;--selected:#263f5a;--line:#38516c;--soft:#1d2e46;--changed:#f3c97f;--changed-bg:#3c3324;--error:#ffb4bb;--error-bg:#482b37;--code-bg:#132136;--code-ink:#dce8f8;--token-str:#a4dbc0;--token-kw:#d4b9f4;--token-num:#f3c97f;--radius:7px;--tile-radius:3px;color-scheme:dark}
+body[data-theme=blueprint] .topbar {border-bottom-color:var(--line)}
+body[data-theme=blueprint] .sidebar {background:#101b2d}
+body[data-theme=blueprint] .brand-mark {background:transparent;border:1px solid var(--accent);border-radius:3px}
+body[data-theme=blueprint] .workbench {grid-template-columns:1fr}
+body[data-theme=blueprint] .visual-panel {grid-row:1;border:1px solid var(--line);border-top:3px solid var(--accent)}
+body[data-theme=blueprint] .control-panel {flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;background:var(--soft)}
+body[data-theme=blueprint] .control-panel>div {flex:1 1 170px}
+body[data-theme=blueprint] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=blueprint] .control-panel hr {display:none}
+body[data-theme=blueprint] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=blueprint] .action-stack .btn {width:auto;flex:1 1 auto;justify-content:center}
+body[data-theme=blueprint] .list-tile {border-width:1px}
+body[data-theme=blueprint] .list-tile.selected {border-width:2px}
+body[data-theme=blueprint] .pos-index {background:var(--selected)}
+body[data-theme=blueprint] .tile-value {font-size:21px}
+body[data-theme=blueprint] .evidence {grid-template-columns:minmax(230px,1fr) minmax(0,1.6fr)}
+
+/* Projection raises teaching text sizes without scaling the whole page. */
+body.projecting {font-size:20px}
+body.projecting .theme-options,body.projecting .course-name,body.projecting .sidebar-bottom,body.projecting .check-panel,body.projecting .site-footer {display:none}
+body.projecting .shell {grid-template-columns:185px minmax(0,1fr)}
+body.projecting .sidebar {padding:25px 15px}
+body.projecting .lesson {padding:26px}
+body.projecting .lesson-nav a {font-size:16px}
+body.projecting h1 {font-size:38px}
+body.projecting .lesson-question,body.projecting .rule-panel {font-size:20px}
+body.projecting .tile-value {font-size:25px;min-height:84px}
+body.projecting .code-panel pre {font-size:20px}
+body.projecting .hint,body.projecting .control-label,body.projecting .btn,body.projecting .status-note,body.projecting .result-title {font-size:17px}
+body.projecting .result-value {font-size:22px}
+body.projecting[data-theme=workbench] .shell {grid-template-columns:1fr}
+body.projecting[data-theme=workbench] .sidebar {padding:10px 26px}
+
+@media (max-width:1150px) {
+  .topbar {padding:16px 24px;gap:18px}.top-actions {gap:10px}.theme-options button {font-size:12px;padding:7px 9px}.brand {font-size:19px}
+  .shell {grid-template-columns:185px minmax(0,1fr)}.sidebar {padding:28px 15px 25px 20px}.lesson {padding:27px 25px}.lesson-nav a {font-size:14px;padding:10px}
+  .course-name strong {font-size:20px}.workbench {grid-template-columns:220px minmax(0,1fr)}.visual-panel {padding:22px 20px}.control-panel {padding:20px}
+  body[data-theme=workbench] .lesson {padding:25px 30px}.theme-dot {width:8px;height:8px}.theme-options {gap:2px}
+}
+@media (max-width:900px) {
+  .topbar {flex-wrap:wrap;gap:14px;min-height:unset;padding:16px 22px}.top-actions {flex:1}.theme-options button {font-size:12px}.brand {font-size:18px}.projection-button {font-size:12px;padding:8px 12px}
+  .shell,.projecting .shell {grid-template-columns:1fr!important}.sidebar {padding:12px 20px;border-right:0;border-bottom:1px solid var(--line);background:var(--surface)}
+  .course-name,.sidebar-bottom {display:none}.lesson-nav {flex-direction:row;flex-wrap:wrap;gap:5px}.lesson-nav a {padding:7px 10px;min-height:38px;font-size:13px}.nav-index {font-size:11px}.nav-done {margin-left:3px}
+  .lesson {padding:24px}.workbench,body[data-theme=workbench] .workbench {grid-template-columns:1fr}.control-panel {flex-direction:row;flex-wrap:wrap}.control-panel>div {flex:1 1 180px}.control-panel>.hint {flex:1 1 180px}
+  .visual-panel {grid-row:1}.evidence,body[data-theme=workbench] .evidence,body[data-theme=blueprint] .evidence {grid-template-columns:1fr}.evidence {gap:14px}.rule-panel {padding:2px}
+  body[data-theme=workbench] .sidebar {padding:12px 20px}.site-footer {padding:20px 24px}.control-panel hr {display:none}.action-stack {flex-direction:row;flex-wrap:wrap}.action-stack .btn {width:auto;flex:1;justify-content:center}
+  h1 {font-size:29px}.lesson-question {font-size:15px}.lesson-heading>.btn {font-size:12px;padding:8px 10px}.source-tag {font-size:12px}
+}
+@media (max-width:600px) {
+  .topbar {padding:14px 16px}.brand-mark {width:38px;height:38px;font-size:29px}.brand {font-size:17px}.brand small {font-size:10px}
+  .top-actions {display:contents}.theme-options {order:3;width:100%;justify-content:space-between}.theme-options button {flex:1;justify-content:center;padding:8px 3px;font-size:11px;gap:5px;min-height:40px}.projection-button {margin-left:auto;font-size:12px}
+  .sidebar,body[data-theme=workbench] .sidebar {padding:10px 12px}.lesson-nav {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:3px}.lesson-nav a,body[data-theme=workbench] .lesson-nav a {font-size:12px;padding:8px 5px;gap:7px;justify-content:center}.nav-done {display:none}
+  .lesson,body[data-theme=workbench] .lesson,body.projecting .lesson {padding:20px 14px}.lesson-heading {gap:10px;margin-bottom:18px}.source-tag {font-size:11px}h1 {font-size:26px}.lesson-question {font-size:14px}.lesson-heading>.btn {font-size:11px;padding:7px 10px;min-height:38px}
+  .visual-panel {padding:18px 14px;gap:14px}.control-panel,body[data-theme=whiteboard] .control-panel,body[data-theme=blueprint] .control-panel {padding:16px 14px;gap:14px;flex-direction:column;align-items:stretch}
+  .control-panel>div,.control-panel>.hint,body[data-theme=whiteboard] .control-panel>div,body[data-theme=blueprint] .control-panel>div,body[data-theme=whiteboard] .control-panel>.hint,body[data-theme=blueprint] .control-panel>.hint {flex:initial}
+  .list-tile,body[data-theme=whiteboard] .list-tile {flex-basis:82px}.tile-value,body[data-theme=whiteboard] .tile-value,body[data-theme=blueprint] .tile-value {font-size:16px;min-height:62px}.pos-index,.neg-index {font-size:12px}
+  .compare-grid {grid-template-columns:1fr;gap:20px}.comparison+.comparison {border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px}.result-pair {grid-template-columns:1fr}.result-value {font-size:16px}.visual-header h2 {font-size:15px}
+  .rule-panel {font-size:15px}.code-panel pre {font-size:13px;padding:14px 12px}.code-line {gap:7px;grid-template-columns:18px minmax(0,1fr)}.try-next {font-size:13px;gap:9px;flex-direction:column}.try-next strong {font-size:13px}
+  .site-footer {padding:18px 16px;flex-direction:column;font-size:11px}.site-guide {min-width:0;max-width:100%}.site-guide summary {text-align:left}.data-table button {font-size:14px;padding:9px;min-height:52px}.data-table th {padding:8px;font-size:11px}.data-table td:first-child {width:35px;padding:8px}
+  .check-panel summary {padding:14px}.check-content {padding:0 14px 16px}.quiz-code {font-size:11px}.quiz-option {font-size:12px}.check-question {font-size:15px}.table-path {font-size:18px}.memory-graph svg,.copy-diagram svg {min-width:650px}
+  .practice-panel .result-pair {grid-template-columns:1fr}.btn,.segmented button,.theme-options button,.lesson-nav a,.preset-row button,.code-toolbar .btn {min-height:44px}
+  body.projecting h1 {font-size:30px}body.projecting .code-panel pre {font-size:16px}
+}
+@media (prefers-reduced-motion:reduce) {*,*:before,*:after {transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media print {.top-actions,.sidebar,.control-panel,.check-panel,.site-footer,.try-next,.toast {display:none!important}.shell {display:block}.lesson {padding:0}.code-panel,.visual-panel {break-inside:avoid}body {background:#fff;color:#17283d}.workbench,.evidence {display:block}.rule-panel {padding:16px 0}}
+
+
+/* Fourth lecture: text, fields and controlled state changes. */
+textarea {font:inherit;color:inherit}
+textarea:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+.control-panel textarea,.text-input {display:block;width:100%;padding:10px 12px;margin-top:7px;min-height:46px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft);font:16px/1.7 var(--mono);font-weight:400}
+.control-panel textarea {resize:vertical;min-height:83px}
+.control-panel>label {flex:1 1 180px;margin:0;min-width:0}
+.control-panel .wide-control {flex:1 1 100%!important;min-width:0}
+.value-box {min-width:0;padding:17px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft)}
+.value-box h3 {display:flex;align-items:center;gap:9px;justify-content:space-between;flex-wrap:wrap;font-size:14px;font-weight:600;margin:0 0 12px;color:var(--muted)}
+.value-box>code {font-size:18px;display:block;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+.changed-box {background:var(--selected);border-color:var(--accent)}
+.type-chip {display:inline-block;font:12px/1.7 var(--mono);padding:1px 7px;background:var(--surface);border:1px solid var(--line);border-radius:4px;color:var(--accent);white-space:nowrap}
+.clean-flow {display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;list-style:none;padding:0;margin:0}
+.clean-flow li {padding:16px;border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;gap:12px;min-width:0;background:var(--soft)}
+.clean-flow li.complete {border-color:var(--accent);background:var(--selected)}
+.clean-flow li.pending {background:var(--surface);border-style:dashed}
+.flow-label {font:13px/1.5 var(--mono);color:var(--muted)}
+.clean-flow code {font-size:20px;line-height:1.8;overflow-wrap:anywhere;white-space:pre-wrap}
+.space-mark {color:var(--accent);font-weight:500;font-size:.85em}
+.pending-label {color:var(--muted);font-size:14px;line-height:1.8}
+.field-cards {display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;min-width:0}
+.field-card {display:flex;flex-direction:column;gap:14px;min-width:0;border:1px solid var(--line);border-radius:8px;background:var(--soft);padding:15px}
+.field-card>span {display:flex;align-items:center;gap:8px;justify-content:space-between;font:13px/1.5 var(--mono);color:var(--muted)}
+.field-card>code {font-size:17px;white-space:pre-wrap;overflow-wrap:anywhere}
+.bad-field {border-color:var(--error);background:var(--error-bg)}
+.raw-text-display {padding:18px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);font-size:19px;overflow-wrap:anywhere;min-width:0}
+.raw-text-display code {white-space:pre-wrap}
+.query-text mark {color:var(--accent);background:var(--selected);border-bottom:2px solid var(--accent);padding:2px 0}
+.query-metrics {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.query-metrics .value-box>code {font-size:27px;font-weight:700;color:var(--accent)}
+.probe-area {min-width:0;overflow-x:auto}
+.probe-area h3 {font-size:16px;margin-bottom:13px}
+.checks-table {width:100%;border-collapse:collapse;font-size:14px;min-width:430px}
+.checks-table th,.checks-table td {padding:11px 13px;border-bottom:1px solid var(--line);text-align:left}
+.checks-table th {background:var(--soft);font-weight:600;color:var(--muted)}
+.checks-table td:first-child {white-space:nowrap}
+.yes-value {color:var(--accent);font-family:var(--mono);font-weight:700}
+.no-value {font-family:var(--mono);color:var(--muted)}
+.detail-note {font-size:14px;border-top:1px solid var(--line);padding-top:12px}
+.detail-note summary {cursor:pointer;color:var(--accent);font-weight:600}
+.detail-body {padding-top:12px;display:flex;flex-direction:column;gap:8px}
+body.projecting textarea,body.projecting .text-input {font-size:19px}
+@media(max-width:700px) {
+  .query-metrics {grid-template-columns:1fr}
+  .clean-flow {grid-template-columns:1fr}
+  .field-cards {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .value-box>code {font-size:16px}
+}
+@media(max-width:420px) {
+  .field-cards {grid-template-columns:1fr}
+  .control-panel>label {flex:initial}
+  .brand {font-size:17px}
+}
+
+/* Merge into the selected classroom-whiteboard stylesheet. */
+.sequence-two-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.sequence-examples { display:flex;flex-direction:column;gap:22px; }
+.sequence-example { min-width:0; }
+.sequence-example+.sequence-example { padding-top:20px;border-top:1px solid var(--line); }
+.sequence-example>.hint { margin-top:6px; }
+.sequence-rail { max-width:100%;overflow-x:auto;padding:9px 0 3px; }
+.sequence-cells { display:flex;gap:6px;min-width:100%;width:max-content; }
+.sequence-cell { flex:1 0 38px;min-width:38px;border:1px solid var(--line);border-radius:7px;background:var(--soft);text-align:center;overflow:hidden; }
+.sequence-index { display:block;padding:3px 6px;border-bottom:1px solid var(--line);font:13px/1.5 var(--mono);color:var(--muted);background:var(--surface); }
+.sequence-cell strong { display:block;padding:9px 7px;font-size:19px;line-height:1.4;font-weight:650;white-space:nowrap; }
+.sequence-elements .sequence-cell { flex-basis:90px; }
+.sequence-cell.is-selected { border-color:var(--accent);background:var(--selected);box-shadow:inset 0 0 0 1px var(--accent); }
+.sequence-cell.is-selected .sequence-index { background:var(--selected);color:var(--accent);border-color:var(--accent); }
+.sequence-expression { margin:10px 0 6px;font-size:15px;overflow-wrap:anywhere; }
+.sequence-output { display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 12px;background:var(--soft);border-radius:7px; }
+.sequence-output .control-label { margin:0;font-size:13px;color:var(--muted); }
+.sequence-output>code { color:var(--accent);font-size:17px;overflow-wrap:anywhere; }
+.sequence-example .error-message { margin-top:10px; }
+.tuple-record { display:grid;grid-template-columns:1.7fr .85fr .85fr .85fr;gap:8px;min-width:0; }
+.tuple-item { min-width:0;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--soft); }
+.tuple-position { display:block;font-size:12px;line-height:1.6;color:var(--muted);margin-bottom:8px; }
+.tuple-item>code { display:block;font-size:15px;line-height:1.6;overflow-wrap:anywhere; }
+.tuple-item.is-changed { border-color:var(--changed);background:var(--changed-bg);color:var(--changed); }
+.tuple-assignment { padding:12px 0;line-height:1.8;overflow-wrap:anywhere; }
+.tuple-bindings { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
+.tuple-binding { padding:12px;border:1px solid var(--accent);border-radius:8px;background:var(--selected);min-width:0; }
+.tuple-binding>code { display:block;color:var(--accent);font-size:17px; }
+.tuple-binding>strong { display:block;font:16px/1.8 var(--mono);overflow-wrap:anywhere;margin-top:7px; }
+.tuple-new-record { border-top:1px solid var(--line);padding-top:18px; }
+.tuple-new-record>h3 { font-size:17px;margin-bottom:12px; }
+.tuple-new-record>.raw-value { margin-top:10px; }
+.single-tuple-compare { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px; }
+.single-tuple-case { padding:18px;border:1px solid var(--line);background:var(--soft);border-radius:9px;min-width:0; }
+.single-tuple-case.is-active { border:2px solid var(--accent);background:var(--selected);padding:17px; }
+.single-tuple-case h2 { font-size:20px;margin-bottom:16px; }
+.single-tuple-case .return-line { margin-top:10px; }
+.single-tuple-contents { display:flex;gap:5px;flex-wrap:wrap;margin:16px 0 10px; }
+.single-tuple-item,.single-character { border:1px solid var(--line);background:var(--surface);border-radius:5px;min-width:30px;padding:7px;text-align:center;font:18px/1.4 var(--mono); }
+.projecting .sequence-cell strong { font-size:22px; }
+.projecting .sequence-index,.projecting .tuple-position { font-size:16px; }
+.projecting .sequence-output>code,.projecting .tuple-item>code,.projecting .tuple-binding>strong { font-size:20px; }
+@media(max-width:650px) {
+  .tuple-record { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .single-tuple-compare { grid-template-columns:1fr; }
+}
+
+/* Formatting and integrated order practice. Append after the shared A styles. */
+.format-mode-control {flex-basis:100%!important}
+.format-result-pair {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.format-value-box {min-width:0;padding:22px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft)}
+.format-value-box.is-formatted {border-color:var(--accent);background:var(--selected)}
+.format-hero {display:block;font-size:27px;line-height:1.5;overflow-wrap:anywhere;color:var(--ink)}
+.is-formatted .format-hero {color:var(--accent);font-weight:700}
+.format-expression {display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:8px 0}
+.format-expression>code {font-size:24px;color:var(--ink)}
+.format-expression strong {color:var(--accent);background:var(--selected);padding:3px 6px;border-radius:5px}
+.format-alignment-scroll {overflow-x:auto;max-width:100%;padding-bottom:6px}
+.format-character-grid {display:flex;width:max-content;gap:4px}
+.format-character {display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:36px;min-height:79px;background:var(--selected);border:1px solid var(--accent);border-radius:5px;font:600 21px/1.6 var(--mono)}
+.format-character.is-space {background:var(--soft);border-color:var(--line);color:var(--muted)}
+.format-cell-index {font-size:10px;font-weight:400;line-height:1.5;padding:5px;color:var(--muted)}
+.format-output {background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);padding:18px;min-width:0}
+.format-output-scroll {overflow-x:auto}
+.format-output-line {display:grid;grid-template-columns:25px max-content;gap:12px;min-height:38px;align-items:center;font:18px/1.7 var(--mono)}
+.format-output-line>span {font-size:12px;color:var(--muted)}
+.format-output-line>code {white-space:pre}
+.pipeline-input-control {flex-basis:100%!important}
+.pipeline-input-control textarea {width:100%;min-height:110px;resize:vertical;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);padding:13px;color:var(--ink);font:15px/1.8 var(--mono)}
+.pipeline-input-control textarea:focus-visible {outline:3px solid var(--accent);outline-offset:3px}
+.pipeline-action-row {display:flex;gap:7px;flex-wrap:wrap}
+.pipeline-steps {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0;padding:0;list-style:none}
+.pipeline-steps li {display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:6px;padding:9px 11px;font-size:13px;color:var(--muted);background:var(--soft)}
+.pipeline-steps li>span {font-family:var(--mono);font-size:13px}
+.pipeline-steps .is-current {color:var(--accent);background:var(--selected);border-color:var(--accent);font-weight:700}
+.pipeline-steps .is-done {color:var(--accent);border-color:var(--line);background:var(--surface)}
+.pipeline-steps .is-error {color:var(--error);background:var(--error-bg);border-color:var(--error)}
+.pipeline-text-block,.pipeline-summary {background:var(--soft);padding:18px;border:1px solid var(--line);border-radius:var(--radius);min-width:0}
+.pipeline-text-block pre,.pipeline-summary pre {margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:16px/1.9 var(--mono)}
+.pipeline-summary {border-left:4px solid var(--accent)}
+.pipeline-summary pre {font-size:18px}
+.pipeline-fields {min-width:610px}
+.pipeline-fields td {padding:10px 12px;font-size:14px;vertical-align:top}
+.pipeline-fields th {white-space:nowrap;font-size:12px}
+.pipeline-fields code {white-space:pre-wrap;overflow-wrap:anywhere}
+.pipeline-record-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.pipeline-field-card {min-width:0;background:var(--soft);border:1px solid var(--line);border-radius:7px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.pipeline-field-card.changed {background:var(--changed-bg);border-color:var(--changed)}
+.pipeline-field-card>div {display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.pipeline-field-card>code {font-size:17px;overflow-wrap:anywhere}
+.pipeline-type {font-family:var(--mono);color:var(--accent);background:var(--surface);border:1px solid var(--line);padding:0 5px;border-radius:4px}
+.pipeline-money-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.pipeline-money-card {display:flex;flex-direction:column;gap:12px;padding:20px 16px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);min-width:0}
+.pipeline-money-card>span {font-size:14px;color:var(--muted)}
+.pipeline-money-card>strong {font-size:27px;line-height:1.4;color:var(--accent);overflow-wrap:anywhere}
+.pipeline-money-card small {font-size:13px;font-weight:400;color:var(--muted)}
+.pipeline-money-card>code {font:12px/1.7 var(--font);color:var(--muted)}
+@media (max-width:700px) {
+  .format-result-pair,.pipeline-money-grid {grid-template-columns:1fr}
+  .format-hero {font-size:24px}
+  .pipeline-record-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pipeline-steps {grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:420px) {
+  .pipeline-record-grid {grid-template-columns:1fr}
+  .pipeline-summary pre {font-size:15px}
+  .format-expression>code {font-size:20px}
+}
+
+/* Sequence comparison: append after the shared A and slide-4 styles.
+   Existing DOM is sufficient: three sibling sections are the comparison;
+   the order-number view has one section and spans the full grid width. */
+.sequence-examples,
+.sequence-example,
+.sequence-example > .visual-header,
+.sequence-example > .visual-header h2,
+.sequence-output {
+  min-width:0;
+}
+.sequence-example:not(:only-child) .sequence-cells {
+  width:100%;
+  min-width:0;
+  gap:4px;
+}
+.sequence-example:not(:only-child) .sequence-cell {
+  flex:1 1 0;
+  min-width:0;
+}
+.sequence-example:not(:only-child) .sequence-cell strong {
+  padding-left:3px;
+  padding-right:3px;
+}
+.sequence-expression code,
+.sequence-output > code {
+  min-width:0;
+  max-width:100%;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.sequence-example .error-message {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+@media (min-width:1100px) {
+  .sequence-examples {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    align-items:stretch;
+    gap:14px;
+  }
+  .sequence-examples > .sequence-example {
+    display:flex;
+    flex-direction:column;
+    padding:14px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:var(--surface);
+  }
+  .sequence-examples > .sequence-example:only-child {
+    grid-column:1 / -1;
+  }
+  .sequence-example:not(:only-child) > .visual-header {
+    align-items:flex-start;
+    gap:8px;
+  }
+  .sequence-example:not(:only-child) > .visual-header h2 {
+    flex:1;
+  }
+  .sequence-example:not(:only-child) > .visual-header h2 code {
+    display:block;
+    margin-top:3px;
+    overflow-wrap:anywhere;
+  }
+  .sequence-example > .sequence-rail {
+    flex-shrink:0;
+  }
+  .sequence-example > .sequence-output {
+    margin-top:auto;
+  }
+}
+
+/* Stack full-width control groups without forming extra flex columns on phones. */
+@media (max-width:600px) {
+  body[data-theme=whiteboard] .control-panel {flex-wrap:nowrap;}
+  body[data-theme=whiteboard] .control-panel > * {flex:initial!important;min-width:0;max-width:100%;}
+}
+</style>
+</head>
+<body data-theme="whiteboard">
+  <a class="skip-link" href="#lesson-title">跳到当前实验</a>
+  <header class="topbar">
+    <a class="brand" href="#sequence" aria-label="文本与元组实验室首页"><span class="brand-mark" aria-hidden="true">(<b>·</b>)</span><span>文本与元组实验室<small>Python 第四讲</small></span></a>
+    <div class="top-actions"><button type="button" class="btn btn-subtle projection-button" id="projection-toggle" aria-pressed="false">投影模式</button></div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="course-name"><span>这一讲</span><strong>让订单文本<br>变成可用数据。</strong></div>
+      <nav class="lesson-nav" id="lesson-nav" aria-label="知识点目录"></nav>
+      <div class="sidebar-bottom"><p>先预测一步，<br>再观察变化。</p><span id="quiz-progress" class="progress-note">7 个动手实验</span></div>
+    </aside>
+    <main id="lesson" class="lesson"></main>
+  </div>
+  <footer class="site-footer">
+    <span>课件案例：跨境订单文本</span>
+    <details class="site-guide"><summary>使用说明与来源</summary><div>
+      <p>使用目录切换实验。部分控件即时更新结果，部分需要点击执行；每个实验都可单独重置。投影模式增大字号，按 Esc 退出。</p>
+      <p>本页采用课堂白板 A 统一模板，依据 slide-4(1).pdf 的第四讲“元组与字符串”。一份课件中的精选知识点集成在一个 HTML 中。</p>
+      <p>页面模拟指定 Python 操作，不执行任意代码。必要资源已内嵌；当前浏览器仅保存最近实验与练习选择，不上传数据。完整代码可复制到 Python 环境运行。</p>
+      <p>字符串位置按 Unicode 码点计数。数值输入仅处理有限数值，整数限于 JavaScript 的安全整数范围；精度和宽度控件采用标明的教学范围。格式化改变显示文本，不改原数值。这里的订单文本约定为固定字段和分隔符，不代替通用 CSV 解析器。</p>
+      <p><a href="https://docs.python.org/3/library/stdtypes.html" target="_blank" rel="noopener noreferrer">Python 官方：内置类型</a> · <a href="https://docs.python.org/3/reference/lexical_analysis.html#string-literal-concatenation" target="_blank" rel="noopener noreferrer">相邻字符串与换行</a> · <a href="https://docs.python.org/3/library/string.html#format-specification-mini-language" target="_blank" rel="noopener noreferrer">格式说明</a></p>
+      <button type="button" class="btn btn-subtle" data-action="reset-quizzes">清除本讲练习记录</button>
+    </div></details>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">请在浏览器中启用 JavaScript 后使用交互实验。页面不需要联网。</p></noscript>
+  <script>/* 第四讲：元组与字符串。教学内容依据 slide-4(1).pdf。 */
+window.StringLabContent = {
+  modules: [
+    {
+      id: 'sequence',
+      title: '序列与字符',
+      pages: '课件 5–7、13–14 页',
+      question: '同一份市场信息存成列表、元组或字符串后，为什么取出的内容和长度会不同？',
+      try: '把同一个索引或切片分别用于三种序列，比较取出的值与结果类型。',
+      quiz: {
+        prompt: '下面两个成员判断会分别得到什么结果？',
+        code: "markets = ('泰国', '越南')\ntext = '泰国越南'\nprint('泰' in markets)\nprint('泰' in text)",
+        options: [
+          {
+            label: 'False、True',
+            explanation: '元组按完整元素判断，里面有“泰国”，没有独立元素“泰”。字符串则可以判断子字符串是否存在，所以第二项为 True。'
+          },
+          {
+            label: 'True、True',
+            explanation: '字符串判断为 True，但元组不会自动进入每个市场名称搜索字符。“泰”不等于元组里的任何一个完整元素。'
+          },
+          {
+            label: 'False、False',
+            explanation: '第一个判断为 False；但字符串中的“泰”确实存在。对字符串使用 in，可以查单个字符，也可以查多个字符组成的子字符串。'
+          }
+        ],
+        answer: 0
+      }
+    },
+    {
+      id: 'tuple',
+      title: '元组与解包',
+      pages: '课件 8–11 页',
+      question: '订单字段的顺序已经固定，怎样把整条记录保存下来，再交给含义清楚的变量使用？',
+      try: '比较直接修改元组元素与建立更新记录，观察原记录是否改变，再检查解包时字段与变量的对应关系。',
+      quiz: {
+        prompt: '同事把解包时的两个变量写反了。下面代码执行后，会发生什么？',
+        code: "order = ('ORD-001', '泰国', 299.9, 'PAID')\norder_id, amount, market, status = order",
+        options: [
+          {
+            label: 'Python 按变量名识别字段，amount 仍是 299.9',
+            explanation: '普通解包按位置一一对应，不会理解变量名的业务含义，也不会自动检查哪个字段应该是金额。'
+          },
+          {
+            label: '元组不可变，因此不能把其中的值交给变量',
+            explanation: '解包只是读取元素并把它们赋给变量，没有修改元组。不可变不会阻止读取和解包。'
+          },
+          {
+            label: "amount 得到 '泰国'，market 得到 299.9",
+            explanation: '左侧第二个变量接收元组第二项，第三个变量接收第三项。变量数量虽然匹配，但字段顺序写错仍会造成业务含义错误。'
+          }
+        ],
+        answer: 2
+      }
+    },
+    {
+      id: 'clean',
+      title: '清洗与不可变',
+      pages: '课件 12、15–16 页',
+      question: '订单状态已经调用了清洗方法，为什么再次读取原变量时，空格和小写字母还在？',
+      try: "在含内部空格的文本上，对比只用 strip 和再加入 replace(' ', '') 的结果。",
+      quiz: {
+        prompt: '这段代码执行后，raw 保存的内容是什么？',
+        code: "raw = '  paid  '\nraw.strip().upper()",
+        options: [
+          {
+            label: "'PAID'，原变量已经被两个方法依次改好",
+            explanation: 'strip 和 upper 会返回处理结果，但不会原地修改原字符串。这里没有把最终结果重新赋给 raw。'
+          },
+          {
+            label: "'  paid  '，首尾仍各有两个空格",
+            explanation: '表达式算出了 PAID，但结果没有保存。raw 仍指向原字符串；若要更新变量，可以写 raw = raw.strip().upper()。'
+          },
+          {
+            label: "'paid'，只会保留第一个方法的结果",
+            explanation: '两个方法会依次执行，upper 使用 strip 返回的结果。但整个表达式都不会自动替换 raw 的值。'
+          }
+        ],
+        answer: 1
+      }
+    },
+    {
+      id: 'split',
+      title: '拆分与连接',
+      pages: '课件 17–19、37 页',
+      question: '一条订单文本怎样拆成字段，处理后的字段又怎样连接成可以导出的文本？',
+      try: '对含多个冒号的客户备注，分别使用 split 和 partition，比较保留的内容与返回类型。',
+      quiz: {
+        prompt: '金额已经转换成数值。为什么下面的代码不能直接生成导出文本？',
+        code: "amount = 299.9\nline = ','.join(['ORD-001', '泰国', amount, 'PAID'])",
+        options: [
+          {
+            label: 'amount 是数值；join 要求参与连接的每一项都是字符串',
+            explanation: '列表中的 amount 是 float，会使 join 抛出 TypeError。可以先用 str(amount) 转成字符串，再参与连接。'
+          },
+          {
+            label: 'join 只接受元组，不能连接列表中的字段',
+            explanation: 'join 可以接收列表或元组等可迭代对象。关键是其中每一项必须是字符串，而不是外层容器必须是哪一种。'
+          },
+          {
+            label: '逗号只能用于 split，不能作为 join 的分隔符',
+            explanation: '逗号可以用于连接，",".join(...) 会把逗号放在各项之间。这里出错的原因是其中含有数值。'
+          }
+        ],
+        answer: 0
+      }
+    },
+    {
+      id: 'query',
+      title: '查找与判断',
+      pages: '课件 20–21、36 页',
+      question: '要知道文本中有没有某个内容、它在哪里、出现几次，应该分别观察什么结果？',
+      try: '把查询内容改为不存在的 REFUND，依次比较 in、find 和 count 的结果。',
+      quiz: {
+        prompt: 'amount_text.isdigit() 得到 False，应怎样理解这个结果？',
+        code: "amount_text = '299.90'\nprint(amount_text.isdigit())",
+        options: [
+          {
+            label: '这段文本不是合法金额，不能转换成数值',
+            explanation: 'isdigit 检查的是字符属性，不是所有数值文本的合法性。小数点使这个判断为 False，但 float("299.90") 可以成功。'
+          },
+          {
+            label: '这个结果不对，带小数点的文本也应返回 True',
+            explanation: '小数点不是数字字符。isdigit 要求字符串非空，而且每个字符都属于它所接受的数字字符。'
+          },
+          {
+            label: '因为含有小数点；这段文本仍可使用 float 转成数值',
+            explanation: '字符判断与类型转换回答的是不同问题。这里不是“全部为数字字符”，但符合 float 可以解析的小数写法。'
+          }
+        ],
+        answer: 2
+      }
+    },
+    {
+      id: 'format',
+      title: '格式化输出',
+      pages: '课件 22–26 页',
+      question: '怎样让金额、百分比和订单摘要便于阅读，同时保留原来的数值供后续计算？',
+      try: '先比较 .2f 与 ,.2f，再切换源码换行和实际换行，观察输出文本在哪里变化。',
+      quiz: {
+        prompt: '下面代码执行后，sales 本身的值和类型是什么？',
+        code: "sales = 1234567.8\nmessage = f'{sales:,.2f}'",
+        options: [
+          {
+            label: "'1,234,567.80'，类型为 str",
+            explanation: '这是 message 保存的格式化字符串。格式说明没有把 sales 改成文本，原数值仍可以用于计算。'
+          },
+          {
+            label: '1234567.8，类型为 float',
+            explanation: '格式化只决定新字符串如何显示。sales 保持原值与 float 类型；message 是含千位分隔符和两位小数的字符串。'
+          },
+          {
+            label: '1234567，类型为 int',
+            explanation: '格式化不会删除原数值的小数部分，也不会自动把原变量转换为整数。.2f 控制的是输出字符串中的小数位数。'
+          }
+        ],
+        answer: 1
+      }
+    },
+    {
+      id: 'pipeline',
+      title: '跨境订单工坊',
+      pages: '课件 27–32、35 页',
+      question: '外部系统发来一行杂乱的订单文本，怎样一步步得到可以人工核对的订单摘要？',
+      try: '换到第二条订单，重新走完五步，核对应付金额 136.50 元和状态 SHIPPED。',
+      quiz: {
+        prompt: '处理另一条采用相同字段结构的订单时，哪一种顺序能保留清楚的计算与展示过程？',
+        options: [
+          {
+            label: '清洗并拆分 → 转换数值字段 → 组织订单记录并计算 → 格式化摘要',
+            explanation: '先从文本得到正确类型的数据，再完成业务计算，最后决定显示方式。相同结构的新订单可以复用这套处理步骤。'
+          },
+          {
+            label: '拆分后保留所有字段为字符串，直接用它们计算金额',
+            explanation: 'split 得到的是字符串。金额、数量和折扣率要先按业务含义转换为 float 或 int，才能进行相应数值计算。'
+          },
+          {
+            label: '先给单价加上“元”并插入千位逗号，再把这段展示文本用于计算',
+            explanation: '单位和千位逗号适合最终展示，却会妨碍直接转换成数值。应保留数值用于计算，在输出摘要时再添加格式。'
+          }
+        ],
+        answer: 0
+      }
+    }
+  ]
+};
+</script>
+  <script>/* Python tuple/string teaching model. No evaluation, network, or dependencies.
+ * Character classifications: Python 3.12 / Unicode 15.0 tables below.
+ * Numbers use IEEE-754 doubles; integers outside JS safe range are rejected
+ * as an explicit teaching limit, not as a Python language restriction.
+ */
+(function (root, factory) {
+  'use strict';
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.StringLabEngine = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  const unicodeVersion = '15.0.0';
+  const rangeData = {"space":"9-d,1c-20,85,a0,1680,2000-200a,2028-2029,202f,205f,3000","numericSpace":"9-d,20,85,a0,1680,2000-200a,2028-2029,202f,205f,3000","digit":"30-39,b2-b3,b9,660-669,6f0-6f9,7c0-7c9,966-96f,9e6-9ef,a66-a6f,ae6-aef,b66-b6f,be6-bef,c66-c6f,ce6-cef,d66-d6f,de6-def,e50-e59,ed0-ed9,f20-f29,1040-1049,1090-1099,1369-1371,17e0-17e9,1810-1819,1946-194f,19d0-19da,1a80-1a89,1a90-1a99,1b50-1b59,1bb0-1bb9,1c40-1c49,1c50-1c59,2070,2074-2079,2080-2089,2460-2468,2474-247c,2488-2490,24ea,24f5-24fd,24ff,2776-277e,2780-2788,278a-2792,a620-a629,a8d0-a8d9,a900-a909,a9d0-a9d9,a9f0-a9f9,aa50-aa59,abf0-abf9,ff10-ff19,104a0-104a9,10a40-10a43,10d30-10d39,10e60-10e68,11052-1105a,11066-1106f,110f0-110f9,11136-1113f,111d0-111d9,112f0-112f9,11450-11459,114d0-114d9,11650-11659,116c0-116c9,11730-11739,118e0-118e9,11950-11959,11c50-11c59,11d50-11d59,11da0-11da9,11f50-11f59,16a60-16a69,16ac0-16ac9,16b50-16b59,1d7ce-1d7ff,1e140-1e149,1e2f0-1e2f9,1e4f0-1e4f9,1e950-1e959,1f100-1f10a,1fbf0-1fbf9","alpha":"41-5a,61-7a,aa,b5,ba,c0-d6,d8-f6,f8-2c1,2c6-2d1,2e0-2e4,2ec,2ee,370-374,376-377,37a-37d,37f,386,388-38a,38c,38e-3a1,3a3-3f5,3f7-481,48a-52f,531-556,559,560-588,5d0-5ea,5ef-5f2,620-64a,66e-66f,671-6d3,6d5,6e5-6e6,6ee-6ef,6fa-6fc,6ff,710,712-72f,74d-7a5,7b1,7ca-7ea,7f4-7f5,7fa,800-815,81a,824,828,840-858,860-86a,870-887,889-88e,8a0-8c9,904-939,93d,950,958-961,971-980,985-98c,98f-990,993-9a8,9aa-9b0,9b2,9b6-9b9,9bd,9ce,9dc-9dd,9df-9e1,9f0-9f1,9fc,a05-a0a,a0f-a10,a13-a28,a2a-a30,a32-a33,a35-a36,a38-a39,a59-a5c,a5e,a72-a74,a85-a8d,a8f-a91,a93-aa8,aaa-ab0,ab2-ab3,ab5-ab9,abd,ad0,ae0-ae1,af9,b05-b0c,b0f-b10,b13-b28,b2a-b30,b32-b33,b35-b39,b3d,b5c-b5d,b5f-b61,b71,b83,b85-b8a,b8e-b90,b92-b95,b99-b9a,b9c,b9e-b9f,ba3-ba4,ba8-baa,bae-bb9,bd0,c05-c0c,c0e-c10,c12-c28,c2a-c39,c3d,c58-c5a,c5d,c60-c61,c80,c85-c8c,c8e-c90,c92-ca8,caa-cb3,cb5-cb9,cbd,cdd-cde,ce0-ce1,cf1-cf2,d04-d0c,d0e-d10,d12-d3a,d3d,d4e,d54-d56,d5f-d61,d7a-d7f,d85-d96,d9a-db1,db3-dbb,dbd,dc0-dc6,e01-e30,e32-e33,e40-e46,e81-e82,e84,e86-e8a,e8c-ea3,ea5,ea7-eb0,eb2-eb3,ebd,ec0-ec4,ec6,edc-edf,f00,f40-f47,f49-f6c,f88-f8c,1000-102a,103f,1050-1055,105a-105d,1061,1065-1066,106e-1070,1075-1081,108e,10a0-10c5,10c7,10cd,10d0-10fa,10fc-1248,124a-124d,1250-1256,1258,125a-125d,1260-1288,128a-128d,1290-12b0,12b2-12b5,12b8-12be,12c0,12c2-12c5,12c8-12d6,12d8-1310,1312-1315,1318-135a,1380-138f,13a0-13f5,13f8-13fd,1401-166c,166f-167f,1681-169a,16a0-16ea,16f1-16f8,1700-1711,171f-1731,1740-1751,1760-176c,176e-1770,1780-17b3,17d7,17dc,1820-1878,1880-1884,1887-18a8,18aa,18b0-18f5,1900-191e,1950-196d,1970-1974,1980-19ab,19b0-19c9,1a00-1a16,1a20-1a54,1aa7,1b05-1b33,1b45-1b4c,1b83-1ba0,1bae-1baf,1bba-1be5,1c00-1c23,1c4d-1c4f,1c5a-1c7d,1c80-1c88,1c90-1cba,1cbd-1cbf,1ce9-1cec,1cee-1cf3,1cf5-1cf6,1cfa,1d00-1dbf,1e00-1f15,1f18-1f1d,1f20-1f45,1f48-1f4d,1f50-1f57,1f59,1f5b,1f5d,1f5f-1f7d,1f80-1fb4,1fb6-1fbc,1fbe,1fc2-1fc4,1fc6-1fcc,1fd0-1fd3,1fd6-1fdb,1fe0-1fec,1ff2-1ff4,1ff6-1ffc,2071,207f,2090-209c,2102,2107,210a-2113,2115,2119-211d,2124,2126,2128,212a-212d,212f-2139,213c-213f,2145-2149,214e,2183-2184,2c00-2ce4,2ceb-2cee,2cf2-2cf3,2d00-2d25,2d27,2d2d,2d30-2d67,2d6f,2d80-2d96,2da0-2da6,2da8-2dae,2db0-2db6,2db8-2dbe,2dc0-2dc6,2dc8-2dce,2dd0-2dd6,2dd8-2dde,2e2f,3005-3006,3031-3035,303b-303c,3041-3096,309d-309f,30a1-30fa,30fc-30ff,3105-312f,3131-318e,31a0-31bf,31f0-31ff,3400-4dbf,4e00-a48c,a4d0-a4fd,a500-a60c,a610-a61f,a62a-a62b,a640-a66e,a67f-a69d,a6a0-a6e5,a717-a71f,a722-a788,a78b-a7ca,a7d0-a7d1,a7d3,a7d5-a7d9,a7f2-a801,a803-a805,a807-a80a,a80c-a822,a840-a873,a882-a8b3,a8f2-a8f7,a8fb,a8fd-a8fe,a90a-a925,a930-a946,a960-a97c,a984-a9b2,a9cf,a9e0-a9e4,a9e6-a9ef,a9fa-a9fe,aa00-aa28,aa40-aa42,aa44-aa4b,aa60-aa76,aa7a,aa7e-aaaf,aab1,aab5-aab6,aab9-aabd,aac0,aac2,aadb-aadd,aae0-aaea,aaf2-aaf4,ab01-ab06,ab09-ab0e,ab11-ab16,ab20-ab26,ab28-ab2e,ab30-ab5a,ab5c-ab69,ab70-abe2,ac00-d7a3,d7b0-d7c6,d7cb-d7fb,f900-fa6d,fa70-fad9,fb00-fb06,fb13-fb17,fb1d,fb1f-fb28,fb2a-fb36,fb38-fb3c,fb3e,fb40-fb41,fb43-fb44,fb46-fbb1,fbd3-fd3d,fd50-fd8f,fd92-fdc7,fdf0-fdfb,fe70-fe74,fe76-fefc,ff21-ff3a,ff41-ff5a,ff66-ffbe,ffc2-ffc7,ffca-ffcf,ffd2-ffd7,ffda-ffdc,10000-1000b,1000d-10026,10028-1003a,1003c-1003d,1003f-1004d,10050-1005d,10080-100fa,10280-1029c,102a0-102d0,10300-1031f,1032d-10340,10342-10349,10350-10375,10380-1039d,103a0-103c3,103c8-103cf,10400-1049d,104b0-104d3,104d8-104fb,10500-10527,10530-10563,10570-1057a,1057c-1058a,1058c-10592,10594-10595,10597-105a1,105a3-105b1,105b3-105b9,105bb-105bc,10600-10736,10740-10755,10760-10767,10780-10785,10787-107b0,107b2-107ba,10800-10805,10808,1080a-10835,10837-10838,1083c,1083f-10855,10860-10876,10880-1089e,108e0-108f2,108f4-108f5,10900-10915,10920-10939,10980-109b7,109be-109bf,10a00,10a10-10a13,10a15-10a17,10a19-10a35,10a60-10a7c,10a80-10a9c,10ac0-10ac7,10ac9-10ae4,10b00-10b35,10b40-10b55,10b60-10b72,10b80-10b91,10c00-10c48,10c80-10cb2,10cc0-10cf2,10d00-10d23,10e80-10ea9,10eb0-10eb1,10f00-10f1c,10f27,10f30-10f45,10f70-10f81,10fb0-10fc4,10fe0-10ff6,11003-11037,11071-11072,11075,11083-110af,110d0-110e8,11103-11126,11144,11147,11150-11172,11176,11183-111b2,111c1-111c4,111da,111dc,11200-11211,11213-1122b,1123f-11240,11280-11286,11288,1128a-1128d,1128f-1129d,1129f-112a8,112b0-112de,11305-1130c,1130f-11310,11313-11328,1132a-11330,11332-11333,11335-11339,1133d,11350,1135d-11361,11400-11434,11447-1144a,1145f-11461,11480-114af,114c4-114c5,114c7,11580-115ae,115d8-115db,11600-1162f,11644,11680-116aa,116b8,11700-1171a,11740-11746,11800-1182b,118a0-118df,118ff-11906,11909,1190c-11913,11915-11916,11918-1192f,1193f,11941,119a0-119a7,119aa-119d0,119e1,119e3,11a00,11a0b-11a32,11a3a,11a50,11a5c-11a89,11a9d,11ab0-11af8,11c00-11c08,11c0a-11c2e,11c40,11c72-11c8f,11d00-11d06,11d08-11d09,11d0b-11d30,11d46,11d60-11d65,11d67-11d68,11d6a-11d89,11d98,11ee0-11ef2,11f02,11f04-11f10,11f12-11f33,11fb0,12000-12399,12480-12543,12f90-12ff0,13000-1342f,13441-13446,14400-14646,16800-16a38,16a40-16a5e,16a70-16abe,16ad0-16aed,16b00-16b2f,16b40-16b43,16b63-16b77,16b7d-16b8f,16e40-16e7f,16f00-16f4a,16f50,16f93-16f9f,16fe0-16fe1,16fe3,17000-187f7,18800-18cd5,18d00-18d08,1aff0-1aff3,1aff5-1affb,1affd-1affe,1b000-1b122,1b132,1b150-1b152,1b155,1b164-1b167,1b170-1b2fb,1bc00-1bc6a,1bc70-1bc7c,1bc80-1bc88,1bc90-1bc99,1d400-1d454,1d456-1d49c,1d49e-1d49f,1d4a2,1d4a5-1d4a6,1d4a9-1d4ac,1d4ae-1d4b9,1d4bb,1d4bd-1d4c3,1d4c5-1d505,1d507-1d50a,1d50d-1d514,1d516-1d51c,1d51e-1d539,1d53b-1d53e,1d540-1d544,1d546,1d54a-1d550,1d552-1d6a5,1d6a8-1d6c0,1d6c2-1d6da,1d6dc-1d6fa,1d6fc-1d714,1d716-1d734,1d736-1d74e,1d750-1d76e,1d770-1d788,1d78a-1d7a8,1d7aa-1d7c2,1d7c4-1d7cb,1df00-1df1e,1df25-1df2a,1e030-1e06d,1e100-1e12c,1e137-1e13d,1e14e,1e290-1e2ad,1e2c0-1e2eb,1e4d0-1e4eb,1e7e0-1e7e6,1e7e8-1e7eb,1e7ed-1e7ee,1e7f0-1e7fe,1e800-1e8c4,1e900-1e943,1e94b,1ee00-1ee03,1ee05-1ee1f,1ee21-1ee22,1ee24,1ee27,1ee29-1ee32,1ee34-1ee37,1ee39,1ee3b,1ee42,1ee47,1ee49,1ee4b,1ee4d-1ee4f,1ee51-1ee52,1ee54,1ee57,1ee59,1ee5b,1ee5d,1ee5f,1ee61-1ee62,1ee64,1ee67-1ee6a,1ee6c-1ee72,1ee74-1ee77,1ee79-1ee7c,1ee7e,1ee80-1ee89,1ee8b-1ee9b,1eea1-1eea3,1eea5-1eea9,1eeab-1eebb,20000-2a6df,2a700-2b739,2b740-2b81d,2b820-2cea1,2ceb0-2ebe0,2f800-2fa1d,30000-3134a,31350-323af","numeric":"30-39,b2-b3,b9,bc-be,660-669,6f0-6f9,7c0-7c9,966-96f,9e6-9ef,9f4-9f9,a66-a6f,ae6-aef,b66-b6f,b72-b77,be6-bf2,c66-c6f,c78-c7e,ce6-cef,d58-d5e,d66-d78,de6-def,e50-e59,ed0-ed9,f20-f33,1040-1049,1090-1099,1369-137c,16ee-16f0,17e0-17e9,17f0-17f9,1810-1819,1946-194f,19d0-19da,1a80-1a89,1a90-1a99,1b50-1b59,1bb0-1bb9,1c40-1c49,1c50-1c59,2070,2074-2079,2080-2089,2150-2182,2185-2189,2460-249b,24ea-24ff,2776-2793,2cfd,3007,3021-3029,3038-303a,3192-3195,3220-3229,3248-324f,3251-325f,3280-3289,32b1-32bf,3405,3483,382a,3b4d,4e00,4e03,4e07,4e09,4e5d,4e8c,4e94,4e96,4ebf-4ec0,4edf,4ee8,4f0d,4f70,5104,5146,5169,516b,516d,5341,5343-5345,534c,53c1-53c4,56db,58f1,58f9,5e7a,5efe-5eff,5f0c-5f0e,5f10,62fe,634c,67d2,6f06,7396,767e,8086,842c,8cae,8cb3,8d30,9621,9646,964c,9678,96f6,a620-a629,a6e6-a6ef,a830-a835,a8d0-a8d9,a900-a909,a9d0-a9d9,a9f0-a9f9,aa50-aa59,abf0-abf9,f96b,f973,f978,f9b2,f9d1,f9d3,f9fd,ff10-ff19,10107-10133,10140-10178,1018a-1018b,102e1-102fb,10320-10323,10341,1034a,103d1-103d5,104a0-104a9,10858-1085f,10879-1087f,108a7-108af,108fb-108ff,10916-1091b,109bc-109bd,109c0-109cf,109d2-109ff,10a40-10a48,10a7d-10a7e,10a9d-10a9f,10aeb-10aef,10b58-10b5f,10b78-10b7f,10ba9-10baf,10cfa-10cff,10d30-10d39,10e60-10e7e,10f1d-10f26,10f51-10f54,10fc5-10fcb,11052-1106f,110f0-110f9,11136-1113f,111d0-111d9,111e1-111f4,112f0-112f9,11450-11459,114d0-114d9,11650-11659,116c0-116c9,11730-1173b,118e0-118f2,11950-11959,11c50-11c6c,11d50-11d59,11da0-11da9,11f50-11f59,11fc0-11fd4,12400-1246e,16a60-16a69,16ac0-16ac9,16b50-16b59,16b5b-16b61,16e80-16e96,1d2c0-1d2d3,1d2e0-1d2f3,1d360-1d378,1d7ce-1d7ff,1e140-1e149,1e2f0-1e2f9,1e4f0-1e4f9,1e8c7-1e8cf,1e950-1e959,1ec71-1ecab,1ecad-1ecaf,1ecb1-1ecb4,1ed01-1ed2d,1ed2f-1ed3d,1f100-1f10c,1fbf0-1fbf9,20001,20064,200e2,20121,2092a,20983,2098c,2099c,20aea,20afd,20b19,22390,22998,23b1b,2626d,2f890","decimal":"30-39,660-669,6f0-6f9,7c0-7c9,966-96f,9e6-9ef,a66-a6f,ae6-aef,b66-b6f,be6-bef,c66-c6f,ce6-cef,d66-d6f,de6-def,e50-e59,ed0-ed9,f20-f29,1040-1049,1090-1099,17e0-17e9,1810-1819,1946-194f,19d0-19d9,1a80-1a89,1a90-1a99,1b50-1b59,1bb0-1bb9,1c40-1c49,1c50-1c59,a620-a629,a8d0-a8d9,a900-a909,a9d0-a9d9,a9f0-a9f9,aa50-aa59,abf0-abf9,ff10-ff19,104a0-104a9,10d30-10d39,11066-1106f,110f0-110f9,11136-1113f,111d0-111d9,112f0-112f9,11450-11459,114d0-114d9,11650-11659,116c0-116c9,11730-11739,118e0-118e9,11950-11959,11c50-11c59,11d50-11d59,11da0-11da9,11f50-11f59,16a60-16a69,16ac0-16ac9,16b50-16b59,1d7ce-1d7ff,1e140-1e149,1e2f0-1e2f9,1e4f0-1e4f9,1e950-1e959,1fbf0-1fbf9","printable":"20-7e,a1-ac,ae-377,37a-37f,384-38a,38c,38e-3a1,3a3-52f,531-556,559-58a,58d-58f,591-5c7,5d0-5ea,5ef-5f4,606-61b,61d-6dc,6de-70d,710-74a,74d-7b1,7c0-7fa,7fd-82d,830-83e,840-85b,85e,860-86a,870-88e,898-8e1,8e3-983,985-98c,98f-990,993-9a8,9aa-9b0,9b2,9b6-9b9,9bc-9c4,9c7-9c8,9cb-9ce,9d7,9dc-9dd,9df-9e3,9e6-9fe,a01-a03,a05-a0a,a0f-a10,a13-a28,a2a-a30,a32-a33,a35-a36,a38-a39,a3c,a3e-a42,a47-a48,a4b-a4d,a51,a59-a5c,a5e,a66-a76,a81-a83,a85-a8d,a8f-a91,a93-aa8,aaa-ab0,ab2-ab3,ab5-ab9,abc-ac5,ac7-ac9,acb-acd,ad0,ae0-ae3,ae6-af1,af9-aff,b01-b03,b05-b0c,b0f-b10,b13-b28,b2a-b30,b32-b33,b35-b39,b3c-b44,b47-b48,b4b-b4d,b55-b57,b5c-b5d,b5f-b63,b66-b77,b82-b83,b85-b8a,b8e-b90,b92-b95,b99-b9a,b9c,b9e-b9f,ba3-ba4,ba8-baa,bae-bb9,bbe-bc2,bc6-bc8,bca-bcd,bd0,bd7,be6-bfa,c00-c0c,c0e-c10,c12-c28,c2a-c39,c3c-c44,c46-c48,c4a-c4d,c55-c56,c58-c5a,c5d,c60-c63,c66-c6f,c77-c8c,c8e-c90,c92-ca8,caa-cb3,cb5-cb9,cbc-cc4,cc6-cc8,cca-ccd,cd5-cd6,cdd-cde,ce0-ce3,ce6-cef,cf1-cf3,d00-d0c,d0e-d10,d12-d44,d46-d48,d4a-d4f,d54-d63,d66-d7f,d81-d83,d85-d96,d9a-db1,db3-dbb,dbd,dc0-dc6,dca,dcf-dd4,dd6,dd8-ddf,de6-def,df2-df4,e01-e3a,e3f-e5b,e81-e82,e84,e86-e8a,e8c-ea3,ea5,ea7-ebd,ec0-ec4,ec6,ec8-ece,ed0-ed9,edc-edf,f00-f47,f49-f6c,f71-f97,f99-fbc,fbe-fcc,fce-fda,1000-10c5,10c7,10cd,10d0-1248,124a-124d,1250-1256,1258,125a-125d,1260-1288,128a-128d,1290-12b0,12b2-12b5,12b8-12be,12c0,12c2-12c5,12c8-12d6,12d8-1310,1312-1315,1318-135a,135d-137c,1380-1399,13a0-13f5,13f8-13fd,1400-167f,1681-169c,16a0-16f8,1700-1715,171f-1736,1740-1753,1760-176c,176e-1770,1772-1773,1780-17dd,17e0-17e9,17f0-17f9,1800-180d,180f-1819,1820-1878,1880-18aa,18b0-18f5,1900-191e,1920-192b,1930-193b,1940,1944-196d,1970-1974,1980-19ab,19b0-19c9,19d0-19da,19de-1a1b,1a1e-1a5e,1a60-1a7c,1a7f-1a89,1a90-1a99,1aa0-1aad,1ab0-1ace,1b00-1b4c,1b50-1b7e,1b80-1bf3,1bfc-1c37,1c3b-1c49,1c4d-1c88,1c90-1cba,1cbd-1cc7,1cd0-1cfa,1d00-1f15,1f18-1f1d,1f20-1f45,1f48-1f4d,1f50-1f57,1f59,1f5b,1f5d,1f5f-1f7d,1f80-1fb4,1fb6-1fc4,1fc6-1fd3,1fd6-1fdb,1fdd-1fef,1ff2-1ff4,1ff6-1ffe,2010-2027,2030-205e,2070-2071,2074-208e,2090-209c,20a0-20c0,20d0-20f0,2100-218b,2190-2426,2440-244a,2460-2b73,2b76-2b95,2b97-2cf3,2cf9-2d25,2d27,2d2d,2d30-2d67,2d6f-2d70,2d7f-2d96,2da0-2da6,2da8-2dae,2db0-2db6,2db8-2dbe,2dc0-2dc6,2dc8-2dce,2dd0-2dd6,2dd8-2dde,2de0-2e5d,2e80-2e99,2e9b-2ef3,2f00-2fd5,2ff0-2ffb,3001-303f,3041-3096,3099-30ff,3105-312f,3131-318e,3190-31e3,31f0-321e,3220-a48c,a490-a4c6,a4d0-a62b,a640-a6f7,a700-a7ca,a7d0-a7d1,a7d3,a7d5-a7d9,a7f2-a82c,a830-a839,a840-a877,a880-a8c5,a8ce-a8d9,a8e0-a953,a95f-a97c,a980-a9cd,a9cf-a9d9,a9de-a9fe,aa00-aa36,aa40-aa4d,aa50-aa59,aa5c-aac2,aadb-aaf6,ab01-ab06,ab09-ab0e,ab11-ab16,ab20-ab26,ab28-ab2e,ab30-ab6b,ab70-abed,abf0-abf9,ac00-d7a3,d7b0-d7c6,d7cb-d7fb,f900-fa6d,fa70-fad9,fb00-fb06,fb13-fb17,fb1d-fb36,fb38-fb3c,fb3e,fb40-fb41,fb43-fb44,fb46-fbc2,fbd3-fd8f,fd92-fdc7,fdcf,fdf0-fe19,fe20-fe52,fe54-fe66,fe68-fe6b,fe70-fe74,fe76-fefc,ff01-ffbe,ffc2-ffc7,ffca-ffcf,ffd2-ffd7,ffda-ffdc,ffe0-ffe6,ffe8-ffee,fffc-fffd,10000-1000b,1000d-10026,10028-1003a,1003c-1003d,1003f-1004d,10050-1005d,10080-100fa,10100-10102,10107-10133,10137-1018e,10190-1019c,101a0,101d0-101fd,10280-1029c,102a0-102d0,102e0-102fb,10300-10323,1032d-1034a,10350-1037a,10380-1039d,1039f-103c3,103c8-103d5,10400-1049d,104a0-104a9,104b0-104d3,104d8-104fb,10500-10527,10530-10563,1056f-1057a,1057c-1058a,1058c-10592,10594-10595,10597-105a1,105a3-105b1,105b3-105b9,105bb-105bc,10600-10736,10740-10755,10760-10767,10780-10785,10787-107b0,107b2-107ba,10800-10805,10808,1080a-10835,10837-10838,1083c,1083f-10855,10857-1089e,108a7-108af,108e0-108f2,108f4-108f5,108fb-1091b,1091f-10939,1093f,10980-109b7,109bc-109cf,109d2-10a03,10a05-10a06,10a0c-10a13,10a15-10a17,10a19-10a35,10a38-10a3a,10a3f-10a48,10a50-10a58,10a60-10a9f,10ac0-10ae6,10aeb-10af6,10b00-10b35,10b39-10b55,10b58-10b72,10b78-10b91,10b99-10b9c,10ba9-10baf,10c00-10c48,10c80-10cb2,10cc0-10cf2,10cfa-10d27,10d30-10d39,10e60-10e7e,10e80-10ea9,10eab-10ead,10eb0-10eb1,10efd-10f27,10f30-10f59,10f70-10f89,10fb0-10fcb,10fe0-10ff6,11000-1104d,11052-11075,1107f-110bc,110be-110c2,110d0-110e8,110f0-110f9,11100-11134,11136-11147,11150-11176,11180-111df,111e1-111f4,11200-11211,11213-11241,11280-11286,11288,1128a-1128d,1128f-1129d,1129f-112a9,112b0-112ea,112f0-112f9,11300-11303,11305-1130c,1130f-11310,11313-11328,1132a-11330,11332-11333,11335-11339,1133b-11344,11347-11348,1134b-1134d,11350,11357,1135d-11363,11366-1136c,11370-11374,11400-1145b,1145d-11461,11480-114c7,114d0-114d9,11580-115b5,115b8-115dd,11600-11644,11650-11659,11660-1166c,11680-116b9,116c0-116c9,11700-1171a,1171d-1172b,11730-11746,11800-1183b,118a0-118f2,118ff-11906,11909,1190c-11913,11915-11916,11918-11935,11937-11938,1193b-11946,11950-11959,119a0-119a7,119aa-119d7,119da-119e4,11a00-11a47,11a50-11aa2,11ab0-11af8,11b00-11b09,11c00-11c08,11c0a-11c36,11c38-11c45,11c50-11c6c,11c70-11c8f,11c92-11ca7,11ca9-11cb6,11d00-11d06,11d08-11d09,11d0b-11d36,11d3a,11d3c-11d3d,11d3f-11d47,11d50-11d59,11d60-11d65,11d67-11d68,11d6a-11d8e,11d90-11d91,11d93-11d98,11da0-11da9,11ee0-11ef8,11f00-11f10,11f12-11f3a,11f3e-11f59,11fb0,11fc0-11ff1,11fff-12399,12400-1246e,12470-12474,12480-12543,12f90-12ff2,13000-1342f,13440-13455,14400-14646,16800-16a38,16a40-16a5e,16a60-16a69,16a6e-16abe,16ac0-16ac9,16ad0-16aed,16af0-16af5,16b00-16b45,16b50-16b59,16b5b-16b61,16b63-16b77,16b7d-16b8f,16e40-16e9a,16f00-16f4a,16f4f-16f87,16f8f-16f9f,16fe0-16fe4,16ff0-16ff1,17000-187f7,18800-18cd5,18d00-18d08,1aff0-1aff3,1aff5-1affb,1affd-1affe,1b000-1b122,1b132,1b150-1b152,1b155,1b164-1b167,1b170-1b2fb,1bc00-1bc6a,1bc70-1bc7c,1bc80-1bc88,1bc90-1bc99,1bc9c-1bc9f,1cf00-1cf2d,1cf30-1cf46,1cf50-1cfc3,1d000-1d0f5,1d100-1d126,1d129-1d172,1d17b-1d1ea,1d200-1d245,1d2c0-1d2d3,1d2e0-1d2f3,1d300-1d356,1d360-1d378,1d400-1d454,1d456-1d49c,1d49e-1d49f,1d4a2,1d4a5-1d4a6,1d4a9-1d4ac,1d4ae-1d4b9,1d4bb,1d4bd-1d4c3,1d4c5-1d505,1d507-1d50a,1d50d-1d514,1d516-1d51c,1d51e-1d539,1d53b-1d53e,1d540-1d544,1d546,1d54a-1d550,1d552-1d6a5,1d6a8-1d7cb,1d7ce-1da8b,1da9b-1da9f,1daa1-1daaf,1df00-1df1e,1df25-1df2a,1e000-1e006,1e008-1e018,1e01b-1e021,1e023-1e024,1e026-1e02a,1e030-1e06d,1e08f,1e100-1e12c,1e130-1e13d,1e140-1e149,1e14e-1e14f,1e290-1e2ae,1e2c0-1e2f9,1e2ff,1e4d0-1e4f9,1e7e0-1e7e6,1e7e8-1e7eb,1e7ed-1e7ee,1e7f0-1e7fe,1e800-1e8c4,1e8c7-1e8d6,1e900-1e94b,1e950-1e959,1e95e-1e95f,1ec71-1ecb4,1ed01-1ed3d,1ee00-1ee03,1ee05-1ee1f,1ee21-1ee22,1ee24,1ee27,1ee29-1ee32,1ee34-1ee37,1ee39,1ee3b,1ee42,1ee47,1ee49,1ee4b,1ee4d-1ee4f,1ee51-1ee52,1ee54,1ee57,1ee59,1ee5b,1ee5d,1ee5f,1ee61-1ee62,1ee64,1ee67-1ee6a,1ee6c-1ee72,1ee74-1ee77,1ee79-1ee7c,1ee7e,1ee80-1ee89,1ee8b-1ee9b,1eea1-1eea3,1eea5-1eea9,1eeab-1eebb,1eef0-1eef1,1f000-1f02b,1f030-1f093,1f0a0-1f0ae,1f0b1-1f0bf,1f0c1-1f0cf,1f0d1-1f0f5,1f100-1f1ad,1f1e6-1f202,1f210-1f23b,1f240-1f248,1f250-1f251,1f260-1f265,1f300-1f6d7,1f6dc-1f6ec,1f6f0-1f6fc,1f700-1f776,1f77b-1f7d9,1f7e0-1f7eb,1f7f0,1f800-1f80b,1f810-1f847,1f850-1f859,1f860-1f887,1f890-1f8ad,1f8b0-1f8b1,1f900-1fa53,1fa60-1fa6d,1fa70-1fa7c,1fa80-1fa88,1fa90-1fabd,1fabf-1fac5,1face-1fadb,1fae0-1fae8,1faf0-1faf8,1fb00-1fb92,1fb94-1fbca,1fbf0-1fbf9,20000-2a6df,2a700-2b739,2b740-2b81d,2b820-2cea1,2ceb0-2ebe0,2f800-2fa1d,30000-3134a,31350-323af,e0100-e01ef"};
+  const tables = {};
+  for (const [key, encoded] of Object.entries(rangeData)) {
+    tables[key] = encoded.split(',').filter(Boolean).map(piece => {
+      const points = piece.split('-').map(n => parseInt(n, 16));
+      return [points[0], points.length === 1 ? points[0] : points[1]];
+    });
+  }
+  function inRanges(ch, key) {
+    const cp = ch.codePointAt(0), ranges = tables[key];
+    let low = 0, high = ranges.length - 1;
+    while (low <= high) {
+      const mid = (low + high) >> 1, range = ranges[mid];
+      if (cp < range[0]) high = mid - 1;
+      else if (cp > range[1]) low = mid + 1;
+      else return true;
+    }
+    return false;
+  }
+  const chars = text => Array.from(String(text));
+  const ok = (result, type) => ({ ok: true, result, error: null, ...(type ? { type } : {}) });
+  const fail = (error, type) => ({ ok: false, result: null, error, ...(type ? { type } : {}) });
+  const validInteger = value => typeof value === 'number' && Number.isSafeInteger(value);
+
+  function pyNumber(value, asFloat) {
+    if (Number.isNaN(value)) return 'nan';
+    if (value === Infinity) return 'inf';
+    if (value === -Infinity) return '-inf';
+    if (Object.is(value, -0)) return '-0.0';
+    let out = String(value);
+    const absolute = Math.abs(value);
+    if (asFloat && absolute !== 0 && (absolute >= 1e16 || absolute < 1e-4)) out = value.toExponential();
+    if (/[eE]/.test(out)) {
+      const [mantissa, exponent] = out.toLowerCase().split('e');
+      const n = Number(exponent);
+      return mantissa + 'e' + (n < 0 ? '-' : '+') + String(Math.abs(n)).padStart(2, '0');
+    }
+    return asFloat && Number.isInteger(value) ? out + '.0' : out;
+  }
+  function pyRepr(value, options = {}) {
+    if (value === null) return 'None';
+    if (value === true) return 'True';
+    if (value === false) return 'False';
+    if (Array.isArray(value)) {
+      const floatIndices = options.floatIndices || [];
+      const content = value.map((item, i) => pyRepr(item, { float: floatIndices.includes(i) })).join(', ');
+      return options.tuple ? '(' + content + (value.length === 1 ? ',' : '') + ')' : '[' + content + ']';
+    }
+    if (typeof value === 'number') return pyNumber(value, !!options.float);
+    if (typeof value !== 'string') throw new TypeError('pyRepr supports strings, numbers, booleans, arrays, and null only');
+    const quote = value.includes("'") && !value.includes('"') ? '"' : "'";
+    const escaped = chars(value).map(ch => {
+      if (ch === '\\') return '\\\\';
+      if (ch === quote) return '\\' + quote;
+      if (ch === '\n') return '\\n';
+      if (ch === '\r') return '\\r';
+      if (ch === '\t') return '\\t';
+      const cp = ch.codePointAt(0);
+      if (!inRanges(ch, 'printable')) {
+        if (cp <= 0xff) return '\\x' + cp.toString(16).padStart(2, '0');
+        if (cp <= 0xffff) return '\\u' + cp.toString(16).padStart(4, '0');
+        return '\\U' + cp.toString(16).padStart(8, '0');
+      }
+      return ch;
+    }).join('');
+    return quote + escaped + quote;
+  }
+
+  function resolveIndex(length, index) {
+    if (!validInteger(length) || length < 0) return { ok: false, index: null, error: 'ValueError: invalid sequence length' };
+    if (!validInteger(index)) return { ok: false, index: null, error: 'TypeError: sequence indices must be integers or slices' };
+    const resolved = index < 0 ? length + index : index;
+    if (resolved < 0 || resolved >= length) return { ok: false, index: null, error: 'IndexError: index out of range' };
+    return { ok: true, index: resolved, error: null };
+  }
+  function sliceIndices(length, start = null, stop = null, step = 1) {
+    if (step === null) step = 1;
+    const failure = error => ({ ok: false, indices: [], start: null, stop: null, step, error });
+    if (!validInteger(length) || length < 0) return failure('ValueError: invalid sequence length');
+    if (!validInteger(step) || (start !== null && !validInteger(start)) || (stop !== null && !validInteger(stop))) return failure('TypeError: slice indices must be integers or None or have an __index__ method');
+    if (!step) return failure('ValueError: slice step cannot be zero');
+    const forward = step > 0, lower = forward ? 0 : -1, upper = forward ? length : length - 1;
+    function bound(value, fallback) {
+      if (value === null) return fallback;
+      if (value < 0) value += length;
+      return Math.max(lower, Math.min(upper, value));
+    }
+    const normalizedStart = bound(start, forward ? 0 : length - 1);
+    const normalizedStop = bound(stop, forward ? length : -1);
+    const indices = [];
+    if (forward) for (let i = normalizedStart; i < normalizedStop; i += step) indices.push(i);
+    else for (let i = normalizedStart; i > normalizedStop; i += step) indices.push(i);
+    return { ok: true, indices, start: normalizedStart, stop: normalizedStop, step, error: null };
+  }
+  function slice(sequence, start, stop, step) {
+    const list = typeof sequence === 'string' ? chars(sequence) : sequence;
+    const selection = sliceIndices(list.length, start, stop, step);
+    const selected = selection.ok ? selection.indices.map(i => list[i]) : null;
+    return { ...selection, value: selection.ok ? typeof sequence === 'string' ? selected.join('') : selected : null };
+  }
+
+  function stripWithTable(text, table) {
+    const list = chars(text);
+    let start = 0, end = list.length;
+    while (start < end && inRanges(list[start], table)) start++;
+    while (end > start && inRanges(list[end - 1], table)) end--;
+    return list.slice(start, end).join('');
+  }
+  function pyStrip(text) { return stripWithTable(text, 'space'); }
+  function clean(text, operations = []) {
+    const original = String(text), steps = [];
+    let result = original;
+    for (const operation of operations) {
+      const before = result;
+      if (operation === 'strip') result = pyStrip(before);
+      else if (operation === 'compact') result = before.split(' ').join('');
+      else if (operation === 'upper') result = before.toUpperCase();
+      else if (operation === 'lower') result = before.toLowerCase();
+      else throw new RangeError('Unknown cleaning operation');
+      steps.push({ operation, before, after: result });
+    }
+    return { ok: true, original, steps, result, error: null };
+  }
+  function split(text, separator = null, maxsplit = -1) {
+    text = String(text);
+    if (!validInteger(maxsplit)) return fail('TypeError: maxsplit must be an integer', 'list');
+    if (separator !== null && typeof separator !== 'string') return fail('TypeError: separator must be str or None', 'list');
+    if (separator === '') return fail('ValueError: empty separator', 'list');
+    if (separator === null) {
+      const list = chars(text), result = [];
+      let i = 0;
+      while (i < list.length && inRanges(list[i], 'space')) i++;
+      if (i === list.length) return ok([], 'list');
+      if (maxsplit === 0) return ok([list.slice(i).join('')], 'list');
+      while (i < list.length) {
+        const begin = i;
+        while (i < list.length && !inRanges(list[i], 'space')) i++;
+        result.push(list.slice(begin, i).join(''));
+        while (i < list.length && inRanges(list[i], 'space')) i++;
+        if (i < list.length && maxsplit >= 0 && result.length === maxsplit) {
+          result.push(list.slice(i).join(''));
+          break;
+        }
+      }
+      return ok(result, 'list');
+    }
+    const result = [];
+    let start = 0, count = 0, index;
+    while ((maxsplit < 0 || count < maxsplit) && (index = text.indexOf(separator, start)) !== -1) {
+      result.push(text.slice(start, index));
+      start = index + separator.length;
+      count++;
+    }
+    result.push(text.slice(start));
+    return ok(result, 'list');
+  }
+  function join(items, separator) {
+    if (!Array.isArray(items) || typeof separator !== 'string') return fail('TypeError: expected a string sequence and a string separator', 'str');
+    const bad = items.findIndex(item => typeof item !== 'string');
+    if (bad !== -1) {
+      const item = items[bad];
+      const type = item === null ? 'NoneType' : Array.isArray(item) ? 'list' : typeof item === 'boolean' ? 'bool' : typeof item === 'number' ? Number.isInteger(item) ? 'int' : 'float' : typeof item;
+      return fail(`TypeError: sequence item ${bad}: expected str instance, ${type} found`, 'str');
+    }
+    return ok(items.join(separator), 'str');
+  }
+  function partition(text, separator) {
+    text = String(text);
+    if (typeof separator !== 'string') return fail('TypeError: separator must be str', 'tuple');
+    if (!separator.length) return fail('ValueError: empty separator', 'tuple');
+    const at = text.indexOf(separator);
+    return ok(at < 0 ? [text, '', ''] : [text.slice(0, at), separator, text.slice(at + separator.length)], 'tuple');
+  }
+  function query(text, needle) {
+    const haystack = chars(text), wanted = chars(needle), positions = [];
+    if (!wanted.length) return { contains: true, first: 0, count: haystack.length + 1, positions: Array.from({ length: haystack.length + 1 }, (_, i) => i) };
+    for (let i = 0; i <= haystack.length - wanted.length;) {
+      const match = wanted.every((ch, j) => haystack[i + j] === ch);
+      if (match) { positions.push(i); i += wanted.length; } else i++;
+    }
+    return { contains: positions.length > 0, first: positions.length ? positions[0] : -1, count: positions.length, positions };
+  }
+  function inspect(text) {
+    text = String(text);
+    const list = chars(text), nonempty = list.length > 0;
+    return {
+      length: list.length,
+      isdigit: nonempty && list.every(ch => inRanges(ch, 'digit')),
+      isalpha: nonempty && list.every(ch => inRanges(ch, 'alpha')),
+      isalnum: nonempty && list.every(ch => inRanges(ch, 'alpha') || inRanges(ch, 'numeric')),
+      startsWithOrder: text.startsWith('ORD-'),
+      endsWithCsv: text.endsWith('.csv')
+    };
+  }
+
+  function normalizeDecimalDigits(text) {
+    return chars(text).map(ch => {
+      const cp = ch.codePointAt(0);
+      for (const [begin, end] of tables.decimal) {
+        if (cp >= begin && cp <= end) return String((cp - begin) % 10);
+        if (cp < begin) break;
+      }
+      return ch;
+    }).join('');
+  }
+  function parseFloatText(text) {
+    text = String(text);
+    const normalized = normalizeDecimalDigits(stripWithTable(text, 'numericSpace'));
+    if (/^[+-]?(?:inf(?:inity)?|nan)$/i.test(normalized)) return { ok: false, value: null, error: '本实验只处理有限数值，不接受 NaN 或 Infinity。', limit: true };
+    const digits = '[0-9](?:_?[0-9])*';
+    const pattern = new RegExp('^[+-]?(?:' + digits + '(?:\\.(?:' + digits + ')?)?|\\.' + digits + ')(?:[eE][+-]?' + digits + ')?$');
+    if (!pattern.test(normalized)) return { ok: false, value: null, error: 'ValueError: could not convert string to float: ' + pyRepr(text), limit: false };
+    const value = Number(normalized.replace(/_/g, ''));
+    if (!Number.isFinite(value)) return { ok: false, value: null, error: '本实验只处理有限数值；当前文本转换后超出有限浮点范围。', limit: true };
+    return { ok: true, value, error: null, limit: false };
+  }
+  function parseIntText(text) {
+    text = String(text);
+    const normalized = normalizeDecimalDigits(stripWithTable(text, 'numericSpace'));
+    if (!/^[+-]?[0-9](?:_?[0-9])*$/.test(normalized)) return { ok: false, value: null, error: 'ValueError: invalid literal for int() with base 10: ' + pyRepr(text), limit: false };
+    const integer = BigInt(normalized.replace(/_/g, ''));
+    if (integer > BigInt(Number.MAX_SAFE_INTEGER) || integer < BigInt(Number.MIN_SAFE_INTEGER)) return { ok: false, value: null, error: '本实验整数范围为 -9007199254740991 到 9007199254740991；Python 整数本身不受此范围限制。', limit: true };
+    return { ok: true, value: Number(integer), error: null, limit: false };
+  }
+
+  function fixedEven(value, precision) {
+    const negative = value < 0 || Object.is(value, -0);
+    const buffer = new ArrayBuffer(8), view = new DataView(buffer);
+    view.setFloat64(0, Math.abs(value), false);
+    const high = view.getUint32(0, false), low = view.getUint32(4, false);
+    const exponentBits = (high >>> 20) & 0x7ff;
+    let mantissa = (BigInt(high & 0xfffff) << 32n) | BigInt(low);
+    let exponent;
+    if (exponentBits === 0) exponent = -1074;
+    else { mantissa |= 1n << 52n; exponent = exponentBits - 1023 - 52; }
+    let numerator = mantissa * (10n ** BigInt(precision)), denominator = 1n;
+    if (exponent >= 0) numerator <<= BigInt(exponent);
+    else denominator <<= BigInt(-exponent);
+    let quotient = numerator / denominator;
+    const twiceRemainder = (numerator % denominator) * 2n;
+    if (twiceRemainder > denominator || (twiceRemainder === denominator && quotient % 2n === 1n)) quotient++;
+    let digits = quotient.toString().padStart(precision + 1, '0');
+    if (precision) digits = digits.slice(0, -precision) + '.' + digits.slice(-precision);
+    return (negative ? '-' : '') + digits;
+  }
+  function formatNumber(value, kind = 'fixed', precision = 2) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return fail('本实验只格式化有限数值。', 'str');
+    if (!validInteger(precision) || precision < 0 || precision > 4) return fail('本实验支持 0 到 4 位小数。', 'str');
+    if (!['fixed', 'grouped', 'percent'].includes(kind)) return fail('未知数值格式。', 'str');
+    const scaled = kind === 'percent' ? value * 100 : value;
+    if (!Number.isFinite(scaled)) return fail('百分比换算后超出本实验的有限数值范围。', 'str');
+    let result = fixedEven(scaled, precision);
+    if (kind === 'grouped') {
+      const [whole, fraction] = result.split('.');
+      result = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (fraction === undefined ? '' : '.' + fraction);
+    }
+    if (kind === 'percent') result += '%';
+    return ok(result, 'str');
+  }
+  function align(text, width, direction = 'left') {
+    text = String(text);
+    if (!validInteger(width) || width < 0 || width > 10000) return fail('本实验字段宽度应为 0 到 10000 的整数。', 'str');
+    direction = ({ '<': 'left', '>': 'right', '^': 'center' })[direction] || direction;
+    if (!['left', 'right', 'center'].includes(direction)) return fail('未知对齐方式。', 'str');
+    const padding = Math.max(0, width - chars(text).length);
+    if (direction === 'left') return ok(text + ' '.repeat(padding), 'str');
+    if (direction === 'right') return ok(' '.repeat(padding) + text, 'str');
+    const left = Math.floor(padding / 2);
+    return ok(' '.repeat(left) + text + ' '.repeat(padding - left), 'str');
+  }
+
+  function orderPipeline(raw) {
+    raw = String(raw);
+    const output = { ok: false, raw, cleaned: null, fields: null, cleanedFields: null, order: null, orderTypes: ['str', 'str', 'str', 'float', 'int', 'float', 'str'], orderRepr: null, conversions: [], subtotal: null, discountAmount: null, payable: null, summary: null, steps: [], error: null, errorStage: null };
+    const stage = (id, label, type, value, extra = {}) => output.steps.push({ id, label, type, value, ...extra });
+    const error = (id, message) => { output.errorStage = id; output.error = message; return output; };
+    stage(0, '原始文本', 'str', raw);
+    output.cleaned = pyStrip(raw);
+    stage(1, '清理整条文本', 'str', output.cleaned);
+    output.fields = split(output.cleaned, '|').result;
+    output.cleanedFields = output.fields.map(pyStrip);
+    if (output.fields.length !== 7) return error(2, `本实验需要 7 个用 | 分隔的字段，当前得到 ${output.fields.length} 个；这是本实验的字段结构要求。`);
+    stage(2, '拆分并逐项清理', 'list', output.cleanedFields, { fields: output.fields });
+    const specifications = [
+      { field: '单价', index: 3, type: 'float', parser: parseFloatText },
+      { field: '数量', index: 4, type: 'int', parser: parseIntText },
+      { field: '折扣率', index: 5, type: 'float', parser: parseFloatText }
+    ];
+    for (const spec of specifications) {
+      const conversion = spec.parser(output.cleanedFields[spec.index]);
+      output.conversions.push({ field: spec.field, index: spec.index, type: spec.type, text: output.cleanedFields[spec.index], ...conversion });
+      if (!conversion.ok) return error(3, spec.field + '字段：' + conversion.error);
+    }
+    const unitPrice = output.conversions[0].value, quantity = output.conversions[1].value, discountRate = output.conversions[2].value;
+    output.order = [output.cleanedFields[0], output.cleanedFields[1], output.cleanedFields[2], unitPrice, quantity, discountRate, output.cleanedFields[6].toUpperCase()];
+    output.orderRepr = pyRepr(output.order, { tuple: true, floatIndices: [3, 5] });
+    stage(3, '转换类型并组织元组', 'tuple', output.order, { repr: output.orderRepr });
+    output.subtotal = unitPrice * quantity;
+    output.discountAmount = output.subtotal * discountRate;
+    output.payable = output.subtotal - output.discountAmount;
+    if (![output.subtotal, output.discountAmount, output.payable].every(Number.isFinite)) return error(4, '当前输入导致计算结果超出本实验的有限浮点范围。');
+    stage(4, '计算金额', 'calculation', { subtotal: output.subtotal, discountAmount: output.discountAmount, payable: output.payable });
+    output.summary = [
+      '跨境订单摘要',
+      '订单编号：' + output.order[0],
+      '目标市场：' + output.order[1],
+      '商品：' + output.order[2],
+      '数量：' + pyRepr(quantity) + ' 件',
+      '商品原价：' + formatNumber(output.subtotal, 'grouped', 2).result + ' 元',
+      '优惠金额：' + formatNumber(output.discountAmount, 'grouped', 2).result + ' 元',
+      '应付金额：' + formatNumber(output.payable, 'grouped', 2).result + ' 元',
+      '订单状态：' + output.order[6]
+    ].join('\n');
+    stage(5, '格式化摘要', 'str', output.summary);
+    output.ok = true;
+    return output;
+  }
+
+  return { unicodeVersion, pyRepr, resolveIndex, sliceIndices, slice, pyStrip, clean, split, join, partition, query, inspect, parseFloatText, parseIntText, formatNumber, align, orderPipeline };
+});
+</script>
+  <script>/* Common sequence operations: containers hold market names; strings hold characters. */
+(function (root) {
+  'use strict';
+  root.StringLabViews = root.StringLabViews || {};
+
+  function esc(value) {
+    return String(value === undefined || value === null ? '' : value).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  function integer(raw, optional) {
+    var text = String(raw === undefined || raw === null ? '' : raw).trim();
+    if (optional && text === '') return { ok: true, value: null, code: '' };
+    if (!/^[+-]?\d+$/.test(text)) return { ok: false, error: optional ? '请填整数，或留空使用默认边界。' : '请填写一个整数索引。' };
+    var value = Number(text);
+    if (!Number.isSafeInteger(value) || value < -10000 || value > 10000) return { ok: false, error: '本实验允许 -10000～10000 的整数索引。' };
+    return { ok: true, value: value, code: String(value) };
+  }
+
+  function button(action, value, label, active) {
+    return '<button type="button" class="btn btn-subtle" data-action="' + esc(action) + '" data-value="' + esc(value) +
+      '" aria-pressed="' + (active ? 'true' : 'false') + '">' + esc(label) + '</button>';
+  }
+
+  function cells(values, selected, isText) {
+    return '<div class="sequence-rail"><div class="sequence-cells' + (isText ? ' sequence-characters' : ' sequence-elements') + '" role="list">' +
+      values.map(function (value, i) {
+        return '<div class="sequence-cell' + (selected.indexOf(i) >= 0 ? ' is-selected' : '') + '" role="listitem" aria-label="索引 ' + i + '：' + esc(value) + '">' +
+          '<span class="sequence-index">' + i + '</span><strong>' + esc(value) + '</strong></div>';
+      }).join('') + '</div></div>';
+  }
+
+  function matchCharacters(text, needle) {
+    var source = Array.from(text), target = Array.from(needle);
+    if (!target.length) return [];
+    for (var i = 0; i <= source.length - target.length; i++) {
+      if (target.every(function (ch, offset) { return ch === source[i + offset]; })) {
+        return target.map(function (_, offset) { return i + offset; });
+      }
+    }
+    return [];
+  }
+
+  root.StringLabViews.sequence = function (s) {
+    var E = root.StringLabEngine;
+    var dataset = s.dataset === 'order' ? 'order' : 'markets';
+    var mode = ['index', 'slice', 'contains'].indexOf(s.mode) >= 0 ? s.mode : 'index';
+    var index = integer(s.index, false), start = integer(s.start, true), stop = integer(s.stop, true);
+    var needle = String(s.needle === undefined || s.needle === null ? '' : s.needle);
+    var validation = mode === 'index' ? index.ok ? '' : index.error : mode === 'slice' ? !start.ok ? start.error : !stop.ok ? stop.error : '' : '';
+    var records = dataset === 'markets' ? [
+      { name: 'markets_list', kind: 'list', title: '列表', value: ['泰国', '越南', '新加坡'] },
+      { name: 'markets_tuple', kind: 'tuple', title: '元组', value: ['泰国', '越南', '新加坡'] },
+      { name: 'market_text', kind: 'str', title: '字符串', value: '泰国越南新加坡' }
+    ] : [{ name: 'order_id', kind: 'str', title: '订单编号', value: 'ORD-20260928-001' }];
+
+    var controls = '<div class="control-group"><span class="control-label">观察哪组数据？</span><div class="action-stack">' +
+      button('sequence-dataset', 'markets', '市场：三种序列对照', dataset === 'markets') +
+      button('sequence-dataset', 'order', '订单编号：提取片段', dataset === 'order') + '</div></div>' +
+      '<div class="control-group"><span class="control-label">使用同一个操作</span><div class="segmented">' +
+      button('sequence-mode', 'index', '索引', mode === 'index') +
+      button('sequence-mode', 'slice', '切片', mode === 'slice') +
+      button('sequence-mode', 'contains', '成员判断', mode === 'contains') + '</div></div>';
+    if (mode === 'index') {
+      controls += '<div class="single-field"><label class="control-label" for="sequence-index">索引 index</label>' +
+        '<input id="sequence-index" type="text" inputmode="numeric" data-field="sequence.index" value="' + esc(s.index) + '">' +
+        '<p class="hint">正索引从 0 开始；-1 指向最后一项。</p></div>';
+    } else if (mode === 'slice') {
+      controls += '<div class="field-row sequence-two-fields"><label>起点 start<input type="text" inputmode="numeric" data-field="sequence.start" value="' + esc(s.start) + '" placeholder="省略"></label>' +
+        '<label>终点 stop<input type="text" inputmode="numeric" data-field="sequence.stop" value="' + esc(s.stop) + '" placeholder="省略"></label></div>' +
+        '<p class="hint">终点位置不取。本实验每次向右移动一格，起点和终点可留空。</p>';
+    } else {
+      controls += '<div class="single-field"><label class="control-label" for="sequence-needle">要查的内容</label>' +
+        '<input id="sequence-needle" type="text" data-field="sequence.needle" value="' + esc(needle) + '">' +
+        '<p class="hint">' + (dataset === 'order' ? '试着查询 ORD 或 20260928。' : '试着比较“泰国”和“泰”。') + '</p></div>';
+    }
+    if (dataset === 'order') {
+      controls += '<div><span class="control-label">编号提取预设</span><div class="preset-row">' +
+        button('sequence-preset', 'prefix', '前缀 [:3]', false) +
+        button('sequence-preset', 'date', '日期 [4:12]', false) +
+        button('sequence-preset', 'serial', '流水号 [13:]', false) + '</div></div>';
+    }
+
+    var snippets = [], anyException = false;
+    var visual = (dataset === 'markets' ? '<p class="hint">三种序列独立演示同一个操作，蓝框标出当前选中的元素或字符。</p>' : '') +
+      '<div class="sequence-examples">' + records.map(function (record) {
+        var isText = record.kind === 'str';
+        var values = isText ? Array.from(record.value) : record.value;
+        var selected = [], result, resultType = '', expression = '', error = '';
+        var declaration = record.name + ' = ' + E.pyRepr(record.value, { tuple: record.kind === 'tuple' });
+        if (!validation) {
+          if (mode === 'index') {
+            expression = record.name + '[' + index.code + ']';
+            var resolved = E.resolveIndex(values.length, index.value);
+            if (resolved.ok) {
+              selected = [resolved.index];
+              result = values[resolved.index];
+              resultType = 'str';
+            } else {
+              error = 'IndexError: ' + (isText ? 'string' : record.kind) + ' index out of range';
+              anyException = true;
+            }
+          } else if (mode === 'slice') {
+            expression = record.name + '[' + start.code + ':' + stop.code + ']';
+            var selection = E.sliceIndices(values.length, start.value, stop.value, 1);
+            selected = selection.indices;
+            var taken = selected.map(function (i) { return values[i]; });
+            result = isText ? taken.join('') : taken;
+            resultType = record.kind;
+          } else {
+            expression = E.pyRepr(needle) + ' in ' + record.name;
+            selected = isText ? matchCharacters(record.value, needle) : values.map(function (value, i) { return value === needle ? i : -1; }).filter(function (i) { return i >= 0; });
+            result = isText ? needle === '' || selected.length > 0 : selected.length > 0;
+            resultType = 'bool';
+          }
+        }
+        snippets.push(declaration + (validation ? '\n# 输入未通过检查；请先修改控件中的参数。' : '\nprint(' + expression + ')'));
+        var output = validation ? '<div class="notice">参数待修正，本次尚未求值。</div>' : error ?
+          '<div class="error-message"><strong>' + esc(error) + '</strong><p>这个索引没有对应元素，本例未产生返回结果。</p></div>' :
+          '<div class="sequence-output"><span class="control-label">结果 · ' + esc(resultType) + '</span><code>' +
+          esc(E.pyRepr(result, { tuple: resultType === 'tuple' })) + '</code></div>';
+        return '<section class="sequence-example"><div class="visual-header"><h2>' + esc(record.title) + ' <code>' + esc(record.name) + '</code></h2>' +
+          '<span class="pill">len = ' + values.length + '</span></div>' +
+          '<p class="hint">' + (isText ? '每格是一个字符。' : '每格是一个完整的市场名称。') + '</p>' +
+          cells(values, selected, isText) +
+          (expression ? '<p class="sequence-expression"><code>' + esc(expression) + '</code></p>' : '') + output + '</section>';
+      }).join('') + '</div>';
+    var summary = validation ? '<div class="error-message" role="status">' + esc(validation) + '<br>这是输入检查提示；参数修正前不执行 Python 示例。</div>' :
+      '<div class="rule-note"><strong>' + (mode === 'index' ? '同一索引定位的是各自序列中的一个元素。' : mode === 'slice' ? '切片取出子序列，结果保留原来的序列类型。' : '成员判断要先看“一个元素”是什么。') + '</strong><p>' +
+      (mode === 'contains' ? dataset === 'markets' ? '列表、元组查找完整元素；字符串查找连续的字符片段。成员判断返回 True 或 False。' : '对编号使用 in，可以判断指定的连续字符片段是否存在，结果为 True 或 False。' : mode === 'slice' ? '边界超出范围时，切片会取到实际边界，不会像单个索引越界那样报错；选不到内容时得到相应类型的空序列。' : dataset === 'markets' ? '本例列表和元组的一项是市场名称，字符串的一项是单个字符。因此长度不同，同一索引也可能只对部分序列有效。' : '订单编号的一个元素是一个字符。索引从 0 开始，索引必须指向编号中实际存在的字符。') + '</p>' +
+      (anyException ? '<p>每个区域是独立示例；下面的代码请按段分别运行。某一段报错，不代表其他序列的同一操作也会报错。</p>' : '') +
+      (dataset === 'order' ? '<p>按固定位置提取编号，前提是前缀、日期和流水号的格式与位置稳定。</p>' : '') + '</div>';
+    var code = (records.length > 1 ? '# 以下三段示例分别运行，比较相同操作。\n' : '') + snippets.join('\n\n');
+    return { controls: controls, visual: visual, code: code, summary: summary };
+  };
+})(window);
+</script>
+  <script>/* Tuple packing, positional unpacking, immutable slots, and the single-element comma. */
+(function (root) {
+  'use strict';
+  root.StringLabViews = root.StringLabViews || {};
+
+  function esc(value) {
+    return String(value === undefined || value === null ? '' : value).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  function button(action, value, label, active) {
+    return '<button type="button" class="btn btn-subtle" data-action="' + esc(action) + '" data-value="' + esc(value) +
+      '" aria-pressed="' + (active ? 'true' : 'false') + '">' + esc(label) + '</button>';
+  }
+
+  function orderCards(E, values, changedIndex) {
+    var labels = ['订单编号', '市场', '金额', '状态'];
+    return '<div class="tuple-record">' + values.map(function (value, index) {
+      return '<div class="tuple-item' + (index === changedIndex ? ' is-changed' : '') + '">' +
+        '<span class="tuple-position">[' + index + '] ' + labels[index] + '</span><code>' + esc(E.pyRepr(value, { float: index === 2 })) + '</code></div>';
+    }).join('') + '</div>';
+  }
+
+  root.StringLabViews.tuple = function (s) {
+    var E = root.StringLabEngine;
+    var mode = ['unpack', 'mutate', 'single'].indexOf(s.mode) >= 0 ? s.mode : 'unpack';
+    var original = ['ORD-20260928-001', '泰国', 299.9, 'PAID'];
+    var orderRepr = E.pyRepr(original, { tuple: true, floatIndices: [2] });
+    var ran = !!s.ran;
+    var controls = '<div class="control-group"><span class="control-label">观察元组的哪一面？</span><div class="action-stack">' +
+      button('tuple-mode', 'unpack', '按顺序解包', mode === 'unpack') +
+      button('tuple-mode', 'mutate', '更新订单记录', mode === 'mutate') +
+      button('tuple-mode', 'single', '只有一个元素', mode === 'single') + '</div></div>';
+    var visual = '', code = '', summary = '';
+
+    if (mode === 'unpack') {
+      var count = ['3', '4', '5'].indexOf(String(s.count)) >= 0 ? Number(s.count) : 4;
+      var names = ['order_id', 'market', 'amount', 'status', 'channel'].slice(0, count);
+      controls += '<div><span class="control-label">左侧放几个变量？</span><div class="segmented">' +
+        [3, 4, 5].map(function (n) { return button('tuple-count', String(n), n + ' 个', count === n); }).join('') + '</div></div>' +
+        '<button type="button" class="btn btn-primary" data-action="tuple-run">' + (ran ? '重新执行解包' : '执行解包') + '</button>' +
+        '<p class="hint">每次都从同一条四字段订单开始。</p>';
+      var failure = count < 4 ? 'ValueError: too many values to unpack (expected 3)' : 'ValueError: not enough values to unpack (expected 5, got 4)';
+      var binding = !ran ? '<p class="notice">右侧有 4 个元素，左侧准备了 ' + count + ' 个变量。先预测能否一一对应，再执行。</p>' : count !== 4 ?
+        '<div class="error-message" role="status"><strong>' + failure + '</strong><p>这次普通解包没有成功，未完成本次变量绑定；后面的 print 不会执行。</p></div>' :
+        '<div class="tuple-bindings" aria-label="解包后变量与值的对应关系">' + names.map(function (name, i) {
+          return '<div class="tuple-binding"><span class="tuple-position">第 ' + (i + 1) + ' 项 · [' + i + ']</span><code>' + esc(name) + '</code>' +
+            '<strong>' + esc(E.pyRepr(original[i], { float: i === 2 })) + '</strong></div>';
+        }).join('') + '</div>';
+      visual = '<div class="visual-header"><h2>订单元组 <code>order</code></h2><span class="pill">4 个元素</span></div>' +
+        orderCards(E, original, -1) + '<p class="tuple-assignment"><code>' + esc(names.join(', ')) + ' = order</code></p>' + binding;
+      code = 'order = ' + orderRepr + '\n' + names.join(', ') + ' = order\n\n' + names.map(function (name) { return 'print(' + name + ')'; }).join('\n');
+      summary = '<div class="rule-note"><strong>普通解包按位置一一对应，变量数量必须与元素数量相同。</strong>' +
+        '<p>变量名帮助人理解业务，Python 不会按名字重新匹配字段。解包读取元组，不改变它的内容。</p></div>';
+    } else if (mode === 'mutate') {
+      var action = s.action === 'rebuild' ? 'rebuild' : 'assign';
+      var rawAmount = String(s.amount === undefined || s.amount === null ? '' : s.amount);
+      var parsed = E.parseFloatText(rawAmount);
+      var amountCode = parsed.ok ? E.pyRepr(parsed.value, { float: true }) : null;
+      controls += '<div class="single-field"><label class="control-label" for="tuple-amount">更新后的金额</label>' +
+        '<input id="tuple-amount" type="text" inputmode="decimal" data-field="tuple.amount" value="' + esc(rawAmount) + '"></div>' +
+        '<div><span class="control-label">采用哪种方式？</span><div class="action-stack">' +
+        button('tuple-action', 'assign', '直接修改 order[2]', action === 'assign') +
+        button('tuple-action', 'rebuild', '建立 new_order', action === 'rebuild') + '</div></div>' +
+        '<button type="button" class="btn btn-primary" data-action="tuple-run">' + (ran ? '重新执行' : '执行更新') + '</button>' +
+        '<p class="hint">每次从原订单开始独立尝试，两种操作不累计。</p>';
+      var operation = action === 'assign' ? 'order[2] = ' + (amountCode || 'new_amount') :
+        'new_order = (order[0], order[1], ' + (amountCode || 'new_amount') + ', order[3])';
+      code = 'order = ' + orderRepr + '\n' + (!parsed.ok ? 'new_amount = float(' + E.pyRepr(rawAmount) + ')\n' : '') + operation +
+        '\n\nprint(order)' + (action === 'rebuild' ? '\nprint(new_order)' : '');
+      if (parsed.limit) code = 'order = ' + orderRepr + '\n# 当前输入超出本实验范围，请先改为有限数值。';
+      var resultHTML;
+      if (!ran) {
+        resultHTML = '<p class="notice">尚未执行。原订单仍保持不变。</p>';
+      } else if (!parsed.ok) {
+        resultHTML = '<div class="error-message" role="status"><strong>' + esc(parsed.error) + '</strong><p>' +
+          (parsed.limit ? '这是本教学实验的输入范围限制，不能据此判断 Python 的转换行为。' : '金额转换未成功，没有执行后续的元组更新，也没有产生新订单。') + '</p></div>';
+      } else if (action === 'assign') {
+        resultHTML = '<div class="error-message" role="status"><strong>TypeError: \'tuple\' object does not support item assignment</strong>' +
+          '<p>不能直接替换索引 2 对应的金额字段。原订单未改变；这次赋值没有成功，后面的 print 不会执行。</p></div>';
+      } else {
+        var updated = [original[0], original[1], parsed.value, original[3]];
+        resultHTML = '<div class="tuple-new-record"><h3>更新记录 <code>new_order</code></h3>' + orderCards(E, updated, 2) +
+          '<p class="raw-value">' + esc(E.pyRepr(updated, { tuple: true, floatIndices: [2] })) + '</p></div>';
+      }
+      visual = '<div class="visual-header"><h2>原订单 <code>order</code></h2><span class="pill">保持不变</span></div>' +
+        orderCards(E, original, -1) + '<p class="tuple-assignment"><code>' + esc(operation) + '</code></p>' + resultHTML;
+      summary = '<div class="rule-note"><strong>不可变限制的是元组本身，不限制变量接收另一条记录。</strong>' +
+        '<p>需要调整金额时，可以读取旧字段并建立更新后的元组。本例字段是字符串和数字。</p>' +
+        '<p class="hint">若元组里放的是列表，内部列表仍能修改；不能把“元组不可变”理解成它包含的一切都被冻结。</p></div>';
+    } else {
+      var withComma = s.singleComma !== false;
+      controls += '<div><span class="control-label">是否保留尾逗号？</span><div class="segmented">' +
+        button('tuple-comma', 'true', '有逗号', withComma) + button('tuple-comma', 'false', '无逗号', !withComma) + '</div></div>' +
+        '<p class="hint">只改变一个标点，比较对象类型与长度。</p>';
+      var variants = [
+        { comma: true, expression: "('PAID',)", type: 'tuple', length: 1, value: ['PAID'] },
+        { comma: false, expression: "('PAID')", type: 'str', length: 4, value: 'PAID' }
+      ];
+      visual = '<div class="single-tuple-compare">' + variants.map(function (variant) {
+        return '<section class="single-tuple-case' + (variant.comma === withComma ? ' is-active' : '') + '"><h2><code>' + esc(variant.expression) + '</code></h2>' +
+          '<div class="return-line"><span>类型</span><code>' + variant.type + '</code></div>' +
+          '<div class="return-line"><span>len</span><code>' + variant.length + '</code></div>' +
+          '<p class="single-tuple-contents">' + (variant.comma ? '<span class="single-tuple-item">PAID</span>' :
+            Array.from('PAID').map(function (ch) { return '<span class="single-character">' + ch + '</span>'; }).join('')) + '</p>' +
+          '<p class="hint">' + (variant.comma ? '一个字符串元素。' : '四个字符，圆括号只起分组作用。') + '</p></section>';
+      }).join('') + '</div><p class="status-note">当前选择：' + (withComma ? '有尾逗号，是一个元素的元组。' : '没有尾逗号，仍是字符串。') + '</p>';
+      code = 'value = ' + (withComma ? "('PAID',)" : "('PAID')") + '\nprint(value)\nprint(type(value))\nprint(len(value))';
+      summary = '<div class="rule-note"><strong>单元素元组的关键是尾逗号。</strong><p>圆括号可以用于分组；在这里只写圆括号，不会把字符串变成元组。</p></div>';
+    }
+    return { controls: controls, visual: visual, code: code, summary: summary };
+  };
+})(window);
+</script>
+  <script>(function () {
+  'use strict';
+  const E = window.StringLabEngine;
+  const V = window.StringLabViews = window.StringLabViews || {};
+  const esc = value => String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const repr = value => E.pyRepr(value);
+  const bool = value => value ? 'True' : 'False';
+  const button = (label, action, value, on) => '<button type="button" data-action="' + action + '" data-value="' + esc(value) + '" aria-pressed="' + Boolean(on) + '">' + label + '</button>';
+  const field = (label, name, value, max) => '<label class="control-label">' + label + '<input class="text-input" data-field="' + name + '" value="' + esc(value) + '" maxlength="' + (max || 100) + '"></label>';
+  const textArea = (label, name, value, max) => '<label class="control-label wide-control">' + label + '<textarea data-field="' + name + '" rows="2" maxlength="' + (max || 300) + '" spellcheck="false">' + esc(value) + '</textarea></label>';
+  const visible = value => Array.from(String(value)).map(ch => ch === ' ' ? '<span class="space-mark" aria-label="空格">␠</span>' : ch === '\n' ? '<span class="space-mark" aria-label="换行">↵</span><br>' : ch === '\t' ? '<span class="space-mark" aria-label="制表符">⇥</span>' : esc(ch)).join('');
+  const chip = type => '<span class="type-chip">' + type + '</span>';
+  const valueBox = (label, value, type, more) => '<section class="value-box ' + (more || '') + '"><h3>' + label + (type ? chip(type) : '') + '</h3><code>' + esc(value) + '</code></section>';
+  const errorBox = error => '<div class="error-message" role="status">' + esc(error) + '</div>';
+  const methodNames = {strip:'strip()',compact:"replace(' ', '')",upper:'upper()',lower:'lower()'};
+  V.clean = function (s) {
+    const result = E.clean(s.raw, s.operations);
+    const done = Math.max(0, Math.min(s.cursor, result.steps.length));
+    const complete = done === result.steps.length;
+    const current = done ? result.steps[done - 1].after : s.raw;
+    const suffix = s.operations.map(op => '.' + methodNames[op]).join('');
+    const expression = 'raw' + suffix;
+    const assignment = s.target === 'discard' ? expression : (s.target === 'rebind' ? 'raw' : 'cleaned') + ' = ' + expression;
+    const code = 'raw = ' + repr(s.raw) + '\n' + assignment + '\nprint(raw)' + (s.target === 'new' ? '\nprint(cleaned)' : '');
+    const controls = textArea('原始文本', 'clean.raw', s.raw, 140) +
+      '<div class="wide-control"><span class="control-label">按点击顺序加入方法；再次点击移除</span><div class="segmented">' +
+      Object.keys(methodNames).map(op => button((s.operations.includes(op) ? (s.operations.indexOf(op) + 1) + '. ' : '') + esc(methodNames[op]), 'clean-operation', op, s.operations.includes(op))).join('') +
+      '</div></div><div><label class="control-label" for="clean-target">怎样使用处理结果？</label><select id="clean-target" data-field="clean.target">' +
+      [['new','赋给新变量 cleaned'],['discard','只调用，不保存'],['rebind','重新赋给 raw']].map(pair => '<option value="' + pair[0] + '" ' + (s.target === pair[0] ? 'selected' : '') + '>' + pair[1] + '</option>').join('') +
+      '</select></div><div><span class="control-label">换个业务文本</span><div class="preset-row">' +
+      button('订单状态', 'clean-preset', 'status', false) + button('SKU 内部空格', 'clean-preset', 'sku', false) +
+      '</div></div><div class="segmented"><button type="button" data-action="clean-step" ' + (complete ? 'disabled' : '') + '>下一步</button><button type="button" data-action="clean-all">全部执行</button></div>';
+    const timeline = '<ol class="clean-flow"><li class="complete"><span class="flow-label">输入 · ' + Array.from(s.raw).length + ' 个字符</span><code>' + visible(s.raw) + '</code></li>' +
+      result.steps.map((step, i) => '<li class="' + (i < done ? 'complete' : 'pending') + '"><span class="flow-label">' + (i + 1) + '. ' + esc(methodNames[step.operation]) + '</span>' +
+        (i < done ? '<code>' + visible(step.after) + '</code><span class="hint">' + Array.from(step.after).length + ' 个字符</span>' : '<span class="pending-label">尚未执行</span>') + '</li>').join('') + '</ol>';
+    let variableState;
+    if (!complete) variableState = valueBox('raw 仍保存原输入', repr(s.raw), 'str') + valueBox('当前中间结果', repr(current), 'str');
+    else if (s.target === 'new') variableState = valueBox('原变量 raw', repr(s.raw), 'str') + valueBox('新变量 cleaned', repr(result.result), 'str', 'changed-box');
+    else if (s.target === 'discard') variableState = valueBox('raw 仍保存原输入', repr(s.raw), 'str') + valueBox('表达式结果 · 没有保存到变量', repr(result.result), 'str', 'changed-box');
+    else variableState = valueBox('执行前 raw', repr(s.raw), 'str') + valueBox('执行后 raw · 重新绑定', repr(result.result), 'str', 'changed-box');
+    const visual = '<div class="visual-header"><h2>每一步处理什么，结果交给谁？</h2><span class="pill">' + done + ' / ' + result.steps.length + ' 步</span></div>' +
+      timeline + '<p class="hint">␠ 表示空格，↵ 表示换行；标记仅用于观察，不属于真实文本。</p><div class="result-pair">' + variableState + '</div>';
+    const summary = '<div class="rule-note"><p><strong>方法返回处理结果，变量是否更新取决于赋值。</strong></p><p>' +
+      (s.target === 'discard' ? '单独调用方法也会算出结果，但原变量仍保留原文本。' : s.target === 'rebind' ? 'raw = ... 会让 raw 绑定到计算结果；这不等于原地修改旧字符串中的字符。' : 'cleaned 接收结果，raw 保留输入，便于比较和排查。') +
+      '</p><p>strip() 只清理首尾空白；replace(\' \', \'\') 删除所有普通空格，包括内部空格。方法链按从左到右执行。</p>' +
+      (!complete ? '<p class="hint">图中为教学分步过程；整行 Python 运行完方法链后才进行赋值。</p>' : '') + '</div>';
+    return {controls,visual,code,summary};
+  };
+
+  const separators = {comma:',',pipe:'|',colon:':',space:' ',whitespace:null,empty:''};
+  const sepNames = {comma:'逗号 ,',pipe:'竖线 |',colon:'冒号 :',space:'单个空格',whitespace:'省略参数：连续空白',empty:'空字符串'};
+  function separatorSelect(name, value, allowWhitespace) {
+    return '<label class="control-label">分隔符<select data-field="' + name + '">' +
+      Object.keys(separators).filter(key => allowWhitespace || key !== 'whitespace').map(key => '<option value="' + key + '" ' + (key === value ? 'selected' : '') + '>' + sepNames[key] + '</option>').join('') +
+      '</select></label>';
+  }
+  V.split = function (s) {
+    const sep = separators[s.mode === 'join' ? s.joinSep : s.separator];
+    let computed, code, input, controls, resultType, uiError = false;
+    const modeControls = '<div class="wide-control"><span class="control-label">操作</span><div class="segmented">' +
+      button('split：拆字段', 'split-mode', 'split', s.mode === 'split') + button('join：连文本', 'split-mode', 'join', s.mode === 'join') +
+      button('partition：保留备注', 'split-mode', 'partition', s.mode === 'partition') + '</div></div>';
+    if (s.mode === 'join') {
+      const items = ['ORD-20260928-001', '泰国', s.joinNumeric ? 299.9 : '299.90', 'PAID'];
+      computed = E.join(items, sep);
+      code = 'fields = ' + repr(items) + '\nline = ' + repr(sep) + '.join(fields)\nprint(line)';
+      input = '<div class="field-cards">' + items.map((item, i) => '<section class="field-card ' + (typeof item !== 'string' ? 'bad-field' : '') + '"><span>[' + i + ']' + chip(typeof item === 'string' ? 'str' : 'float') + '</span><code>' + esc(repr(item)) + '</code></section>').join('') + '</div>';
+      controls = modeControls + separatorSelect('split.joinSep', s.joinSep, false) +
+        '<div><span class="control-label">金额字段的类型</span><div class="segmented">' + button("'299.90' 字符串", 'join-type', 'string', !s.joinNumeric) + button('299.9 数值', 'join-type', 'number', s.joinNumeric) + '</div></div>';
+      resultType = 'str';
+    } else {
+      const rawCount = String(s.maxsplit).trim();
+      const valid = /^-?\d+$/.test(rawCount) && Math.abs(Number(rawCount)) <= 10000;
+      const count = valid ? Number(rawCount) : -1;
+      if (s.mode === 'split') {
+        uiError = !valid;
+        computed = valid ? E.split(s.raw, sep, count) : {ok:false,error:'maxsplit 请填写 -10000 到 10000 的整数。'};
+        let args;
+        if (sep === null) args = count === -1 ? '' : 'maxsplit=' + count;
+        else args = repr(sep) + (count === -1 ? '' : ', ' + count);
+        code = 'raw = ' + repr(s.raw) + '\nfields = raw.split(' + args + ')\nprint(fields)';
+        if (!valid) code = 'raw = ' + repr(s.raw) + '\n# maxsplit 必须填写整数。修正参数后再执行 split。';
+        resultType = 'list';
+      } else {
+        computed = E.partition(s.raw, sep);
+        code = 'raw = ' + repr(s.raw) + '\nparts = raw.partition(' + repr(sep) + ')\nprint(parts)';
+        resultType = 'tuple';
+      }
+      input = '<div class="raw-text-display"><code>' + visible(s.raw) + '</code></div>';
+      controls = modeControls + textArea('待处理文本', 'split.raw', s.raw, 240) +
+        separatorSelect('split.separator', s.separator, s.mode === 'split') +
+        (s.mode === 'split' ? field('最多拆几次 maxsplit（-1 不限）', 'split.maxsplit', s.maxsplit, 7) : '') +
+        '<div><span class="control-label">换个例子</span><div class="preset-row">' + button('订单字段', 'split-preset', 'order', false) +
+        button('客户备注', 'split-preset', 'note', false) + button('连续空格', 'split-preset', 'spaces', false) + '</div></div>';
+    }
+    controls += '<button type="button" class="btn btn-primary" data-action="split-run">' + (s.ran ? '重新执行' : '执行操作') + '</button>';
+    let output;
+    if (!s.ran) output = '<p class="pending-label">先预测结果，再执行操作。</p>';
+    else if (!computed.ok) output = errorBox(computed.error) + '<p class="hint">' + (uiError ? '尚未执行，请修正参数。' : '发生异常，没有返回结果。') + '</p>';
+    else if (s.mode === 'join') output = valueBox('连接后的文本', repr(computed.result), 'str', 'changed-box');
+    else output = '<div class="field-cards">' + computed.result.map((item, i) => '<section class="field-card"><span>' + (s.mode === 'partition' ? ['分隔符之前','分隔符本身','其余全部内容'][i] : '[' + i + ']') + chip('str') + '</span><code>' + visible(item) + (item === '' ? "''" : '') + '</code></section>').join('') +
+      '</div><code class="result-value">' + esc(E.pyRepr(computed.result, {tuple:s.mode === 'partition'})) + '</code>';
+    const visual = '<div class="visual-header"><h2>' + (s.mode === 'join' ? '把字段送回一条文本' : '从一条文本得到多个部分') + '</h2><span class="pill">' +
+      (s.ran && computed.ok ? '返回 ' + resultType : '输入保持不变') + '</span></div>' + input + '<div class="selection-result" aria-live="polite">' + output + '</div>';
+    const summary = '<div class="rule-note"><p><strong>' + (s.mode === 'join' ? 'join 要求每一个元素都是字符串。' : s.mode === 'partition' ? 'partition 只在第一个分隔符处分成三部分。' : 'split 返回列表，每一项仍然是字符串。') +
+      '</strong></p><p>' + (s.mode === 'join' ? '数值先经 str() 或格式化变成字符串，才能参加连接。分隔符写在 join 前面。' : s.mode === 'partition' ? '分隔符会作为中间一项保留。找不到分隔符时，结果为（原文本、空串、空串）。' : '显式分隔符会保留相邻分隔符之间的空字段；省略参数时，连续空白作为一组处理。split 不会自动给每个字段做 strip 或数值转换。') +
+      '</p><p class="hint">' + (s.mode === 'split' ? 'maxsplit 表示最多拆分次数，不是结果项数；负数表示不限制。' : '␠ 是观察用的空格标记。') + '</p></div>';
+    return {controls,visual,code,summary};
+  };
+
+  V.query = function (s) {
+    const found = E.query(s.text, s.needle);
+    const info = E.inspect(s.probe);
+    const intValue = E.parseIntText(s.probe);
+    const chars = Array.from(s.text), width = Array.from(s.needle).length;
+    const selected = new Set();
+    if (width) found.positions.forEach(start => {for (let j = 0; j < width; j++) selected.add(start + j);});
+    const marked = chars.map((ch, i) => selected.has(i) ? '<mark>' + esc(ch) + '</mark>' : visible(ch)).join('');
+    const controls = textArea('查询的文本', 'query.text', s.text, 240) +
+      field('要查找的字符或子字符串', 'query.needle', s.needle, 50) +
+      '<div><span class="control-label">查什么？</span><div class="preset-row">' + button('泰国', 'query-needle', '泰国', false) + button('逗号', 'query-needle', ',', false) +
+      button('REFUND（未出现）', 'query-needle', 'REFUND', false) + '</div></div>' +
+      field('再检查一个输入字段', 'query.probe', s.probe, 70) +
+      '<div><span class="control-label">字段示例</span><div class="preset-row">' + ['128','299.90','泰国','SKU001TH','²'].map(v => button(esc(v), 'query-probe', v, false)).join('') + '</div></div>';
+    const metrics = '<div class="query-metrics">' +
+      valueBox('in · 是否存在', bool(found.contains), 'bool') +
+      valueBox('find · 首次位置', String(found.first), 'int') +
+      valueBox('count · 不重叠次数', String(found.count), 'int') + '</div>';
+    const rows = [['isdigit()',info.isdigit,'至少一个字符，且全部是数字字符'],['isalpha()',info.isalpha,'至少一个字符，且全部是字母或文字'],['isalnum()',info.isalnum,'至少一个字符，且全部是字母、文字或数值字符']];
+    const visual = '<div class="visual-header"><h2>“有没有”“在哪里”“多少次”是三个问题</h2><span class="pill">' + Array.from(s.text).length + ' 个字符</span></div><div class="raw-text-display query-text"><code>' +
+      (s.text ? marked : "''") + '</code></div>' + metrics +
+      (!width ? '<p class="status-note">空字符串位于每两个字符之间以及两端，因此 count 为字符数 + 1，find 为 0。</p>' : '') +
+      '<div class="probe-area"><h3>检查字段 <code>' + esc(repr(s.probe)) + '</code></h3><table class="checks-table"><thead><tr><th>方法</th><th>结果</th><th>判断范围</th></tr></thead><tbody>' +
+      rows.map(r => '<tr><td><code>' + r[0] + '</code></td><td class="' + (r[1] ? 'yes-value' : 'no-value') + '">' + bool(r[1]) + '</td><td>' + r[2] + '</td></tr>').join('') + '</tbody></table></div>' +
+      '<details class="detail-note"><summary>再看前后缀与数值转换</summary><div class="detail-body"><p><code>field.startswith(\'ORD-\')</code> → ' + bool(info.startsWithOrder) +
+      '</p><p><code>field.endswith(\'.csv\')</code> → ' + bool(info.endsWithCsv) + '</p><p><code>int(field)</code> → ' + esc(intValue.ok ? String(intValue.value) : intValue.error) +
+      '</p><p class="hint">“²”属于数字字符，isdigit() 为 True，但 int(\'²\') 仍会报错。字符判断不能替代完整的类型转换与业务校验。</p></div></details>';
+    const code = 'text = ' + repr(s.text) + '\nneedle = ' + repr(s.needle) +
+      '\nprint(needle in text)\nprint(text.find(needle))\nprint(text.count(needle))\n\nfield = ' + repr(s.probe) +
+      '\nprint(field.isdigit())\nprint(field.isalpha())\nprint(field.isalnum())';
+    const summary = '<div class="rule-note"><p><strong>根据需要的结果选择方法。</strong></p><p>in 返回 True / False；find 返回从 0 开始的首次位置，没找到返回 -1；count 统计不重叠的出现次数。</p><p>299.90 含小数点，所以 isdigit() 为 False，但仍能用 float() 转成金额。空字符串的三种字符判断均为 False。</p></div>';
+    return {controls,visual,code,summary};
+  };
+})();
+</script>
+  <script>/* Formatting changes the output text, while the original value stays numeric. */
+(function (root) {
+  'use strict';
+  root.StringLabViews = root.StringLabViews || {};
+
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+  const button = (label, action, value, pressed) => `<button type="button" data-action="${action}" data-value="${esc(value)}" aria-pressed="${pressed ? 'true' : 'false'}">${label}</button>`;
+  const outcome = value => typeof value === 'string' ? { ok: true, result: value } : value;
+  const modes = mode => `<div class="format-mode-control"><span class="control-label">选择观察内容</span><div class="segmented">${button('数值格式', 'format-mode', 'number', mode === 'number')}${button('字段对齐', 'format-mode', 'align', mode === 'align')}${button('代码与换行', 'format-mode', 'lines', mode === 'lines')}</div></div>`;
+
+  function integer(raw, minimum, maximum, label) {
+    const text = String(raw).trim();
+    const value = Number(text);
+    return /^\d+$/.test(text) && Number.isSafeInteger(value) && value >= minimum && value <= maximum
+      ? { ok: true, value }
+      : { ok: false, error: `本实验的${label}可填写 ${minimum}～${maximum} 的整数。` };
+  }
+
+  function numberView(s, E) {
+    const raw = s.value === undefined ? '1234567.8' : String(s.value);
+    const kind = ['fixed', 'grouped', 'percent'].includes(s.kind) ? s.kind : 'grouped';
+    const precision = integer(s.precision === undefined ? '2' : s.precision, 0, 4, '小数位数');
+    const parsed = E.parseFloatText(raw);
+    let result = null;
+    let error = parsed.ok ? precision.ok ? '' : precision.error : parsed.error;
+    if (!error) {
+      try { result = outcome(E.formatNumber(parsed.value, kind, precision.value)); }
+      catch (problem) { result = { ok: false, error: problem.message }; }
+      if (!result.ok) error = result.error;
+    }
+    const spec = `${kind === 'grouped' ? ',' : ''}.${precision.ok ? precision.value : '2'}${kind === 'percent' ? '%' : 'f'}`;
+    const controls = modes('number') +
+      `<div class="single-field"><label class="control-label" for="format-number">原始数值 value</label><input id="format-number" data-field="format.value" type="text" inputmode="decimal" value="${esc(raw)}" maxlength="60"></div>` +
+      `<div><span class="control-label">格式说明</span><div class="segmented">${button('小数 f', 'format-kind', 'fixed', kind === 'fixed')}${button('千分位 ,f', 'format-kind', 'grouped', kind === 'grouped')}${button('百分比 %', 'format-kind', 'percent', kind === 'percent')}</div></div>` +
+      `<div class="single-field"><label class="control-label" for="format-precision">保留几位小数</label><select id="format-precision" data-field="format.precision">${[0, 1, 2, 3, 4].map(n => `<option value="${n}"${precision.ok && precision.value === n ? ' selected' : ''}>${n} 位</option>`).join('')}</select></div>` +
+      `<div><span class="control-label">业务示例</span><div class="preset-row">${button('单价 29.9', 'format-preset', 'price', false)}${button('销售额 1234567.8', 'format-preset', 'sales', false)}${button('增长率 0.186', 'format-preset', 'growth', false)}</div></div>`;
+    const visual = `<div class="visual-header"><h2>数值 → 格式化文本</h2><span class="pill">原始数值保持不变</span></div>` +
+      `<div class="format-result-pair" aria-live="polite"><section class="format-value-box"><span class="control-label">value · float</span><code class="format-hero">${parsed.ok ? esc(E.pyRepr(parsed.value, { float: true })) : '等待有效输入'}</code></section><section class="format-value-box is-formatted"><span class="control-label">message · str</span><code class="format-hero">${!error ? esc(result.result) : '未生成'}</code></section></div>` +
+      (error ? `<div class="error-message" role="status">${esc(error)}</div>` : `<div class="format-expression"><code>f"{value:<strong>${esc(spec)}</strong>}"</code><span class="hint">${kind === 'percent' ? '先按百分比显示，再保留指定小数位。' : kind === 'grouped' ? '逗号用于千位分组，小数位数由点后数字指定。' : 'f 表示定点小数，点后数字指定小数位数。'}</span></div><p class="raw-value">文本的 Python 表示：<code>${esc(E.pyRepr(result.result))}</code></p>`);
+    const code = `value = float(${E.pyRepr(raw)})\nmessage = f"{value:${spec}}"\nprint(message)\nprint(value)`;
+    const summary = `<div class="rule-note"><p><strong>格式说明控制生成的字符串。</strong>金额显示两位小数，增长率显示百分比；变量 <code>value</code> 仍然保存原数值。</p><p>${kind === 'percent' ? '例如 0.186 表示 18.6%。显示百分号时，不要先手动把输入乘以 100。' : '保留小数位会按 Python 的格式化规则舍入。只为了展示金额时，不需要先改写原来的数值。'}</p></div>`;
+    return { controls, visual, code, summary };
+  }
+
+  function alignView(s, E) {
+    const text = s.text === undefined ? 'SKU-A01' : String(s.text);
+    const width = integer(s.width === undefined ? '14' : s.width, 0, 30, '最小宽度');
+    const direction = ['left', 'right', 'center'].includes(s.align) ? s.align : 'right';
+    const symbol = { left: '<', right: '>', center: '^' }[direction];
+    let result = null;
+    let error = width.ok ? '' : width.error;
+    if (Array.from(text).length > 30) error = '本实验最多输入 30 个字符。';
+    if (!error) {
+      try { result = outcome(E.align(text, width.value, direction)); }
+      catch (problem) { result = { ok: false, error: problem.message }; }
+      if (!result.ok) error = result.error;
+    }
+    const chars = !error ? Array.from(result.result) : [];
+    const originalLength = Array.from(text).length;
+    const controls = modes('align') +
+      `<div class="single-field"><label class="control-label" for="format-text">字段文本 text</label><input id="format-text" data-field="format.text" type="text" value="${esc(text)}" maxlength="60"></div>` +
+      `<div class="single-field"><label class="control-label" for="format-width">最小宽度 width</label><input id="format-width" data-field="format.width" type="text" inputmode="numeric" value="${esc(s.width === undefined ? '14' : s.width)}"></div>` +
+      `<div><span class="control-label">对齐方向</span><div class="segmented">${button('&lt; 左对齐', 'format-align', 'left', direction === 'left')}${button('&gt; 右对齐', 'format-align', 'right', direction === 'right')}${button('^ 居中', 'format-align', 'center', direction === 'center')}</div></div>`;
+    const visual = `<div class="visual-header"><h2>给字段留出最小宽度</h2><span class="pill">原文 ${originalLength} 个字符</span></div>` +
+      (error ? `<div class="error-message" role="status">${esc(error)}</div>` :
+        `<div class="format-alignment-scroll"><div class="format-character-grid" role="list" aria-label="格式化结果；圆点表示空格">${chars.map((char, i) => `<div class="format-character ${char === ' ' ? 'is-space' : ''}" role="listitem" aria-label="第 ${i + 1} 个字符：${char === ' ' ? '空格' : esc(char)}"><span class="format-cell-index">${i + 1}</span><span>${char === ' ' ? '·' : esc(char)}</span></div>`).join('') || '<span class="hint">空字符串，没有字符。</span>'}</div></div>` +
+        `<p class="hint">圆点 · 仅用于标出空格，实际字符串中保存的是空格。</p><div class="selection-result"><span class="result-title">生成的字符串 · 长度 ${chars.length}</span><code class="result-value">${esc(E.pyRepr(result.result))}</code></div>`);
+    const code = `text = ${E.pyRepr(text)}\nline = f"{text:${symbol}${width.ok ? width.value : '14'}}"\nprint(line)\nprint(len(line))`;
+    const summary = `<div class="rule-note"><p><strong>宽度是最小值，不是截断长度。</strong>${!error && originalLength > width.value ? `当前文本已有 ${originalLength} 个字符，比设置的 ${width.value} 更长，因此完整保留，结果长度仍为 ${originalLength}。` : '文本不够长时，Python 用空格补齐；文本更长时，完整保留。'}</p><p>文本字段常用左对齐，数值常用右对齐。Python 按字符数计算宽度；含中文时，终端上的视觉列宽可能不同。</p></div>`;
+    return { controls, visual, code, summary };
+  }
+
+  function linesView(s, E) {
+    const multiline = s.lineMode === 'newline';
+    const amount = outcome(E.formatNumber(299.9, 'fixed', 2)).result;
+    const parts = ['订单号：ORD-20260928-001', '市场：泰国', `金额：${amount}元`, '状态：PAID'];
+    const message = parts.join(multiline ? '\n' : '，');
+    const joiner = multiline ? '\\n' : '，';
+    const code = `order_id = "ORD-20260928-001"\nmarket = "泰国"\namount = 299.9\nstatus = "PAID"\n\nmessage = (\n  f"订单号：{order_id}${joiner}"\n  f"市场：{market}${joiner}"\n  f"金额：{amount:.2f}元${joiner}"\n  f"状态：{status}"\n)\nprint(message)`;
+    const controls = modes('lines') + `<div><span class="control-label">字符串中是否写入换行符</span><div class="segmented">${button('相邻 f-string 直接拼接', 'format-lines', 'adjacent', !multiline)}${button('显式加入 \\n', 'format-lines', 'newline', multiline)}</div></div>`;
+    const visual = `<div class="visual-header"><h2>源代码分行，输出会分行吗？</h2><span class="pill">message 中有 ${multiline ? 4 : 1} 行内容</span></div>` +
+      `<div class="format-output" aria-live="polite" aria-label="print 的输出"><span class="control-label">运行输出</span><div class="format-output-scroll">${message.split('\n').map((line, i) => `<div class="format-output-line"><span aria-hidden="true">${i + 1}</span><code>${esc(line)}</code></div>`).join('')}</div></div>` +
+      `<div class="selection-result"><span class="result-title">用 repr 查看字符串内部</span><code class="result-value">${esc(E.pyRepr(message))}</code></div>`;
+    const summary = `<div class="rule-note"><p><strong>${multiline ? '\\n 是字符串中的换行符。' : '括号内相邻的字符串会连接成一个字符串。'}</strong>${multiline ? 'print 显示这个字符串时，遇到换行符就进入下一行。源码中的反斜杠和 n 表示一个换行字符。' : '把源码分成多行是为了便于阅读，这些源码换行本身不会进入字符串。'}</p><p>这与三重引号字符串不同：三重引号可以直接保留写在字符串内部的换行。</p></div>`;
+    return { controls, visual, code, summary };
+  }
+
+  root.StringLabViews.format = function (state) {
+    const s = state || {};
+    const E = root.StringLabEngine;
+    if (s.mode === 'align') return alignView(s, E);
+    if (s.mode === 'lines') return linesView(s, E);
+    return numberView(s, E);
+  };
+})(window);
+</script>
+  <script>/* Reveal the order transformation only after the relevant step is executed. */
+(function (root) {
+  'use strict';
+  root.StringLabViews = root.StringLabViews || {};
+
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+  const examples = {
+    first: ' ORD-20260928-001 | 泰国 | 无线耳机 | 29.90 | 8 | 0.10 | paid ',
+    second: ' ORD-20260929-002 | 印尼 | 蓝牙音箱 | 45.50 | 3 | 0.00 | shipped ',
+    inquiry: ' INQ-20260929-018 | 越南 | 咖啡机 | 79.90 | 18 | 0.05 | pending '
+  };
+  const labels = ['原始文本', '清理首尾', '拆分字段', '转换与打包', '业务计算', '生成摘要'];
+  const fields = ['订单编号', '目标市场', '商品', '单价', '数量', '折扣率', '状态'];
+  const variableNames = ['order_id', 'market', 'product', 'unit_price', 'quantity', 'discount_rate', 'status'];
+  const variableTypes = ['str', 'str', 'str', 'float', 'int', 'float', 'str'];
+  const resultText = value => typeof value === 'string' ? value : value.result;
+
+  function pythonRaw(raw, E) {
+    const parts = raw.split('|');
+    if (parts.length === 7) {
+      const head = parts.slice(0, 3).join('|') + '|';
+      const tail = parts.slice(3).join('|');
+      return `raw_order = (\n  ${E.pyRepr(head)}\n  ${E.pyRepr(tail)}\n)`;
+    }
+    return `raw_order = ${E.pyRepr(raw)}`;
+  }
+
+  function codeAt(raw, stage, inquiry, E) {
+    let code = pythonRaw(raw, E);
+    if (stage === 0) return code + '\nprint(raw_order)';
+    code += '\ncleaned_order = raw_order.strip()';
+    if (stage === 1) return code + '\nprint(cleaned_order)';
+    code += '\nfields = cleaned_order.split("|")\norder_id = fields[0].strip()\nmarket = fields[1].strip()\nproduct = fields[2].strip()\nprice_text = fields[3].strip()\nquantity_text = fields[4].strip()\ndiscount_text = fields[5].strip()\nraw_status = fields[6].strip()\nclean_fields = [\n  order_id, market, product, price_text,\n  quantity_text, discount_text, raw_status\n]';
+    if (stage === 2) return code + '\nprint(fields)\nprint(clean_fields)';
+    code += '\n\nunit_price = float(price_text)\nquantity = int(quantity_text)\ndiscount_rate = float(discount_text)\nstatus = raw_status.upper()\norder = (\n  order_id, market, product,\n  unit_price, quantity, discount_rate, status\n)';
+    if (stage === 3) return code + '\nprint(order)';
+    code += '\n\nsubtotal = unit_price * quantity\ndiscount_amount = subtotal * discount_rate\npayable = subtotal - discount_amount';
+    if (stage === 4) return code + '\nprint(f"{subtotal:,.2f}", f"{discount_amount:,.2f}", f"{payable:,.2f}")';
+    code += `\n\nsummary = (\n  "${inquiry ? '客户询价摘要' : '跨境订单摘要'}\\n"\n  f"${inquiry ? '询价编号' : '订单编号'}：{order_id}\\n"\n  f"目标市场：{market}\\n"\n  f"商品：{product}\\n"\n  f"数量：{quantity} 件\\n"\n  f"商品原价：{subtotal:,.2f} 元\\n"\n  f"优惠金额：{discount_amount:,.2f} 元\\n"\n  f"${inquiry ? '报价金额' : '应付金额'}：{payable:,.2f} 元\\n"\n  f"状态：{status}"\n)\nprint(summary)`;
+    return code;
+  }
+
+  function fieldTable(originalFields, cleanFields, E) {
+    return `<div class="table-scroll"><table class="data-table pipeline-fields"><thead><tr><th>字段</th><th>split 后 · str</th><th>逐项 strip 后 · str</th></tr></thead><tbody>${originalFields.map((value, i) => `<tr><th scope="row"><code>[${i}]</code> ${esc(fields[i] || '额外字段')}</th><td><code>${esc(E.pyRepr(value))}</code></td><td><code>${esc(E.pyRepr(cleanFields[i]))}</code></td></tr>`).join('')}</tbody></table></div>`;
+  }
+
+  function tupleCards(order, E) {
+    return `<div class="pipeline-record-grid">${order.map((value, i) => `<section class="pipeline-field-card${[3, 4, 5, 6].includes(i) ? ' changed' : ''}"><div><span>${esc(fields[i])}</span><span class="pipeline-type">${variableTypes[i]}</span></div><code>${esc(E.pyRepr(value, { float: [3, 5].includes(i) }))}</code><span class="hint">${variableNames[i]}</span></section>`).join('')}</div>`;
+  }
+
+  root.StringLabViews.pipeline = function (state) {
+    const s = state || {};
+    const E = root.StringLabEngine;
+    const raw = s.raw === undefined ? examples.first : String(s.raw);
+    const outcome = E.orderPipeline(raw);
+    const errorStage = outcome.errorStage == null ? outcome.ok ? null : outcome.stage : outcome.errorStage;
+    const requestedStage = Number.isInteger(s.stage) ? Math.max(0, Math.min(5, s.stage)) : 0;
+    const stage = errorStage == null ? requestedStage : Math.min(requestedStage, errorStage);
+    const failed = !outcome.ok && errorStage != null && requestedStage >= errorStage;
+    const cleanFields = outcome.cleanedFields || outcome.cleanFields || [];
+    const inquiry = (cleanFields[0] || E.pyStrip(raw)).startsWith('INQ-');
+    const amountLabel = inquiry ? '报价金额' : '应付金额';
+    const done = stage === 5 && !failed;
+    const controls = `<div class="pipeline-input-control"><label class="control-label" for="pipeline-raw">外部系统传来的原始文本</label><textarea id="pipeline-raw" data-field="pipeline.raw" rows="3" maxlength="600" spellcheck="false">${esc(raw)}</textarea><p class="hint">可以改变空格、状态或数值；编辑文本后从第 0 步重新观察。</p></div>` +
+      `<div><span class="control-label">换一条业务记录</span><div class="preset-row">${[['first', '第一条订单'], ['second', '第二条订单'], ['inquiry', '课后：询价单']].map(([value, title]) => `<button type="button" data-action="pipeline-preset" data-value="${value}" aria-pressed="${raw === examples[value]}">${title}</button>`).join('')}</div></div>` +
+      `<div><span class="control-label">逐步执行</span><div class="pipeline-action-row"><button type="button" class="btn btn-primary" data-action="pipeline-step"${done || failed ? ' disabled' : ''}>${done ? '已完成' : failed ? '请修改输入' : '下一步'}</button><button type="button" class="btn" data-action="pipeline-all"${done || failed ? ' disabled' : ''}>全部执行</button><button type="button" class="btn btn-subtle" data-action="pipeline-reset">从头开始</button></div></div>`;
+    const stepper = `<ol class="pipeline-steps" aria-label="订单处理步骤">${labels.map((label, i) => `<li class="${i < stage ? 'is-done' : i === stage ? failed ? 'is-error' : 'is-current' : 'is-pending'}"${i === stage ? ' aria-current="step"' : ''}><span>${i}</span>${label}</li>`).join('')}</ol>`;
+    let visual = `<div class="visual-header"><h2>第 ${stage} 步 · ${labels[stage]}</h2><span class="pill${failed ? ' changed' : ''}">${failed ? '在本步停止' : done ? '处理完成' : `已执行 ${stage} / 5 步`}</span></div>${stepper}`;
+    if (stage === 0) {
+      visual += `<div class="pipeline-text-block"><span class="control-label">raw_order · str · ${Array.from(raw).length} 个字符</span><pre>${esc(E.pyRepr(raw))}</pre></div><p class="hint">这是一整个字符串。源码可以分行书写，字段之间的竖线仍然是字符串中的字符。</p>`;
+    } else if (stage === 1) {
+      visual += `<div class="result-pair"><section class="result-cell"><span class="control-label">原始文本 raw_order</span><pre>${esc(E.pyRepr(raw))}</pre></section><section class="result-cell"><span class="control-label">清理结果 cleaned_order</span><pre>${esc(E.pyRepr(outcome.cleaned))}</pre></section></div><p class="hint">只清理整条文本首尾的空白，字段之间的空格仍然保留。</p>`;
+    } else if (stage === 2) {
+      visual += fieldTable(outcome.fields || [], cleanFields, E);
+      if (!failed) visual += '<p class="hint">拆分并清理后，7 个字段仍然都是字符串。金额和数量还不能直接参加业务计算。</p>';
+    } else if (stage === 3) {
+      if (!failed && outcome.order) {
+        visual += tupleCards(outcome.order, E) + `<div class="selection-result"><span class="result-title">order · tuple</span><code class="result-value">${esc(outcome.orderRepr || E.pyRepr(outcome.order, { tuple: true, floatIndices: [3, 5] }))}</code></div>`;
+      } else {
+        visual += fieldTable(outcome.fields || [], cleanFields, E);
+      }
+    } else if (stage === 4 && !failed) {
+      const money = value => resultText(E.formatNumber(value, 'grouped', 2));
+      visual += `<div class="pipeline-money-grid">${[["商品原价", outcome.subtotal, '单价 × 数量'], ['优惠金额', outcome.discountAmount, '商品原价 × 折扣率'], [amountLabel, outcome.payable, '商品原价 − 优惠金额']].map(([label, value, formula]) => `<section class="pipeline-money-card"><span>${label}</span><strong>${esc(money(value))}<small> 元</small></strong><code>${formula}</code></section>`).join('')}</div><p class="hint">这里按两位小数展示结果；计算变量仍保留浮点数值。</p>`;
+    } else if (stage === 5 && !failed) {
+      const money = value => resultText(E.formatNumber(value, 'grouped', 2));
+      const order = outcome.order;
+      const summary = `${inquiry ? '客户询价摘要' : '跨境订单摘要'}\n${inquiry ? '询价编号' : '订单编号'}：${order[0]}\n目标市场：${order[1]}\n商品：${order[2]}\n数量：${order[4]} 件\n商品原价：${money(outcome.subtotal)} 元\n优惠金额：${money(outcome.discountAmount)} 元\n${amountLabel}：${money(outcome.payable)} 元\n状态：${order[6]}`;
+      visual += `<div class="pipeline-summary" aria-live="polite"><span class="control-label">summary · str</span><pre>${esc(summary)}</pre></div>`;
+    }
+    if (failed) visual += `<div class="error-message" role="status"><strong>${esc(outcome.error)}</strong><br>后续步骤尚未执行。修改原始文本后，可以重新开始。</div>`;
+    const explanations = [
+      '先识别一条文本中有哪些业务字段：编号、市场、商品、单价、数量、折扣率和状态。',
+      'strip 返回清理后的字符串。将结果赋给 cleaned_order，raw_order 仍然保存原始输入。',
+      '先用竖线确定字段边界，再分别清理字段首尾。split 返回列表，列表里的字段仍是字符串。',
+      '单价与折扣率转成 float，数量转成 int，状态转成大写；再按固定字段顺序打包成元组。',
+      '先计算商品原价，再计算优惠金额，最后相减得到应付或报价金额。折扣率 0.10 表示优惠 10%。',
+      'f-string 把记录与计算结果组织成可读文本。金额格式一致、每个信息项独占一行，便于人工核对。'
+    ];
+    const summary = `<div class="rule-note"><p><strong>${failed ? '先解决当前步骤的问题。' : labels[stage] + '：'}</strong>${explanations[stage]}</p>${stage === 2 ? '<p>本实验约定每条记录有 7 个字段。字段数检查是本实验的输入要求；它与 Python 的类型转换异常不同。</p>' : ''}</div>`;
+    return { controls, visual, code: codeAt(raw, stage, inquiry, E), summary };
+  };
+})(window);
+</script>
+  <script>(function () {
+  'use strict';
+  const C = window.StringLabContent;
+  const E = window.StringLabEngine;
+  const V = window.StringLabViews;
+  const STORAGE = 'classroom-whiteboard-slide4-v1';
+  const examples = {
+    first:' ORD-20260928-001 | 泰国 | 无线耳机 | 29.90 | 8 | 0.10 | paid ',
+    second:' ORD-20260929-002 | 印尼 | 蓝牙音箱 | 45.50 | 3 | 0.00 | shipped ',
+    inquiry:' INQ-20260929-018 | 越南 | 咖啡机 | 79.90 | 18 | 0.05 | pending '
+  };
+  let saved = {};
+  try {saved = JSON.parse(localStorage.getItem(STORAGE) || '{}') || {};} catch (_) {}
+  const known = id => C.modules.some(m => m.id === id);
+  const route = () => location.hash.slice(1).split('?')[0];
+  let current = known(route()) ? route() : known(saved.lastLesson) ? saved.lastLesson : C.modules[0].id;
+  const answers = {};
+  C.modules.forEach(m => {
+    const v = saved.answers && saved.answers[m.id];
+    if (Number.isInteger(v) && v >= 0 && v < m.quiz.options.length) answers[m.id] = v;
+  });
+  function initial(id) {
+    return {
+      sequence:{dataset:'markets',mode:'index',index:'0',start:'0',stop:'2',needle:'泰国'},
+      tuple:{mode:'unpack',count:'4',ran:false,action:'assign',amount:'329.90',singleComma:true},
+      clean:{raw:'  paid  ',operations:['strip','upper'],cursor:0,target:'new'},
+      split:{mode:'split',raw:'ORD-20260928-001, 泰国, 299.90, paid',separator:'comma',maxsplit:'-1',joinSep:'comma',joinNumeric:false,ran:false},
+      query:{text:'ORD-20260928-001,泰国,299.90,PAID',needle:'泰国',probe:'299.90'},
+      format:{mode:'number',value:'1234567.8',kind:'grouped',precision:'2',width:'14',align:'right',text:'SKU-A01',lineMode:'adjacent'},
+      pipeline:{raw:examples.first,stage:0}
+    }[id];
+  }
+  const states = Object.fromEntries(C.modules.map(m => [m.id, initial(m.id)]));
+  const openedQuizzes = new Set();
+  const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  let activeCode = '', toastTimer, projecting = false;
+  function save() {
+    try {localStorage.setItem(STORAGE, JSON.stringify({lastLesson:current,answers}));} catch (_) {}
+  }
+  function toast(message) {
+    const node = document.getElementById('toast');
+    node.textContent = message;
+    node.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => node.classList.remove('visible'), 2400);
+  }
+  function preserveFocus(callback) {
+    const active = document.activeElement;
+    let selector = '', range;
+    if (active && active.dataset.field) selector = '[data-field="' + active.dataset.field + '"]';
+    else if (active && active.dataset.action) {
+      selector = '[data-action="' + active.dataset.action + '"]';
+      if (active.dataset.value !== undefined) selector += '[data-value="' + CSS.escape(active.dataset.value) + '"]';
+    }
+    try {if (active && active.selectionStart !== null) range = [active.selectionStart,active.selectionEnd];} catch (_) {}
+    callback();
+    const next = selector && document.querySelector(selector);
+    if (next && !next.disabled) {
+      next.focus({preventScroll:true});
+      if (range) {try {next.setSelectionRange(range[0],range[1]);} catch (_) {}}
+    }
+  }
+  function highlighted(code) {
+    function line(source) {
+      const pattern = /('[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"|#.*|\b(?:None|True|False|import|del|print|return|def|in)\b|\b\d+(?:\.\d+)?\b)/g;
+      let html = '', position = 0, match;
+      while ((match = pattern.exec(source))) {
+        html += esc(source.slice(position,match.index));
+        const token = match[0], type = token[0] === '#' ? 'comment' : /^['"]/.test(token) ? 'str' : /^\d/.test(token) ? 'num' : 'kw';
+        html += '<span class="token-' + type + '">' + esc(token) + '</span>';
+        position = match.index + token.length;
+      }
+      return html + esc(source.slice(position));
+    }
+    return code.split('\n').map((text,i) => '<span class="code-line"><span class="line-no" aria-hidden="true">' + (i+1) + '</span><span class="line-text">' + (line(text) || ' ') + '</span></span>').join('');
+  }
+  function quiz(module) {
+    const q = module.quiz, answer = answers[module.id], answered = Number.isInteger(answer), right = answer === q.answer;
+    return '<details class="check-panel" data-quiz-panel="' + module.id + '" ' + (openedQuizzes.has(module.id) ? 'open' : '') + '><summary>检验理解' +
+      (answered ? right ? ' · 已答对' : ' · 再想一想' : '') + '</summary><div class="check-content"><p class="check-question">' + esc(q.prompt) +
+      '</p>' + (q.code ? '<pre class="quiz-code">' + esc(q.code) + '</pre>' : '') + '<div class="quiz-options" role="group" aria-label="练习选项">' +
+      q.options.map((option,i) => '<button type="button" class="quiz-option" data-action="quiz-answer" data-value="' + i + '" aria-pressed="' + (answer === i) +
+        '"><span class="quiz-letter">' + String.fromCharCode(65+i) + '</span><span>' + esc(option.label) + '</span></button>').join('') +
+      '</div>' + (answered ? '<div class="quiz-feedback ' + (right ? '' : 'incorrect') + '" role="status"><strong>' + (right ? '判断正确。' : '再想一想。') + '</strong>' + esc(q.options[answer].explanation) + '</div>' : '') + '</div></details>';
+  }
+  function renderNav() {
+    document.getElementById('lesson-nav').innerHTML = C.modules.map((m,i) => '<a href="#' + m.id + '" ' + (m.id === current ? 'aria-current="page"' : '') + '><span class="nav-index">' +
+      String(i+1).padStart(2,'0') + '</span><span>' + esc(m.title) + '</span>' + (answers[m.id] === m.quiz.answer ? '<span class="nav-done" aria-label="练习已答对">✓</span>' : '') + '</a>').join('');
+    const count = C.modules.filter(m => answers[m.id] === m.quiz.answer).length;
+    document.getElementById('quiz-progress').textContent = count ? '练习答对 ' + count + ' / ' + C.modules.length : C.modules.length + ' 个动手实验';
+  }
+  function renderLesson() {
+    const module = C.modules.find(m => m.id === current);
+    const view = V[current](states[current]);
+    activeCode = view.code;
+    document.getElementById('lesson').innerHTML = '<div class="lesson-heading"><div><p class="source-tag">' + esc(module.pages) +
+      '</p><h1 id="lesson-title" tabindex="-1">' + esc(module.title) + '</h1><p class="lesson-question">' + esc(module.question) +
+      '</p></div><button type="button" class="btn btn-subtle" data-action="reset-experiment">重置实验</button></div>' +
+      '<div class="workbench"><section class="control-panel" aria-label="实验操作">' + view.controls + '</section><section class="visual-panel" aria-label="可视化结果">' + view.visual + '</section></div>' +
+      '<div class="evidence"><section class="rule-panel" aria-label="理解原理">' + view.summary + '</section><section class="code-panel" aria-label="对应的 Python 代码"><div class="code-toolbar"><span>对应的 Python</span><button type="button" class="btn btn-subtle" data-action="copy-code">复制代码</button></div><pre><code>' +
+      highlighted(view.code) + '</code></pre></section></div>' + (view.extra || '') +
+      '<div class="try-next"><strong>再试一步</strong><span>' + esc(module.try) + '</span></div>' + quiz(module);
+    const detail = document.querySelector('[data-quiz-panel]');
+    detail.addEventListener('toggle',() => {if (detail.open) openedQuizzes.add(module.id); else openedQuizzes.delete(module.id);});
+  }
+  function setProjection(value) {
+    projecting = value;
+    document.body.classList.toggle('projecting',value);
+    const button = document.getElementById('projection-toggle');
+    button.textContent = value ? '退出投影' : '投影模式';
+    button.setAttribute('aria-pressed',String(value));
+  }
+  function navigate() {
+    if (!known(route())) return;
+    current = route();
+    renderNav(); renderLesson(); save();
+    document.getElementById('lesson-title').focus({preventScroll:true});
+    if (window.innerWidth < 901) document.getElementById('lesson').scrollIntoView({block:'start'});
+  }
+  async function copyCode() {
+    try {
+      if (!navigator.clipboard || !window.isSecureContext) throw Error('fallback');
+      await navigator.clipboard.writeText(activeCode); toast('Python 代码已复制');
+    } catch (_) {
+      const area = document.createElement('textarea');
+      area.value = activeCode; area.setAttribute('readonly',''); area.style.cssText = 'position:fixed;left:-9999px;top:0';
+      document.body.appendChild(area); area.select();
+      let success = false;
+      try {success = document.execCommand('copy');} catch (_) {}
+      area.remove();
+      toast(success ? 'Python 代码已复制' : '浏览器未允许自动复制，请选中代码后复制。');
+    }
+  }
+  document.addEventListener('click',event => {
+    if (event.target.closest('#projection-toggle')) {setProjection(!projecting); return;}
+    const button = event.target.closest('[data-action]');
+    if (!button || button.disabled) return;
+    const action = button.dataset.action, value = button.dataset.value;
+    if (action === 'copy-code') {copyCode(); return;}
+    preserveFocus(() => {
+      const s = states[current];
+      switch (action) {
+        case 'reset-experiment': states[current] = initial(current); break;
+        case 'sequence-dataset': s.dataset = value; s.mode = 'index'; s.index = '0'; s.start = '0'; s.stop = '2'; break;
+        case 'sequence-mode': s.mode = value; break;
+        case 'sequence-preset':
+          s.dataset = 'order'; s.mode = 'slice';
+          [s.start,s.stop] = value === 'date' ? ['4','12'] : value === 'serial' ? ['13',''] : ['','3']; break;
+        case 'tuple-mode': s.mode = value; s.ran = false; break;
+        case 'tuple-count': s.count = value; s.ran = false; break;
+        case 'tuple-action': s.action = value; s.ran = false; break;
+        case 'tuple-comma': s.singleComma = value === 'true' || value === 'yes' || value === 'comma'; break;
+        case 'tuple-run': s.ran = true; break;
+        case 'clean-operation':
+          s.operations = s.operations.includes(value) ? s.operations.filter(op => op !== value) : s.operations.concat(value); s.cursor = 0; break;
+        case 'clean-step': s.cursor = Math.min(s.operations.length,s.cursor+1); break;
+        case 'clean-all': s.cursor = s.operations.length; break;
+        case 'clean-preset':
+          s.raw = value === 'sku' ? '  sku 001-th  ' : '  paid  ';
+          s.operations = value === 'sku' ? ['strip','compact','upper'] : ['strip','upper']; s.cursor = 0; break;
+        case 'split-mode':
+          s.mode = value; s.ran = false;
+          if (value === 'partition') {s.raw = 'ORD-001:客户备注:17:00后送达'; s.separator = 'colon';}
+          break;
+        case 'split-preset':
+          s.ran = false;
+          if (value === 'note') {s.raw = 'ORD-001:客户备注:17:00后送达'; s.separator = 'colon';}
+          else if (value === 'spaces') {s.raw = '  泰国   越南  新加坡  '; s.separator = s.mode === 'partition' ? 'space' : 'whitespace';}
+          else {s.raw = 'ORD-20260928-001, 泰国, 299.90, paid'; s.separator = 'comma';}
+          break;
+        case 'join-type': s.joinNumeric = value === 'number'; s.ran = false; break;
+        case 'split-run': s.ran = true; break;
+        case 'query-needle': s.needle = value; break;
+        case 'query-probe': s.probe = value; break;
+        case 'format-mode': s.mode = value; break;
+        case 'format-kind': s.kind = value; break;
+        case 'format-align': s.align = value; break;
+        case 'format-lines': s.lineMode = value; break;
+        case 'format-preset':
+          s.mode = 'number';
+          [s.value,s.kind,s.precision] = value === 'price' ? ['29.9','fixed','2'] : value === 'growth' ? ['0.186','percent','1'] : ['1234567.8','grouped','2']; break;
+        case 'pipeline-preset': s.raw = examples[value] || examples.first; s.stage = 0; break;
+        case 'pipeline-step': {const result = E.orderPipeline(s.raw); s.stage = Math.min(result.ok ? 5 : result.errorStage, s.stage + 1); break;}
+        case 'pipeline-all': {const result = E.orderPipeline(s.raw); s.stage = result.ok ? 5 : result.errorStage; break;}
+        case 'pipeline-reset': s.stage = 0; break;
+        case 'quiz-answer': answers[current] = Number(value); openedQuizzes.add(current); save(); renderNav(); break;
+        case 'reset-quizzes': Object.keys(answers).forEach(key => delete answers[key]); save(); renderNav(); toast('本讲练习记录已清除'); break;
+        default: return;
+      }
+      renderLesson();
+    });
+  });
+  function updateField(event) {
+    const field = event.target.dataset.field;
+    if (!field) return;
+    const [id,key] = field.split('.');
+    if (!states[id]) return;
+    preserveFocus(() => {
+      states[id][key] = event.target.value;
+      if (id === 'clean' && key === 'raw') states[id].cursor = 0;
+      if (id === 'split' || id === 'tuple') states[id].ran = false;
+      if (id === 'pipeline') states[id].stage = 0;
+      renderLesson();
+    });
+  }
+  document.addEventListener('input',event => {if (event.target.tagName !== 'SELECT') updateField(event);});
+  document.addEventListener('change',event => {if (event.target.tagName === 'SELECT') updateField(event);});
+  document.addEventListener('keydown',event => {if (event.key === 'Escape') setProjection(false);});
+  window.addEventListener('hashchange',navigate);
+  renderNav(); renderLesson(); save();
+})();
+</script>
+</body>
+</html>

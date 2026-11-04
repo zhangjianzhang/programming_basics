@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="通过订单文件，逐步观察 Python 文件路径、安全关闭、读取位置、文本转换、覆盖追加与报告核验。">
+  <meta name="color-scheme" content="light">
+  <title>文件与报告实验室｜Python 第八讲</title>
+  <style>:root {
+  --bg:#f2f5fa; --surface:#fff; --ink:#17283d; --muted:#536477;
+  --accent:#245fc4; --accent-ink:#fff; --selected:#e4edfc; --line:#d6dfeb;
+  --changed:#6d4c00; --changed-bg:#fff0c9; --error:#a32d32; --error-bg:#fff0f0;
+  --soft:#f6f8fc; --code-bg:#eef3fa; --code-ink:#17314d;
+  --token-str:#236242; --token-kw:#754b9a; --token-num:#9a4a0f;
+  --radius:10px; --tile-radius:12px; --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono","PingFang SC","Microsoft YaHei",monospace;
+  font-family:var(--font); color:var(--ink); font-synthesis:none; font-size:17px; color-scheme:light;
+}
+* {box-sizing:border-box}
+body {margin:0;background:var(--bg);color:var(--ink);line-height:1.7;min-width:320px}
+button,input,select {font:inherit;color:inherit}
+button,summary,a,input,select {-webkit-tap-highlight-color:transparent}
+button {cursor:pointer}
+button:disabled {cursor:default;opacity:.5}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+a {color:var(--accent);text-decoration-thickness:1px;text-underline-offset:4px}
+h1,h2,h3,p {margin:0}
+button,input,select {border-radius:var(--radius)}
+button {transition:background-color .15s,border-color .15s}
+button:hover:not(:disabled) {filter:brightness(.98)}
+code,pre,.mono {font-family:var(--mono)}
+code {font-size:.95em}
+.skip-link {position:fixed;left:16px;top:-100px;z-index:30;padding:12px 20px;background:var(--surface)}
+.skip-link:focus {top:10px}
+.topbar {display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:92px;padding:18px 36px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand {display:flex;gap:13px;align-items:center;color:var(--ink);text-decoration:none;font-size:21px;font-weight:750;line-height:1.25;white-space:nowrap}
+.brand small {display:block;font-weight:500;color:var(--muted);font-size:12px;letter-spacing:.06em;margin-top:7px}
+.brand-mark {display:flex;align-items:center;justify-content:center;gap:2px;color:var(--accent);font:700 36px/1 var(--mono);width:48px;height:48px;background:var(--selected);border-radius:12px}
+.brand-mark b {font-weight:500}
+.top-actions {display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.theme-options {display:flex;gap:5px;padding:4px;background:var(--soft);border:1px solid var(--line);border-radius:12px}
+.theme-options button {display:flex;align-items:center;gap:8px;min-height:42px;padding:7px 12px;background:transparent;border:1px solid transparent;font-size:14px;white-space:nowrap}
+.theme-options button[aria-pressed=true] {background:var(--surface);border-color:var(--line);font-weight:700}
+.theme-dot {width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.2)}
+.dot-a {background:#245fc4}.dot-b {background:#086a5b}.dot-c {background:#173a58;outline:1px solid #83d8f3}
+.btn {display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:9px 17px;border:1px solid var(--line);background:var(--surface);font-size:15px;font-weight:600;line-height:1.5;text-align:center}
+.btn-primary {background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-subtle {background:transparent;color:var(--muted)}
+.btn-small {font-size:13px;padding:7px 12px;min-height:38px}
+.shell {display:grid;grid-template-columns:218px minmax(0,1fr);max-width:1580px;margin:auto}
+.sidebar {padding:36px 22px 26px 28px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:29px}
+.course-name span {font-size:13px;color:var(--muted)}
+.course-name strong {display:block;font-size:22px;line-height:1.5;font-weight:650;margin-top:8px;letter-spacing:-.03em}
+.lesson-nav {display:flex;flex-direction:column;gap:9px}
+.lesson-nav a {position:relative;display:flex;gap:13px;align-items:center;min-height:48px;padding:10px 12px;text-decoration:none;color:var(--muted);font-size:16px;border-radius:7px}
+.lesson-nav a[aria-current=page] {background:var(--selected);color:var(--accent);font-weight:700}
+.nav-index {font:500 13px/1 var(--mono);opacity:.8}
+.nav-done {margin-left:auto;font-size:14px;color:var(--accent)}
+.sidebar-bottom {margin-top:auto;padding-top:36px;color:var(--muted);font-size:13px}
+.progress-note {display:block;margin-top:12px;font-size:12px}
+.lesson {min-width:0;padding:31px 34px 38px}
+.lesson-heading {display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}
+.source-tag {color:var(--muted);font-size:13px;margin-bottom:7px}
+h1 {font-size:32px;line-height:1.35;font-weight:750;letter-spacing:-.035em}
+.lesson-question {font-size:17px;line-height:1.7;color:var(--muted);margin-top:10px;max-width:800px}
+.lesson-heading>.btn {flex-shrink:0;margin-top:7px}
+.workbench {display:grid;grid-template-columns:minmax(225px,.72fr) minmax(0,2.4fr);gap:20px;align-items:stretch}
+.control-panel {display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);padding:22px;border-radius:var(--radius);min-width:0}
+.visual-panel {min-width:0;display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:25px 25px 22px}
+.control-label {display:block;font-size:14px;font-weight:700;line-height:1.5;margin-bottom:8px}
+.hint {font-size:13px;color:var(--muted);line-height:1.75}
+.field-row {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.field-row label {font-size:13px;display:flex;flex-direction:column;gap:5px;color:var(--muted)}
+.field-row input {width:100%;min-height:46px;border:1px solid var(--line);background:var(--soft);font-family:var(--mono);font-size:18px;padding:7px 9px;color:var(--ink)}
+.single-field input,.single-field select,.control-panel select,.control-panel>input {width:100%;min-height:46px;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.segmented {display:flex;gap:5px;flex-wrap:wrap}
+.segmented button {min-height:42px;padding:8px 12px;flex:1 0 auto;background:var(--soft);border:1px solid var(--line);font-size:14px;line-height:1.4}
+.segmented button[aria-pressed=true],.segmented .is-active,.segmented .active {color:var(--accent);border-color:var(--accent);background:var(--selected);font-weight:700}
+.action-stack {display:flex;flex-direction:column;gap:8px}
+.action-stack .btn {width:100%;justify-content:flex-start;font-size:14px}
+.action-stack .btn[aria-pressed=true] {color:var(--accent);border-color:var(--accent);background:var(--selected)}
+.preset-row {display:flex;gap:6px;flex-wrap:wrap}
+.preset-row button {border:1px solid var(--line);background:var(--surface);padding:6px 10px;min-height:38px;font-size:13px}
+.preset-row button:hover {border-color:var(--accent)}
+.control-panel hr {border:0;border-top:1px solid var(--line);margin:0}
+.visual-header {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.visual-header h2 {font-size:17px;font-weight:650;line-height:1.4}
+.visual-header code {font-size:17px;font-weight:650}
+.pill {font-size:12px;line-height:1.4;padding:5px 8px;border-radius:5px;background:var(--soft);color:var(--muted)}
+.pill.changed {background:var(--changed-bg);color:var(--changed)}
+.rail-scroll {overflow-x:auto;padding:6px 2px 7px;max-width:100%}
+.list-rail {display:flex;gap:8px;align-items:stretch;min-width:min-content;padding:8px 0}
+.list-tile {display:flex;flex:1 0 90px;min-width:0;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:var(--tile-radius);background:var(--soft);position:relative;text-align:center;overflow:hidden}
+.pos-index,.neg-index {font-family:var(--mono);font-size:13px;line-height:1.4;padding:7px 7px 6px;color:var(--muted);width:100%;background:var(--surface)}
+.pos-index {border-bottom:1px solid var(--line)}
+.neg-index {border-top:1px solid var(--line)}
+.tile-value {display:flex;align-items:center;justify-content:center;flex:1;padding:17px 9px;min-height:70px;font-size:17px;font-weight:650;white-space:nowrap}
+.list-tile.selected {border:2px solid var(--accent);background:var(--selected)}
+.list-tile.selected .pos-index,.list-tile.selected .neg-index {background:var(--selected);color:var(--accent)}
+.list-tile.changed {border-color:var(--changed);background:var(--changed-bg)}
+.list-tile.changed .pos-index {background:var(--changed-bg);color:var(--changed)}
+.list-tile.stop {border-style:dashed;border-color:var(--muted)}
+.take-order {font-size:11px;font-weight:650;color:var(--accent);padding:3px 5px 5px}
+.stop-flag {font-size:11px;padding:3px 5px 5px;color:var(--muted)}
+.list-legend {display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px}
+.list-legend span {display:flex;gap:6px;align-items:center}
+.legend-swatch {display:inline-block;width:11px;height:11px;border:1px solid var(--accent);background:var(--selected)}
+.sublist {display:flex;gap:5px;align-items:center;padding:0 5px;font-size:14px;font-family:var(--mono)}
+.sublist-item {padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:4px;white-space:nowrap;font-family:var(--font)}
+.list-tile.nested {min-width:180px;flex:1.5 0 180px}
+.empty-list {font:22px/1.5 var(--mono);padding:20px;color:var(--muted);background:var(--soft);border:1px dashed var(--line);border-radius:var(--radius);width:100%}
+.selection-result {border-top:1px solid var(--line);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.result-title {font-size:14px;color:var(--muted);font-weight:500}
+.result-value {font-size:18px;line-height:1.6;color:var(--accent);overflow-wrap:anywhere}
+.path {display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.path b {border:1px solid var(--line);border-radius:5px;min-width:28px;padding:1px 6px;text-align:center;background:var(--surface);color:var(--accent)}
+.result-pair {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.result-cell {min-width:0;padding:15px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);font-size:14px}
+.result-cell h3,.result-cell strong {font-size:14px;display:block;margin-bottom:7px}
+.result-cell code,.result-cell pre {display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin:0}
+.compare-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.comparison {min-width:0;display:flex;flex-direction:column;gap:12px}
+.comparison+ .comparison {border-left:1px solid var(--line);padding-left:20px}
+.comparison h3 {font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)}
+.comparison .list-tile {flex-basis:65px}
+.comparison .tile-value {font-size:15px;min-height:62px;padding:12px 7px}
+.comparison .list-rail {gap:5px}
+.return-line {display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;border-top:1px solid var(--line);padding-top:10px;color:var(--muted)}
+.return-line code {color:var(--ink);font-size:16px;font-weight:650;white-space:pre-wrap;overflow-wrap:anywhere}
+.evidence {display:grid;grid-template-columns:minmax(230px,.9fr) minmax(0,1.5fr);gap:20px;margin-top:20px;align-items:start}
+.rule-panel {padding:6px 2px;min-width:0;font-size:16px;line-height:1.85}
+.rule-panel p+p {margin-top:11px}
+.rule-note {line-height:1.8}
+.rule-note strong {color:var(--accent)}
+.rule-note .hint {display:block;margin-top:9px}
+.code-panel {min-width:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--code-bg)}
+.code-toolbar {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 15px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.code-toolbar .btn {min-height:31px;font-size:12px;padding:4px 9px}
+.code-panel pre {font-size:15px;line-height:1.8;color:var(--code-ink);padding:16px 18px;margin:0;overflow-x:auto}
+.code-line {display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;min-height:1.8em}
+.line-no {color:var(--muted);font-size:11px;user-select:none;line-height:2.4}
+.line-text {white-space:pre-wrap;overflow-wrap:anywhere}
+.token-str {color:var(--token-str)}.token-kw {color:var(--token-kw)}.token-num {color:var(--token-num)}.token-comment {color:var(--muted)}
+.error-message {padding:14px 17px;border-radius:var(--radius);background:var(--error-bg);color:var(--error);line-height:1.7;font-size:14px;border:1px solid currentColor}
+.status-note {font-size:14px;line-height:1.7;color:var(--muted)}
+.notice {padding:11px 14px;background:var(--changed-bg);color:var(--changed);border-radius:var(--radius);font-size:14px;line-height:1.7}
+.try-next {display:flex;gap:12px;font-size:14px;color:var(--muted);padding:20px 0 16px;border-bottom:1px solid var(--line);margin-top:2px}
+.try-next strong {flex-shrink:0;color:var(--ink);font-size:14px}
+.check-panel {margin-top:17px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.check-panel summary {cursor:pointer;padding:15px 20px;font-size:15px;font-weight:650}
+.check-content {padding:0 20px 20px}
+.check-question {font-size:17px;line-height:1.7;margin:8px 0 12px}
+.quiz-code {white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.8 var(--mono);padding:12px 15px;background:var(--soft);border-radius:7px;margin:0 0 14px;color:var(--muted)}
+.quiz-options {display:grid;gap:9px}
+.quiz-option {display:flex;gap:12px;text-align:left;align-items:flex-start;padding:12px 14px;background:var(--surface);border:1px solid var(--line);min-height:46px;font-size:14px;line-height:1.65}
+.quiz-letter {font-family:var(--mono);font-size:12px;flex-shrink:0;padding-top:2px;color:var(--muted)}
+.quiz-option[aria-pressed=true] {border-color:var(--accent);background:var(--selected)}
+.quiz-feedback {margin-top:13px;padding:12px 15px;line-height:1.8;font-size:14px;background:var(--selected);border-radius:var(--radius)}
+.quiz-feedback.incorrect {background:var(--changed-bg);color:var(--changed)}
+.chart-bars {display:flex;flex-direction:column;gap:10px;padding:8px 0}
+.bar-line {display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center}
+.bar-index {font:11px/1 var(--mono);color:var(--muted);text-align:right}
+.bar-track {position:relative;min-height:31px;display:flex;align-items:center;background:var(--soft)}
+.bar-fill {position:absolute;left:0;top:0;bottom:0;background:var(--selected);border-left:2px solid var(--accent)}
+.bar-label {position:relative;padding:2px 9px;font-size:13px;font-family:var(--mono);color:var(--ink);white-space:nowrap}
+.bar-scale {display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-left:40px;border-top:1px solid var(--line);padding-top:2px}
+.raw-value {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+.sort-trap {margin-top:8px;border-top:1px solid var(--line);padding-top:15px}
+.sort-trap summary {font-size:14px;color:var(--muted);cursor:pointer}
+.sort-trap .notice {margin-top:12px}
+.copy-graph {width:100%;height:auto;display:block}
+.copy-graph text {font-family:var(--font)}
+.memory-graph {width:100%;overflow-x:auto}
+.data-table {width:100%;border-collapse:separate;border-spacing:0;font-size:16px}
+.data-table th {font-size:12px;font-weight:500;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+.data-table td {padding:0;border-bottom:1px solid var(--line);background:var(--surface)}
+.data-table td:first-child {padding:10px 12px;color:var(--muted);font-family:var(--mono);font-size:13px;width:55px}
+.data-table button {width:100%;min-height:56px;display:block;text-align:left;padding:12px;border:2px solid transparent;background:transparent;border-radius:0;font-size:16px}
+.data-table tr.selected-row td,.data-table tr.is-row td {background:var(--soft)}
+.data-table button.selected,.data-table button[aria-pressed=true],.data-table .is-cell button {background:var(--selected);border-color:var(--accent);color:var(--accent);font-weight:700}
+.table-wrap {overflow-x:auto;width:100%}
+.table-scroll {overflow-x:auto;width:100%}
+.table-edit-row {display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}
+.table-edit-row input {min-height:46px;min-width:100px;flex:1;width:100%;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.table-edit-controls>.control-label {margin-top:12px}
+.table-lookup-results {margin-top:24px}
+.table-lookup-results .python-value {margin:12px 0 4px;overflow-wrap:anywhere;font-family:var(--mono);font-size:17px}
+.data-table .is-selected-row td {background:var(--soft)}
+.data-table tbody th {border-bottom:1px solid var(--line)}
+.data-table .is-selected-row th {background:var(--soft)}
+.practice-actions {display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.practice-step-title {font-size:17px}
+.practice-panel summary>.hint {display:block;margin-top:4px}
+.practice-data-table {min-width:265px}
+.practice-data-table td {padding:8px;font-size:12px}
+.practice-data-table th {font-size:10px;padding:7px}
+.practice-comparison h4 {font-size:14px;margin:0 0 10px}
+.practice-statistics .result-cell>strong {font-size:28px;color:var(--accent)}
+.sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.copy-diagram {overflow-x:auto;width:100%}
+.table-path {font-size:22px;font-family:var(--mono);padding:12px 0;color:var(--accent)}
+.table-reading {display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.practice-panel {margin-top:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.practice-panel summary {padding:13px 16px;cursor:pointer;font-weight:650;font-size:15px}
+.practice-body {padding:0 16px 18px;font-size:14px}
+.practice-body p {margin:8px 0}
+.practice-body pre {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;background:var(--code-bg);padding:12px;margin:12px 0;border-radius:7px}
+.practice-controls {display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.practice-panel .result-pair {grid-template-columns:repeat(2,minmax(0,1fr))}
+.site-footer {display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-top:1px solid var(--line);max-width:1580px;margin:auto;padding:20px 36px;font-size:12px;color:var(--muted)}
+.site-guide {max-width:680px;min-width:160px}
+.site-guide summary {cursor:pointer;text-align:right;color:var(--muted)}
+.site-guide>div {padding:18px 0;font-size:14px}
+.site-guide p+p {margin-top:12px}
+.site-guide .btn {margin-top:14px}
+.toast {position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:8px;font-size:14px;z-index:40;pointer-events:none;opacity:0;transition:opacity .15s}
+.toast.visible {opacity:1}
+.noscript {padding:30px;background:var(--error-bg);color:var(--error)}
+
+/* A: the list is the main blackboard; the controls sit directly below it. */
+body[data-theme=whiteboard] .workbench {grid-template-columns:1fr}
+body[data-theme=whiteboard] .visual-panel {grid-row:1}
+body[data-theme=whiteboard] .control-panel {display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;padding:18px 22px}
+body[data-theme=whiteboard] .control-panel>div {flex:1 1 160px}
+body[data-theme=whiteboard] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=whiteboard] .control-panel>.btn {flex:0 0 auto}
+body[data-theme=whiteboard] .control-panel hr {display:none}
+body[data-theme=whiteboard] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=whiteboard] .action-stack .btn {width:auto;justify-content:center;flex:1 1 auto}
+body[data-theme=whiteboard] .list-tile {flex-basis:85px}
+body[data-theme=whiteboard] .tile-value {font-size:21px;min-height:74px}
+
+/* B: a green business desk with horizontal navigation and a task column. */
+body[data-theme=workbench] {--bg:#ecf3f0;--surface:#fff;--ink:#173c36;--muted:#4d6860;--accent:#086a5b;--accent-ink:#fff;--selected:#dcefe8;--line:#ccdcd5;--soft:#f3f8f5;--changed:#745200;--changed-bg:#fcedbc;--code-bg:#edf4f0;--code-ink:#193f35;--token-str:#236242;--token-kw:#7b4283;--token-num:#91501c;--radius:4px;--tile-radius:4px}
+body[data-theme=workbench] .shell {grid-template-columns:1fr}
+body[data-theme=workbench] .sidebar {padding:14px 36px;border-right:0;border-bottom:1px solid var(--line);flex-direction:row;align-items:center;gap:30px;background:var(--surface)}
+body[data-theme=workbench] .course-name,body[data-theme=workbench] .sidebar-bottom {display:none}
+body[data-theme=workbench] .lesson-nav {flex-direction:row;flex-wrap:wrap;gap:9px;width:100%}
+body[data-theme=workbench] .lesson-nav a {flex:1;justify-content:center;font-size:15px;border-radius:3px;min-height:43px;white-space:nowrap}
+body[data-theme=workbench] .nav-done {margin-left:0}
+body[data-theme=workbench] .lesson {padding:28px 44px 40px}
+body[data-theme=workbench] .workbench {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .control-panel {border-top:3px solid var(--accent)}
+body[data-theme=workbench] .evidence {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .brand-mark {border-radius:4px}
+body[data-theme=workbench] .comparison h3 {font-size:22px}
+
+/* C: an object diagram on a deep-blue laboratory bench. */
+body[data-theme=blueprint] {--bg:#101b2d;--surface:#17253a;--ink:#f0f5fc;--muted:#b4c5db;--accent:#83d8f3;--accent-ink:#112339;--selected:#263f5a;--line:#38516c;--soft:#1d2e46;--changed:#f3c97f;--changed-bg:#3c3324;--error:#ffb4bb;--error-bg:#482b37;--code-bg:#132136;--code-ink:#dce8f8;--token-str:#a4dbc0;--token-kw:#d4b9f4;--token-num:#f3c97f;--radius:7px;--tile-radius:3px;color-scheme:dark}
+body[data-theme=blueprint] .topbar {border-bottom-color:var(--line)}
+body[data-theme=blueprint] .sidebar {background:#101b2d}
+body[data-theme=blueprint] .brand-mark {background:transparent;border:1px solid var(--accent);border-radius:3px}
+body[data-theme=blueprint] .workbench {grid-template-columns:1fr}
+body[data-theme=blueprint] .visual-panel {grid-row:1;border:1px solid var(--line);border-top:3px solid var(--accent)}
+body[data-theme=blueprint] .control-panel {flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;background:var(--soft)}
+body[data-theme=blueprint] .control-panel>div {flex:1 1 170px}
+body[data-theme=blueprint] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=blueprint] .control-panel hr {display:none}
+body[data-theme=blueprint] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=blueprint] .action-stack .btn {width:auto;flex:1 1 auto;justify-content:center}
+body[data-theme=blueprint] .list-tile {border-width:1px}
+body[data-theme=blueprint] .list-tile.selected {border-width:2px}
+body[data-theme=blueprint] .pos-index {background:var(--selected)}
+body[data-theme=blueprint] .tile-value {font-size:21px}
+body[data-theme=blueprint] .evidence {grid-template-columns:minmax(230px,1fr) minmax(0,1.6fr)}
+
+/* Projection raises teaching text sizes without scaling the whole page. */
+body.projecting {font-size:20px}
+body.projecting .theme-options,body.projecting .course-name,body.projecting .sidebar-bottom,body.projecting .check-panel,body.projecting .site-footer {display:none}
+body.projecting .shell {grid-template-columns:185px minmax(0,1fr)}
+body.projecting .sidebar {padding:25px 15px}
+body.projecting .lesson {padding:26px}
+body.projecting .lesson-nav a {font-size:16px}
+body.projecting h1 {font-size:38px}
+body.projecting .lesson-question,body.projecting .rule-panel {font-size:20px}
+body.projecting .tile-value {font-size:25px;min-height:84px}
+body.projecting .code-panel pre {font-size:20px}
+body.projecting .hint,body.projecting .control-label,body.projecting .btn,body.projecting .status-note,body.projecting .result-title {font-size:17px}
+body.projecting .result-value {font-size:22px}
+body.projecting[data-theme=workbench] .shell {grid-template-columns:1fr}
+body.projecting[data-theme=workbench] .sidebar {padding:10px 26px}
+
+@media (max-width:1150px) {
+  .topbar {padding:16px 24px;gap:18px}.top-actions {gap:10px}.theme-options button {font-size:12px;padding:7px 9px}.brand {font-size:19px}
+  .shell {grid-template-columns:185px minmax(0,1fr)}.sidebar {padding:28px 15px 25px 20px}.lesson {padding:27px 25px}.lesson-nav a {font-size:14px;padding:10px}
+  .course-name strong {font-size:20px}.workbench {grid-template-columns:220px minmax(0,1fr)}.visual-panel {padding:22px 20px}.control-panel {padding:20px}
+  body[data-theme=workbench] .lesson {padding:25px 30px}.theme-dot {width:8px;height:8px}.theme-options {gap:2px}
+}
+@media (max-width:900px) {
+  .topbar {flex-wrap:wrap;gap:14px;min-height:unset;padding:16px 22px}.top-actions {flex:1}.theme-options button {font-size:12px}.brand {font-size:18px}.projection-button {font-size:12px;padding:8px 12px}
+  .shell,.projecting .shell {grid-template-columns:1fr!important}.sidebar {padding:12px 20px;border-right:0;border-bottom:1px solid var(--line);background:var(--surface)}
+  .course-name,.sidebar-bottom {display:none}.lesson-nav {flex-direction:row;flex-wrap:wrap;gap:5px}.lesson-nav a {padding:7px 10px;min-height:38px;font-size:13px}.nav-index {font-size:11px}.nav-done {margin-left:3px}
+  .lesson {padding:24px}.workbench,body[data-theme=workbench] .workbench {grid-template-columns:1fr}.control-panel {flex-direction:row;flex-wrap:wrap}.control-panel>div {flex:1 1 180px}.control-panel>.hint {flex:1 1 180px}
+  .visual-panel {grid-row:1}.evidence,body[data-theme=workbench] .evidence,body[data-theme=blueprint] .evidence {grid-template-columns:1fr}.evidence {gap:14px}.rule-panel {padding:2px}
+  body[data-theme=workbench] .sidebar {padding:12px 20px}.site-footer {padding:20px 24px}.control-panel hr {display:none}.action-stack {flex-direction:row;flex-wrap:wrap}.action-stack .btn {width:auto;flex:1;justify-content:center}
+  h1 {font-size:29px}.lesson-question {font-size:15px}.lesson-heading>.btn {font-size:12px;padding:8px 10px}.source-tag {font-size:12px}
+}
+@media (max-width:600px) {
+  .topbar {padding:14px 16px}.brand-mark {width:38px;height:38px;font-size:29px}.brand {font-size:17px}.brand small {font-size:10px}
+  .top-actions {display:contents}.theme-options {order:3;width:100%;justify-content:space-between}.theme-options button {flex:1;justify-content:center;padding:8px 3px;font-size:11px;gap:5px;min-height:40px}.projection-button {margin-left:auto;font-size:12px}
+  .sidebar,body[data-theme=workbench] .sidebar {padding:10px 12px}.lesson-nav {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:3px}.lesson-nav a,body[data-theme=workbench] .lesson-nav a {font-size:12px;padding:8px 5px;gap:7px;justify-content:center}.nav-done {display:none}
+  .lesson,body[data-theme=workbench] .lesson,body.projecting .lesson {padding:20px 14px}.lesson-heading {gap:10px;margin-bottom:18px}.source-tag {font-size:11px}h1 {font-size:26px}.lesson-question {font-size:14px}.lesson-heading>.btn {font-size:11px;padding:7px 10px;min-height:38px}
+  .visual-panel {padding:18px 14px;gap:14px}.control-panel,body[data-theme=whiteboard] .control-panel,body[data-theme=blueprint] .control-panel {padding:16px 14px;gap:14px;flex-direction:column;align-items:stretch}
+  .control-panel>div,.control-panel>.hint,body[data-theme=whiteboard] .control-panel>div,body[data-theme=blueprint] .control-panel>div,body[data-theme=whiteboard] .control-panel>.hint,body[data-theme=blueprint] .control-panel>.hint {flex:initial}
+  .list-tile,body[data-theme=whiteboard] .list-tile {flex-basis:82px}.tile-value,body[data-theme=whiteboard] .tile-value,body[data-theme=blueprint] .tile-value {font-size:16px;min-height:62px}.pos-index,.neg-index {font-size:12px}
+  .compare-grid {grid-template-columns:1fr;gap:20px}.comparison+.comparison {border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px}.result-pair {grid-template-columns:1fr}.result-value {font-size:16px}.visual-header h2 {font-size:15px}
+  .rule-panel {font-size:15px}.code-panel pre {font-size:13px;padding:14px 12px}.code-line {gap:7px;grid-template-columns:18px minmax(0,1fr)}.try-next {font-size:13px;gap:9px;flex-direction:column}.try-next strong {font-size:13px}
+  .site-footer {padding:18px 16px;flex-direction:column;font-size:11px}.site-guide {min-width:0;max-width:100%}.site-guide summary {text-align:left}.data-table button {font-size:14px;padding:9px;min-height:52px}.data-table th {padding:8px;font-size:11px}.data-table td:first-child {width:35px;padding:8px}
+  .check-panel summary {padding:14px}.check-content {padding:0 14px 16px}.quiz-code {font-size:11px}.quiz-option {font-size:12px}.check-question {font-size:15px}.table-path {font-size:18px}.memory-graph svg,.copy-diagram svg {min-width:650px}
+  .practice-panel .result-pair {grid-template-columns:1fr}.btn,.segmented button,.theme-options button,.lesson-nav a,.preset-row button,.code-toolbar .btn {min-height:44px}
+  body.projecting h1 {font-size:30px}body.projecting .code-panel pre {font-size:16px}
+}
+@media (prefers-reduced-motion:reduce) {*,*:before,*:after {transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media print {.top-actions,.sidebar,.control-panel,.check-panel,.site-footer,.try-next,.toast {display:none!important}.shell {display:block}.lesson {padding:0}.code-panel,.visual-panel {break-inside:avoid}body {background:#fff;color:#17283d}.workbench,.evidence {display:block}.rule-panel {padding:16px 0}}
+
+/* Sixth lecture: execution state, not object references. */
+textarea {font:inherit;color:inherit}
+textarea:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+.flow-wide {flex:1 1 100%!important;min-width:0}
+.control-panel .single-field {min-width:160px}
+.preset-row button[aria-pressed=true] {background:var(--selected);color:var(--accent);border-color:var(--accent);font-weight:650}
+.flow-branches {display:grid;gap:10px}
+.flow-branch {display:grid;grid-template-columns:38px 1fr;gap:12px;padding:15px 18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft)}
+.flow-branch.is-selected {border-color:var(--accent);background:var(--selected)}
+.flow-branch.is-false {background:var(--surface);color:var(--muted)}
+.flow-branch-number {font:13px/1.8 var(--mono);padding-top:1px;color:var(--muted)}
+.flow-branch code {font-size:14px;overflow-wrap:anywhere}
+.flow-branch h3 {font-size:18px;line-height:1.5;margin-top:3px}
+.flow-branch p {font-size:13px;color:var(--muted);margin-top:3px}
+.flow-branch>div:last-child {display:grid;grid-template-columns:minmax(170px,1fr) minmax(100px,.7fr) minmax(180px,1.2fr);gap:14px;align-items:center;min-width:0}
+.flow-branch h3,.flow-branch p {margin-top:0}
+.flow-branch.is-selected p {color:var(--accent)}
+.flow-decision-result,.flow-outside {display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 16px;background:var(--selected);border-radius:var(--radius)}
+.flow-decision-result span,.flow-outside span {color:var(--muted);font:14px var(--mono)}
+.flow-decision-result strong {font-size:23px;color:var(--accent)}
+.flow-outside code {font-size:14px}
+.flow-outside strong {font-size:14px}
+.flow-metrics {display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.flow-metric {display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;min-width:0}
+.flow-metric span {font-size:13px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+.flow-metric strong {font-size:25px;line-height:1.3;color:var(--accent);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.flow-metric small {font-size:12px;color:var(--muted)}
+.flow-four-metrics {grid-template-columns:repeat(4,minmax(0,1fr))}
+.flow-four-metrics strong {font-size:22px}
+.flow-table-wrap {overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:var(--radius)}
+.flow-table {width:100%;border-collapse:collapse;text-align:left;font-size:14px;white-space:normal}
+.flow-table th,.flow-table td {padding:11px 13px;border-bottom:1px solid var(--line);line-height:1.5}
+.flow-table thead {background:var(--soft);font-size:13px;color:var(--muted)}
+.flow-table tbody tr:last-child th,.flow-table tbody tr:last-child td {border-bottom:0}
+.flow-table tbody th {font-weight:650}
+.flow-current-row {background:var(--changed-bg)}
+.flow-current-row th:first-child {box-shadow:inset 3px 0 var(--changed)}
+.flow-selected-row {background:var(--selected)}
+.flow-order-status {font:12px var(--mono);color:var(--muted)}
+.flow-order-status.is-paid {color:var(--accent)}
+.flow-current-item {display:flex;flex-direction:column;gap:6px;border-left:3px solid var(--accent);padding:10px 14px;background:var(--soft)}
+.flow-current-item span {font-size:13px;color:var(--muted)}
+.flow-current-item code {font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.flow-banner {display:flex;justify-content:space-between;gap:16px;align-items:center;border:1px solid var(--line);padding:10px 14px;border-radius:var(--radius)}
+.flow-banner code {font-size:14px;overflow-wrap:anywhere}
+.flow-banner strong {color:var(--accent)}
+.flow-execution {border-top:1px solid var(--line);padding-top:18px;display:grid;gap:14px}
+.flow-stepper {display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flow-stepper .btn {font-size:14px;min-height:40px;padding:7px 12px}
+.flow-step-count {margin-left:auto;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.flow-step-note {padding:11px 14px;background:var(--selected);border-left:3px solid var(--accent);border-radius:4px;min-height:56px;font-size:14px;line-height:1.65}
+.flow-step-note>strong {font-weight:550}
+.flow-current-code {display:flex;gap:13px;margin-top:7px;align-items:baseline;min-width:0}
+.flow-current-code span {font:11px var(--mono);white-space:nowrap;color:var(--muted)}
+.flow-current-code code {font:13px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.flow-output {display:grid;grid-template-columns:80px minmax(0,1fr);gap:12px;padding:12px 14px;background:var(--soft);border-radius:var(--radius)}
+.flow-output>span {font-size:12px;color:var(--muted)}
+.flow-output pre {margin:0;font:14px/1.7 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;max-height:185px;overflow-y:auto}
+.flow-muted {color:var(--muted);font-size:13px}
+.flow-error-text {color:var(--error)}
+.code-line.is-current {background:var(--selected);box-shadow:inset 3px 0 var(--accent)}
+.code-line.is-current .line-no {color:var(--accent);font-weight:700}
+.code-line {padding:0 4px}
+.flow-edit-table input,.flow-edit-table select {min-width:0;width:100%;min-height:40px;padding:5px 8px;border:1px solid var(--line);background:var(--surface);border-radius:5px;font-size:14px}
+.flow-edit-table th:first-child {width:17%}
+.flow-edit-table td:nth-child(2) {width:30%}
+.flow-edit-table td:nth-child(3) {width:53%}
+body.projecting .flow-step-note,body.projecting .flow-current-code code,body.projecting .flow-table,body.projecting .flow-output pre {font-size:18px}
+body.projecting .flow-branch h3 {font-size:22px}
+body.projecting .flow-metric strong {font-size:28px}
+@media(max-width:1100px) {.flow-four-metrics {grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1100px) and (min-width:901px) {.flow-branch>div:last-child {grid-template-columns:minmax(140px,1fr) minmax(90px,.7fr)}.flow-branch p {grid-column:1/-1}}
+@media(max-width:600px) {
+  .flow-branch {grid-template-columns:25px 1fr;gap:8px;padding:12px}
+  .flow-branch>div:last-child {display:block}.flow-branch h3,.flow-branch p {margin-top:3px}
+  .flow-branch code {font-size:12px}.flow-branch h3 {font-size:17px}
+  .flow-metrics {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .flow-metric {padding:11px 12px}.flow-metric strong {font-size:21px}
+  .flow-table {font-size:12px}.flow-table th,.flow-table td {padding:9px 7px}
+  .flow-order-status {font-size:10px}
+  .flow-stepper .btn {font-size:12px;padding:7px 10px;flex:1 1 38%}
+  .flow-step-count {margin-left:0;flex-basis:100%;text-align:center}
+  .flow-output {grid-template-columns:1fr;gap:6px}
+  .flow-output pre {font-size:12px}
+  .flow-current-code {display:block}.flow-current-code span {display:block;margin-bottom:5px}
+  .flow-edit-table input,.flow-edit-table select {font-size:12px;padding:5px}
+  body[data-theme=whiteboard] .control-panel>.flow-wide,body[data-theme=whiteboard] .control-panel>.flow-cv-wide {flex:initial!important}
+}
+
+/* File operations use document surfaces, directory rows and before/after text. */
+.fl-two-columns {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.fl-path-layout {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:20px}
+.fl-project-tree {padding:12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft);min-width:0;align-self:start}
+.fl-tree-row {display:flex;align-items:center;gap:8px;min-height:47px;padding:7px 9px 7px calc(9px + var(--depth)*13px);border:1px solid transparent;border-radius:6px;font-size:15px}
+.fl-tree-row code {min-width:0;overflow-wrap:anywhere;flex:1}
+.fl-tree-symbol {color:var(--muted);font-size:18px;flex-shrink:0}
+.fl-tree-tag {font-size:12px;white-space:nowrap}
+.fl-tree-row.is-cwd {border-color:var(--accent);background:var(--selected);color:var(--accent)}
+.fl-tree-row.is-target {box-shadow:inset -4px 0 var(--accent);font-weight:700}
+.fl-path-resolution {display:flex;flex-direction:column;gap:12px;min-width:0}
+.fl-path-resolution>div {padding:11px 15px;background:var(--soft);border:1px solid var(--line);border-radius:8px;min-width:0}
+.fl-path-resolution span {display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+.fl-path-resolution code {display:block;overflow-wrap:anywhere;font-size:16px}
+.fl-path-resolution .fl-path-target {border-color:var(--accent);background:var(--selected)}
+.fl-path-exists {display:flex;justify-content:space-between;align-items:center;gap:12px}
+.fl-path-exists span {margin:0}
+.fl-path-exists strong {font:700 21px/1.5 var(--mono);color:var(--accent)}
+.fl-file-paper {background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0}
+.fl-paper-head {display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding:13px 16px;border-bottom:1px solid var(--line);background:var(--surface);font-size:15px;min-width:0}
+.fl-paper-head code {flex:1;min-width:0;overflow-wrap:anywhere}
+.fl-paper-head h3 {font-size:16px}
+.fl-file-icon {color:var(--accent);font-size:22px;line-height:1}
+.fl-file-paper pre {margin:0;padding:19px 17px 22px;min-height:130px;white-space:pre-wrap;overflow-wrap:anywhere;font:15.5px/1.95 var(--mono);color:var(--code-ink)}
+.fl-handle {border:1px solid var(--line);background:var(--soft);border-radius:var(--radius);padding:17px;min-width:0}
+.fl-handle.is-open {background:var(--selected);border-color:var(--accent)}
+.fl-handle.is-closed {border-style:dashed}
+.fl-handle-heading {display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.fl-handle-heading h3 {font-size:16px}
+.fl-handle-properties {display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,1fr);gap:10px 18px;margin-bottom:14px}
+.fl-handle-properties span {font-size:14px;color:var(--muted)}
+.fl-handle-properties code {font-size:18px;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+.fl-value-panel {padding:16px 17px;border:1px solid var(--line);border-radius:var(--radius);min-width:0;background:var(--surface)}
+.fl-value-panel h3 {font-size:16px;margin-bottom:12px}
+.fl-value-panel pre {margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:15px/1.85 var(--mono);color:var(--code-ink)}
+.fl-value-panel .hint {margin-top:10px}
+.fl-variables {display:flex;flex-direction:column;gap:0;min-width:0}
+.fl-variables>div {display:grid;grid-template-columns:minmax(90px,.85fr) minmax(0,1.15fr);gap:16px;padding:8px 0;border-bottom:1px solid var(--line);align-items:start}
+.fl-variables>div:last-child {border:0}
+.fl-variables code {font-size:13px;overflow-wrap:anywhere}
+.fl-variables strong {font:600 15px/1.7 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.fl-read-layout {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.fl-source-lines,.fl-read-results {min-width:0}
+.fl-source-lines h3,.fl-read-results h3 {font-size:16px;margin-bottom:14px}
+.fl-source-lines h3 span {display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:3px}
+.fl-source-line {display:grid;grid-template-columns:21px minmax(0,1fr);position:relative;gap:8px;padding:13px 11px;margin-bottom:8px;border:1px solid var(--line);border-radius:7px;background:var(--soft);align-items:start;min-width:0}
+.fl-source-line code {white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.85}
+.fl-source-number {font:12px/1.85 var(--mono);color:var(--muted);padding-top:2px}
+.fl-source-line.is-read {color:var(--muted);background:var(--surface)}
+.fl-source-line.is-next {border-color:var(--accent);background:var(--selected)}
+.fl-line-tag {grid-column:2;font-size:12px;color:var(--accent)}
+.fl-read-result {border:1px solid var(--line);border-radius:7px;overflow:hidden;margin-bottom:10px;background:var(--soft)}
+.fl-read-result>div {display:flex;justify-content:space-between;gap:12px;padding:7px 12px;font-size:13px;border-bottom:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.fl-read-result pre {padding:12px;margin:0;font:14px/1.85 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--code-ink)}
+.fl-empty {padding:18px;color:var(--muted);font-size:14px;line-height:1.8;background:var(--soft);border-radius:7px}
+.fl-text-stages {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.fl-text-stages section {border:1px solid var(--line);border-radius:var(--radius);padding:15px 17px;min-width:0;background:var(--soft)}
+.fl-text-stages h3 {font-size:15px;margin-bottom:12px}
+.fl-text-stages pre {margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:15px/1.8 var(--mono)}
+.fl-fields h3 {font-size:15px;margin-bottom:12px}
+.fl-fields>div {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.fl-fields .fl-empty {grid-column:1/-1}
+.fl-field-cell {border:1px solid var(--line);padding:10px 12px;border-radius:7px;background:var(--selected);min-width:0}
+.fl-field-cell span {display:block;font:12px/1.8 var(--mono);color:var(--muted);margin-bottom:5px}
+.fl-field-cell code {font-size:16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.fl-comparison {display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 17px;background:var(--soft);border:1px solid var(--line);border-radius:8px;min-width:0}
+.fl-comparison>code {white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;font-size:15px}
+.fl-comparison strong {font:700 22px/1.5 var(--mono);color:var(--accent)}
+.fl-comparison>span {font-size:14px;color:var(--muted)}
+body.projecting .fl-file-paper pre,body.projecting .fl-value-panel pre,body.projecting .fl-source-line code,body.projecting .fl-read-result pre,body.projecting .fl-text-stages pre {font-size:18px}
+body.projecting .fl-variables code {font-size:16px}
+body.projecting .fl-variables strong {font-size:18px}
+@media(max-width:1100px){.fl-read-layout{grid-template-columns:1fr}.fl-read-results{display:block}.fl-path-layout{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)}}
+@media(max-width:700px){
+  .fl-two-columns,.fl-path-layout,.fl-read-layout,.fl-text-stages {grid-template-columns:1fr}
+  .fl-fields>div {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fl-file-paper pre {min-height:90px;font-size:14px;padding:15px}
+  .fl-value-panel pre {font-size:14px}
+  .fl-project-tree {padding:8px}
+  .fl-tree-row {padding-left:calc(6px + var(--depth)*10px);font-size:14px}
+  .fl-path-resolution code {font-size:15px}
+  .fl-variables>div {gap:9px;grid-template-columns:minmax(90px,.8fr) minmax(0,1.2fr)}
+  .fl-comparison {flex-wrap:wrap}
+  body[data-theme=whiteboard] .control-panel>.flow-wide,body[data-theme=whiteboard] .control-panel>.flx-wide {flex:initial!important}
+}
+
+/* Report workflow and CSV detail views; whiteboard palette inherited. */
+.flx-wide {flex:1 1 100%!important;min-width:0}
+.flx-downloads {display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.flx-stages {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));list-style:none;padding:0;margin:0;gap:10px}
+.flx-stages li {display:flex;align-items:center;gap:10px;padding:12px 15px;border:1px solid var(--line);background:var(--soft);border-radius:var(--radius);color:var(--muted);font-size:15px}
+.flx-stages li>span {display:flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid var(--line);border-radius:50%;font-family:var(--mono);font-size:12px;flex-shrink:0}
+.flx-stages li.is-active {background:var(--selected);border-color:var(--accent);color:var(--accent)}
+.flx-stages li.is-active>span {background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.flx-stages li.is-complete {color:var(--accent)}
+.flx-stages li.is-complete>span {border-color:var(--accent)}
+.flx-stages li.is-error {background:var(--error-bg);border-color:var(--error);color:var(--error)}
+.flx-input-layout,.flx-output-layout {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;align-items:stretch}
+.flx-source-paper,.flx-records,.flx-pending,.flx-verification,.flx-verification-placeholder {min-width:0;padding:16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.flx-source-paper {background:var(--soft)}
+.flx-section-head {display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.flx-section-head h3,.flx-verification h3,.flx-verification-placeholder h3 {font-size:16px;line-height:1.5;margin:0}
+.flx-section-head .pill {font-size:11px}
+.flx-source-lines {display:grid;list-style:none;margin:0;padding:0;gap:4px}
+.flx-source-lines li {display:grid;grid-template-columns:18px minmax(0,1fr) 28px;gap:7px;align-items:start;padding:6px 4px;border-left:3px solid transparent;border-radius:3px;min-width:0}
+.flx-source-lines code {font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.flx-source-lines li.is-active {background:var(--selected);border-left-color:var(--accent)}
+.flx-source-lines li.is-error {background:var(--error-bg);border-left-color:var(--error)}
+.flx-line-number {font:12px/1.85 var(--mono);color:var(--muted);text-align:right}
+.flx-line-result {font-size:11px;color:var(--muted);text-align:right;line-height:2}
+.flx-order-table {font-size:13px;min-width:400px}
+.flx-order-table th,.flx-order-table td {padding:9px 8px}
+.flx-row-active {background:var(--selected)!important;box-shadow:inset 3px 0 var(--accent)}
+.flx-row-selected {background:var(--soft)}
+.flx-row-mismatch {background:var(--changed-bg)}
+.flx-pending {background:var(--changed-bg);border-color:#dfc985}
+.flx-pending pre {font:15px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;margin:0;min-height:85px}
+.flx-pending p,.flx-verification-placeholder p,.flx-verification p {font-size:13px;line-height:1.8;color:var(--muted);margin:10px 0 0}
+.flx-verification-placeholder {display:flex;flex-direction:column;justify-content:center;background:var(--soft)}
+.flx-verification.is-passed {border-color:var(--accent)}
+.flx-verification.is-passed h3 {color:var(--accent)}
+.flx-verification.is-failed {border-color:var(--error);background:var(--error-bg)}
+.flx-verification.is-failed h3 {color:var(--error)}
+.flx-verification .flow-table {font-size:13px;margin-top:10px}
+.flx-verification .flow-table th,.flx-verification .flow-table td {padding:9px 7px}
+.flx-csv-compare {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px}
+.flx-csv-half {min-width:0}
+.flx-csv-half h3 {font-size:16px;display:flex;gap:10px;align-items:center;justify-content:space-between;margin:0 0 12px;flex-wrap:wrap}
+.flx-csv-half h3>span {font-size:12px;font-weight:400;color:var(--muted)}
+.flx-naive-table,.flx-csv-table {font-size:13px}
+.flx-naive-table th,.flx-naive-table td,.flx-csv-table th,.flx-csv-table td {padding:10px 8px}
+.flx-naive-table code,.flx-csv-table code {font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.flx-naive-table th:first-child {width:35px}
+.flx-naive-table td:last-child {width:42px;text-align:center}
+.flx-csv-table {min-width:340px}
+.flx-empty-records {padding:22px 16px;border:1px dashed var(--line);border-radius:var(--radius);font-size:14px;color:var(--muted);min-height:110px}
+body.projecting .flx-stages li {font-size:18px}
+body.projecting .flx-section-head h3,body.projecting .flx-csv-half h3,body.projecting .flx-verification h3 {font-size:20px}
+body.projecting .flx-source-lines code,body.projecting .flx-order-table,body.projecting .flx-naive-table code,body.projecting .flx-csv-table code {font-size:16px}
+@media(max-width:1100px) {
+  .flx-input-layout,.flx-output-layout,.flx-csv-compare {grid-template-columns:1fr}
+}
+@media(max-width:600px) {
+  body[data-theme=whiteboard] .control-panel>.flx-wide {flex:initial!important}
+  .flx-stages {grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .flx-stages li {font-size:14px;padding:10px}
+  .flx-source-paper,.flx-records,.flx-pending,.flx-verification,.flx-verification-placeholder {padding:13px}
+  .flx-source-lines code {font-size:12px}
+  .flx-source-lines li {grid-template-columns:16px minmax(0,1fr) 24px;gap:5px}
+  .flx-downloads .btn {flex:1 1 160px}
+}
+</style>
+</head>
+<body data-theme="whiteboard">
+  <a class="skip-link" href="#lesson-title">跳到当前实验</a>
+  <header class="topbar">
+    <a class="brand" href="#paths" aria-label="文件与报告实验室首页"><span class="brand-mark" aria-hidden="true">▤</span><span>文件与报告实验室<small>Python 第八讲</small></span></a>
+    <div class="top-actions"><button type="button" class="btn btn-subtle projection-button" id="projection-toggle" aria-pressed="false">投影模式</button></div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="course-name"><span>这一讲</span><strong>读入订单，<br>写出报告。</strong></div>
+      <nav class="lesson-nav" id="lesson-nav" aria-label="知识点目录"></nav>
+      <div class="sidebar-bottom"><p>先预测下一步，<br>再观察程序。</p><span id="quiz-progress" class="progress-note">7 个动手实验</span></div>
+    </aside>
+    <main id="lesson" class="lesson"></main>
+  </div>
+  <footer class="site-footer">
+    <span>课件案例：订单文件与统计报告</span>
+    <details class="site-guide"><summary>使用说明与来源</summary><div>
+      <p>选择知识点后，先预测，再点击“下一步”观察执行。可以退回、运行到最后或从头演示；改变参数会重新开始当前实验。投影模式增大字号，按 Esc 退出。</p>
+      <p>采用课堂白板 A 统一模板，依据本次上传的 slide-8(1).pdf 第八讲“文件读写”。一份 HTML 集中展示课件中的 7 组精选知识点，页码见各模块。</p>
+      <p>页面模拟指定场景中的 Python 执行过程，不执行任意代码。样式与脚本均已内嵌，操作无需联网。对应代码可复制到 Python 环境复现；自动复制受限时，可手动选中复制。</p>
+      <p>一个“步骤”可以对应路径检查、打开文件、读取、转换、计算、写入或关闭。蓝色代码行表示当前讲解位置；相关操作可合并展示。各级代码缩进使用 2 个空格，并保持同层一致。</p>
+      <p>实验使用页面内的示例文件，所有参数变化都会从预设文件重新开始。报告模块可下载 UTF-8 订单文本与核验通过的报告。读取位置按已读行展示，不等同于 tell() 的返回值；写入中的内容与关闭后的文件内容分开展示。</p>
+      <p>本页只在当前浏览器保存最近打开的模块和练习选择，不上传学生数据。刷新后，实验参数恢复初始值。</p>
+      <p><a href="https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files" target="_blank" rel="noopener noreferrer">Python 官方：文件读写</a> · <a href="https://docs.python.org/3/library/pathlib.html" target="_blank" rel="noopener noreferrer">pathlib 路径</a> · <a href="https://docs.python.org/3/library/csv.html" target="_blank" rel="noopener noreferrer">CSV</a></p>
+      <button type="button" class="btn btn-subtle" data-action="reset-quizzes">清除本讲练习记录</button>
+    </div></details>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">请在浏览器中启用 JavaScript 后使用交互实验。页面不需要联网。</p></noscript>
+  <script>/* 第八讲：文件读写。依据 slide-8(1).pdf 的精选知识点。 */
+window.FileLabContent = {
+  modules: [
+    {
+      id: 'paths', title: '路径与工作目录', pages: '课件 7–8 页',
+      question: '同样写 data/orders.txt，为什么换一个工作目录就找不到订单文件？',
+      try: '先改变当前工作目录，再比较相对路径与绝对路径各自指向哪里。',
+      quiz: {
+        prompt: '当前工作目录是 /course/python-course/data。下面的相对路径从哪里开始查找？',
+        code: 'from pathlib import Path\n\nfile_path = Path("data") / "orders.txt"',
+        options: [
+          {label: '自动从 Notebook 所在文件夹查找', explanation: '相对路径的起点由当前工作目录决定，不保证与 Notebook 文件所在的目录相同。'},
+          {label: '/course/python-course/data/data/orders.txt', explanation: '当前已经位于 data 文件夹，再写 data/orders.txt，就会在它下面再找一层 data。'},
+          {label: '自动向上搜索，直到找到 orders.txt', explanation: '普通相对路径不会自动向上搜索同名文件。程序会按给定的起点和路径逐层查找。'}
+        ], answer: 1
+      }
+    },
+    {
+      id: 'opening',
+      navTitle: '文件打开与关闭', title: 'with 与文件状态', pages: '课件 9 页',
+      question: '离开 with 代码块以后，文件对象还在吗？还能继续读取吗？',
+      try: '跟随正常结束与异常过程，分别观察文件是否成功打开、何时关闭以及后续语句是否执行。',
+      quiz: {
+        prompt: '假设文件存在，下面代码运行后会怎样？',
+        code: 'with open("data/orders.txt", "r", encoding="utf-8") as file:\n  content = file.read()\n\nprint(file.closed)\nfile.read()',
+        options: [
+          {label: '输出 False，然后重新读取全部内容', explanation: '离开 with 代码块时文件已经关闭，并没有自动重新打开。'},
+          {label: 'file 变量在块外消失，print 立即产生 NameError', explanation: 'with 不会创建一个独立的变量作用域。这里仍能访问 file 名称，也可以检查它的 closed 属性。'},
+          {label: '先输出 True，再因读取已关闭文件产生 ValueError', explanation: 'file 名称仍然可访问，但它指向的文件对象已经关闭。读取 closed 属性可以，继续调用 read 不可以。'}
+        ], answer: 2
+      }
+    },
+    {
+      id: 'reading', title: '读取方式与位置', pages: '课件 11–13、26 页',
+      question: '同一个文件对象连续读取时，下一次从哪里继续？空行和文件末尾又有什么区别？',
+      try: '依次执行读取操作，比较返回内容和类型；特别观察空行、最后一行与文件末尾。',
+      quiz: {
+        prompt: '文件依次包含第一行 A、第二行空行、第三行 B。second 接收到什么？',
+        code: 'with open("data/demo.txt", "r", encoding="utf-8") as file:\n  first = file.readline()\n  second = file.readline()\n\nprint(repr(second))',
+        options: [
+          {label: "'\\n'：一个保留换行符的字符串", explanation: '第二行虽然没有可见文字，但仍是一行；readline 保留它的换行符。'},
+          {label: "''：表示已经读到文件末尾", explanation: '此时刚读到第二行，后面还有 B。空行与文件末尾不同，空行通常返回换行符，末尾才返回空字符串。'},
+          {label: 'None：空行没有返回值', explanation: 'readline 返回字符串。空行会返回换行符，到文件末尾会返回空字符串，这两种情况都不是 None。'}
+        ], answer: 0
+      }
+    },
+    {
+      id: 'parsing', title: '从文本到订单', pages: '课件 12、14–16、21 页',
+      question: '一行原始文本怎样变成可计算的订单？每一步究竟改了什么？',
+      try: '比较原始行与 strip 后的结果，再观察拆分、字段数量、float 转换和状态比较。',
+      quiz: {
+        prompt: '这行状态前面有一个空格。代码会输出什么？',
+        code: 'line = "O001|杭州|360.00| 已完成\\n"\nfields = line.strip().split("|")\nstatus = fields[3]\nprint(status == "已完成")',
+        options: [
+          {label: 'True，strip 会清除每个字段两端的空格', explanation: '这里的 strip 作用于整行，只清理整行两端。状态前面的空格处于整行内部，没有被清除。'},
+          {label: "False，状态仍是 ' 已完成'", explanation: '行末换行被去掉，但竖线后的空格仍保留。字符串比较需要完全一致，因此与“已完成”不相等。'},
+          {label: 'ValueError，状态带空格无法拆分', explanation: 'split 仍能按竖线得到四个字符串。这里没有做会失败的数值转换，只是比较结果为 False。'}
+        ], answer: 1
+      }
+    },
+    {
+      id: 'writing',
+      navTitle: '覆盖与追加', title: '覆盖、追加与换行', pages: '课件 10、17–19、26 页',
+      question: '报告和日志应该用什么模式？文件什么时候被清空，换行又由谁添加？',
+      try: '比较 w 与 a，比较是否添加换行，再观察同一个写入任务连续运行两次的结果。',
+      quiz: {
+        prompt: 'summary.txt 原来有“旧报告”。下面代码执行结束后，文件内容是什么？',
+        code: 'with open("output/summary.txt", "w", encoding="utf-8") as file:\n  pass',
+        options: [
+          {label: '空文件', explanation: 'w 模式在成功打开时就会清空原内容，不需要等到第一次 write。pass 不会写入任何新文本。'},
+          {label: '仍然是“旧报告”', explanation: '保留原内容是读取或追加模式的特点；w 成功打开现有文件时已经清空它。'},
+          {label: '产生错误，因为 with 中必须执行 write', explanation: 'with 中可以不执行写入。这里 open 成功后文件已被清空，随后正常关闭。'}
+        ], answer: 0
+      }
+    },
+    {
+      id: 'report', title: '订单报告全流程', pages: '课件 20–25 页',
+      question: '怎样把订单文件变成可信的统计报告，并确认原始数据和最终结果都正确？',
+      try: '先运行课件三笔订单，再加入两条课后记录，观察有效记录、完成订单、汇总金额和重新读取的报告。',
+      quiz: {
+        prompt: '原有三笔订单的已完成金额为 1000 元、数量为 2 笔。再加入下面两笔后，新报告应是什么？',
+        code: 'O004|杭州|120.00|已完成\nO005|上海|200.00|已退款',
+        options: [
+          {label: '4 笔，1320.00 元', explanation: '新增记录有两条，但只有 O004 已完成。退款订单仍是有效记录，却不应进入已完成统计。'},
+          {label: '3 笔，1320.00 元', explanation: '数量只增加一笔是对的，但金额也应只加已完成的 120 元，不能把退款的 200 元算入。'},
+          {label: '3 笔，1120.00 元', explanation: 'O004 使已完成数量增加 1，金额增加 120。O005 为已退款，不计入已完成统计。'}
+        ], answer: 2
+      }
+    },
+    {
+      id: 'csv', title: '正确读取 CSV', pages: '课件 28 页 · 拓展',
+      question: '字段本身含有逗号时，怎样避免把一条订单拆错？',
+      try: '用同一条含引号逗号的记录，对比普通 split 与 CSV 解析，检查城市和金额是否仍对应正确表头。',
+      quiz: {
+        prompt: '按 CSV 规则解析下面这一行，会得到几个字段，城市是什么？',
+        code: 'O001,"杭州,滨江",360.00,已完成',
+        options: [
+          {label: '5 个字段；杭州和滨江是两个字段', explanation: '简单按每一个逗号拆分会得到这样的错误结果。CSV 规则会识别引号中的逗号属于字段内容。'},
+          {label: '4 个字段；城市是杭州,滨江', explanation: '双引号包住一个完整字段，其中的逗号作为城市字段内容保留。金额仍是第三个字段。'},
+          {label: '4 个字段；城市只保留杭州', explanation: 'CSV 解析不会自动丢弃引号里的后半段内容。“杭州,滨江”会作为一个完整字段返回。'}
+        ], answer: 1
+      }
+    }
+  ]
+};
+</script>
+  <script>/* Slide 8: bounded file-I/O teaching models. All files are demonstration data. */
+(function(root,factory){
+  'use strict';
+  const api=factory();
+  if(typeof module==='object'&&module.exports)module.exports=api;
+  if(root)root.FileLabEngine=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+  'use strict';
+  const clone=value=>JSON.parse(JSON.stringify(value));
+  const has=(obj,key)=>Object.prototype.hasOwnProperty.call(obj,key);
+  function repr(value,type){
+    if(value===null)return 'None';
+    if(value===true)return 'True';
+    if(value===false)return 'False';
+    if(typeof value==='number'){
+      if(!Number.isFinite(value))throw new TypeError('只支持有限数值。');
+      return Object.is(value,-0)?'-0.0':type==='float'&&Number.isInteger(value)?value+'.0':String(value);
+    }
+    if(typeof value==='string'){
+      const quote=value.includes("'")&&!value.includes('"')?'"':"'";
+      return quote+Array.from(value).map(ch=>{
+        if(ch==='\\')return '\\\\';
+        if(ch===quote)return '\\'+quote;
+        if(ch==='\n')return '\\n';
+        if(ch==='\r')return '\\r';
+        if(ch==='\t')return '\\t';
+        const n=ch.codePointAt(0);
+        if(n<32||n===127||(/[\p{C}\p{Z}]/u.test(ch)&&ch!==' '))return n<256?'\\x'+n.toString(16).padStart(2,'0'):n<65536?'\\u'+n.toString(16).padStart(4,'0'):'\\U'+n.toString(16).padStart(8,'0');
+        return ch;
+      }).join('')+quote;
+    }
+    if(Array.isArray(value))return '['+value.map((x,i)=>repr(x,Array.isArray(type)?type[i]:undefined)).join(', ')+']';
+    if(value&&typeof value==='object')return '{'+Object.keys(value).map(k=>repr(k)+': '+repr(value[k],type&&typeof type==='object'?type[k]:undefined)).join(', ')+'}';
+    throw new TypeError('不支持的教学数据类型。');
+  }
+  function money(value,precision=2){
+    if(!Number.isFinite(value)||!Number.isInteger(precision)||precision<0||precision>6)throw new RangeError('格式化参数无效。');
+    const negative=value<0||Object.is(value,-0),view=new DataView(new ArrayBuffer(8));
+    view.setFloat64(0,Math.abs(value),false);
+    const high=view.getUint32(0,false),low=view.getUint32(4,false),exponent=(high>>>20)&2047;
+    let mantissa=(BigInt(high&1048575)<<32n)+BigInt(low),shift;
+    if(exponent===0)shift=-1074;else{mantissa+=1n<<52n;shift=exponent-1023-52;}
+    let numerator=mantissa*(10n**BigInt(precision)),denominator=1n;
+    if(shift>=0)numerator<<=BigInt(shift);else denominator<<=BigInt(-shift);
+    let q=numerator/denominator;const rem=numerator%denominator;
+    if(rem*2n>denominator||(rem*2n===denominator&&q%2n===1n))q+=1n;
+    let digits=q.toString().padStart(precision+1,'0');
+    if(precision)digits=digits.slice(0,-precision)+'.'+digits.slice(-precision);
+    return (negative?'-':'')+digits;
+  }
+  const COURSE='O001|杭州|360.00|已完成\nO002|上海|640.00|已完成\nO003|宁波|520.00|已退款\n';
+  const OLD_REPORT='上次统计报告\n已完成订单：1笔\n';
+  const REPORT_LINES=['订单统计报告','已完成订单：2笔','已完成金额：1000.00元'];
+  const physicalLines=text=>text.match(/[^\n]*\n|[^\n]+$/g)||[];
+  const pyType=x=>x===null?'NoneType':Array.isArray(x)?'list':typeof x==='string'?'str':typeof x==='boolean'?'bool':typeof x==='number'?(Number.isInteger(x)?'int':'float'):'dict';
+  function choice(value,fallback,choices,label){const v=value===undefined?fallback:value;if(!choices.includes(v))throw new RangeError(label+'无效。');return v;}
+  function boolean(value,fallback=false){if(value===undefined)return fallback;if(value===true||value==='true')return true;if(value===false||value==='false')return false;throw new RangeError('开关值无效。');}
+  function program(){const lines=[];return {lines,add(text){lines.push(text);return lines.length;}};}
+  function tracer(p,files={},extra={}){
+    const initialFiles=clone(files),trace=[],state=Object.assign({kind:'ready',line:null,lines:[],note:'尚未执行。',vars:{},varTypes:{},varReprs:{},files:clone(files),handle:null,stdout:'',done:false,error:null},clone(extra));
+    function emit(kind,line,note,patch={}){Object.assign(state,patch,{kind,note,lines:Array.isArray(line)?line:line?[line]:[]});state.line=state.lines[0]||null;trace.push(clone(state));}
+    function assign(name,value,type,exact){state.vars[name]=clone(value);state.varTypes[name]=type||pyType(value);state.varReprs[name]=exact===undefined?repr(value,type):exact;}
+    function print(text,line,note){state.stdout+=String(text)+'\n';emit('print',line,note||'执行 print，产生屏幕输出。');}
+    function open(path,mode,line,alias='file'){
+      const text=has(state.files,path)?state.files[path]:'';
+      state.handle={path,mode,alias,closed:false,cursorLine:0,totalLines:physicalLines(text).length,atEnd:text.length===0};
+      emit('open',line,'打开文件，当前文件对象尚未关闭。');
+    }
+    function close(line,note){if(state.handle)state.handle.closed=true;emit('close',line,note||'离开 with 代码块，文件自动关闭；变量仍可继续访问。');}
+    function error(type,message,line,note){if(state.handle&&!state.handle.closed)state.handle.closed=true;emit('error',line,note||'出现异常，后续语句不再执行。',{error:{type,message},done:true});}
+    function finish(meta={}){return Object.assign({ok:true,error:null,code:p.lines.join('\n'),lines:p.lines.slice(),trace,outcome:clone(trace[trace.length-1]),initialFiles},meta);}
+    function done(note){emit('done',null,note||'程序执行结束。',{done:true});}
+    emit('ready',null,'尚未执行。');
+    return {state,trace,emit,assign,print,open,close,error,done,finish};
+  }
+  function safe(fn){return function(config={}){try{return fn(config||{});}catch(error){const p=program(),r=tracer(p);return Object.assign(r.finish(),{ok:false,error:error.message});}};}
+  function stateAt(model,cursor=0){const n=Number(cursor);return model.trace[Math.max(0,Math.min(model.trace.length-1,Number.isFinite(n)?Math.floor(n):0))];}
+  function normalizePath(path,cwd='/'){
+    const parts=(path.startsWith('/')?path:cwd+'/'+path).split('/'),out=[];
+    for(const part of parts){if(!part||part==='.')continue;if(part==='..')out.pop();else out.push(part);}
+    return '/'+out.join('/');
+  }
+  function lexicalPath(path){
+    let prefix=path.startsWith('//')&&!path.startsWith('///')?'//':path.startsWith('/')?'/':'';
+    const parts=path.split('/').filter(x=>x&&x!=='.');return prefix+parts.join('/')||(prefix||'.');
+  }
+  const api={repr,money,formatFixed:money,stateAt,defaults:{course:COURSE,oldReport:OLD_REPORT,reportLines:REPORT_LINES.slice()},_helpers:{clone,physicalLines,pyType,program,tracer,choice,boolean}};
+
+  api.paths=safe(c=>{
+    const cwdKey=choice(c.cwd,'project',['project','data','outside'],'当前目录'),cwd={project:'/python-course',data:'/python-course/data',outside:'/'}[cwdKey];
+    const target=c.target===undefined?'data/orders.txt':String(c.target);
+    if(!target.trim()||Array.from(target).length>120||/[\0\r\n]/.test(target))throw new RangeError('路径请填写 1～120 个字符，不含换行或空字符。');
+    const files={'/python-course/data/orders.txt':COURSE,'/python-course/output/summary.txt':OLD_REPORT},dirs=['/','/python-course','/python-course/data','/python-course/output'];
+    const p=program(),imp=p.add('from pathlib import Path');p.add('');p.add('# 当前工作目录：'+cwd);
+    const getCwd=p.add('cwd = Path.cwd()'),printCwd=p.add('print(cwd)'),pathLine=p.add('file_path = Path('+repr(target)+')'),resolveLine=p.add('resolved_path = file_path.resolve()'),printPath=p.add('print(resolved_path)'),existsLine=p.add('exists = resolved_path.exists()'),printExists=p.add('print(exists)'),read=p.add('content = resolved_path.read_text(encoding="utf-8")'),printContent=p.add('print(content)');
+    const r=tracer(p,files,{cwd,resolvedPath:null,exists:null}),resolved=normalizePath(target,cwd),lexical=lexicalPath(target);
+    r.emit('import',imp,'导入路径工具。');r.assign('cwd',cwd,'PosixPath',"PosixPath("+repr(cwd)+")");r.emit('assign',getCwd,'读取当前工作目录；相对路径以这里为起点。');r.print(cwd,printCwd);
+    r.assign('file_path',lexical,'PosixPath',"PosixPath("+repr(lexical)+")");r.emit('assign',pathLine,'建立路径对象，此时还没有读取文件。');
+    r.assign('resolved_path',resolved,'PosixPath',"PosixPath("+repr(resolved)+")");r.emit('resolve',resolveLine,'结合当前目录得到实际查找位置。',{resolvedPath:resolved});r.print(resolved,printPath);
+    const exists=has(files,resolved)||dirs.includes(resolved);r.assign('exists',exists,'bool');r.emit('check',existsLine,'检查该位置是否存在；目录存在也会得到 True。',{exists});r.print(repr(exists),printExists);
+    if(dirs.includes(resolved))r.error('IsADirectoryError',"[Errno 21] Is a directory: "+repr(resolved),read,'路径指向目录，不能把它当作文本文件读取。');
+    else if(!has(files,resolved)){
+      const ancestorFile=Object.keys(files).some(f=>resolved.startsWith(f+'/'));
+      r.error(ancestorFile?'NotADirectoryError':'FileNotFoundError',(ancestorFile?'[Errno 20] Not a directory: ':'[Errno 2] No such file or directory: ')+repr(resolved),read,ancestorFile?'路径中的某一级是文件，不能继续作为目录查找。':'没有找到文件。请核对当前目录、文件名和层级。');
+    }else{r.assign('content',files[resolved],'str');r.emit('read',read,'read_text 读取文本，并在内部关闭文件。');r.print(files[resolved],printContent);r.done();}
+    return r.finish({cwd,source:COURSE,target,entries:dirs.map(path=>({path,type:'directory'})).concat(Object.keys(files).map(path=>({path,type:'file'}))),directories:dirs});
+  });
+  api.opening=safe(c=>{
+    const mode=choice(c.mode,'normal',['normal','insideError','afterClose'],'文件状态模式'),path='data/orders.txt',p=program();
+    let open,read,divide,exceptLine,caughtPrint,closedPrint,contentPrint;
+    if(mode==='insideError'){
+      p.add('try:');open=p.add('  with open("data/orders.txt", "r", encoding="utf-8") as file:');read=p.add('    content = file.read()');divide=p.add('    result = 1 / 0');exceptLine=p.add('except ZeroDivisionError:');caughtPrint=p.add('  print("捕获 ZeroDivisionError")');closedPrint=p.add('print(file.closed)');
+    }else{
+      open=p.add('with open("data/orders.txt", "r", encoding="utf-8") as file:');read=p.add('  content = file.read()');p.add('');closedPrint=p.add('print(file.closed)');contentPrint=p.add(mode==='afterClose'?'content_again = file.read()':'print(content)');
+    }
+    const r=tracer(p,{[path]:COURSE},{caughtError:null}),count=physicalLines(COURSE).length;
+    r.open(path,'r',open);r.assign('content',COURSE,'str');Object.assign(r.state.handle,{cursorLine:count,atEnd:true});r.emit('read',read,'读取内容并保存到 content。');
+    if(mode==='insideError'){
+      r.emit('raise',divide,'零除法产生异常；result 没有完成赋值。',{caughtError:{type:'ZeroDivisionError',message:'division by zero'}});
+      r.close(null,'异常使执行离开 with；进入 except 之前，文件已经自动关闭。');r.emit('catch',exceptLine,'捕获示例中的零除法异常，继续检查关闭状态。');r.print('捕获 ZeroDivisionError',caughtPrint);r.print('True',closedPrint,'在 with 外仍可访问 file.closed，结果为 True。');r.done();
+    }else{
+      r.close(null);r.print('True',closedPrint,'在 with 外仍可访问 file.closed，结果为 True。');
+      if(mode==='afterClose')r.error('ValueError','I/O operation on closed file.',contentPrint,'file 名称仍存在，但文件已关闭，不能再次 read。');
+      else{r.print(COURSE,contentPrint,'content 已经是普通字符串；文件关闭后仍可使用。');r.done();}
+    }
+    return r.finish({mode,source:COURSE,path,directories:['data']});
+  });
+  function readingSource(preset){
+    if(preset==='empty')return '';
+    if(preset==='noFinalNewline')return COURSE.slice(0,-1);
+    if(preset==='blank')return 'O001|杭州|360.00|已完成\n\nO002|上海|640.00|已完成\n';
+    return COURSE;
+  }
+  api.reading=safe(c=>{
+    const method=choice(c.method,'read',['read','readline','readlines','iterate'],'读取方法'),preset=choice(c.preset,'normal',['normal','blank','empty','noFinalNewline'],'文件预设'),times=Number(c.times===undefined?2:c.times);
+    if(![2,4].includes(times))throw new RangeError('读取次数请选择 2 次或 4 次。');
+    const source=readingSource(preset),physical=physicalLines(source),path='data/orders.txt',p=program(),open=p.add('with open("data/orders.txt", "r", encoding="utf-8") as file:');
+    let loop,read,print,closePrint;
+    if(method==='iterate'){loop=p.add('  for line in file:');print=p.add('    print(repr(line))');}
+    else{loop=p.add('  for index in range('+times+'):');read=p.add('    result = file.'+method+'()');print=p.add('    print(repr(result))');}
+    p.add('');closePrint=p.add('print(file.closed)');
+    const r=tracer(p,{[path]:source},{reads:[],activeLine:null}),length=physical.length;
+    r.open(path,'r',open);
+    if(method==='iterate'){
+      physical.forEach((line,i)=>{r.assign('line',line,'str');Object.assign(r.state.handle,{cursorLine:i+1,atEnd:i+1===length});r.state.reads.push({call:i+1,result:line,type:'str',repr:repr(line)});r.emit('read',loop,'文件迭代取出下一行，换行符仍在字符串中。',{activeLine:i});r.print(repr(line),print);});
+      r.emit('eof',loop,length?'没有下一行，for 循环结束。':'空文件没有行可迭代，循环体不执行。',{activeLine:null});
+    }else{
+      let position=0;
+      for(let i=0;i<times;i++){
+        r.assign('index',i,'int');r.emit('loop',loop,'开始第 '+(i+1)+' 次读取。');
+        const start=position;let value,type;
+        if(method==='readline'){value=position<length?physical[position++]:'';type='str';}
+        else if(method==='readlines'){value=physical.slice(position);position=length;type='list';}
+        else{value=physical.slice(position).join('');position=length;type='str';}
+        r.assign('result',value,type);Object.assign(r.state.handle,{cursorLine:position,atEnd:position===length});r.state.reads.push({call:i+1,result:clone(value),type,repr:repr(value)});
+        r.emit('read',read,(start===length?'已经在文件末尾；本次得到 '+(type==='list'?'空列表 []':'空字符串 \'\'')+'。':'从当前位置读取，保留文本中的换行符。'),{activeLine:start<length?start:null});r.print(repr(value),print);
+      }
+    }
+    r.close(null);r.print('True',closePrint);r.done();
+    return r.finish({method,preset,source,physicalLines:physical,path,times,directories:['data']});
+  });
+  const PARSE_SOURCES={normal:'O001|杭州|360.00|已完成\n',outerSpace:'  O001|杭州|360.00|已完成  \n',innerSpace:'O001 | 杭州 | 360.00 | 已完成\n',missing:'O001|杭州|360.00\n',badAmount:'O001|杭州|三百六十|已完成\n',blank:'  \t\n'};
+  api.parsing=safe(c=>{
+    const preset=choice(c.preset,'normal',Object.keys(PARSE_SOURCES),'文本预设'),cleanFields=boolean(c.cleanFields),source=PARSE_SOURCES[preset],p=program();
+    const init=p.add('line = '+repr(source)),strip=p.add('record = line.strip()'),check=p.add('if record:'),split=p.add('  fields = record.split("|")'),unpack=p.add('  order_id, city, amount_text, status = fields');
+    const trims=[];if(cleanFields)for(const name of ['order_id','city','amount_text','status'])trims.push([name,p.add('  '+name+' = '+name+'.strip()')]);
+    const make=p.add('  order = {"订单号": order_id, "城市": city,'),makeEnd=p.add('           "金额": float(amount_text), "状态": status}'),test=p.add('  is_completed = order["状态"] == "已完成"'),printOrder=p.add('  print(order)'),printTest=p.add('  print(is_completed)');p.add('else:');const skip=p.add('  print("跳过空行")');
+    const r=tracer(p,{},{});r.assign('line',source,'str');r.emit('assign',init,'取得这一行原始文本；换行符属于字符串内容。');
+    const record=source.trim();r.assign('record',record,'str');r.emit('strip',strip,'strip 返回新字符串，只清理整行两端的空白。');r.emit('check',check,record?'文本不为空，继续解析字段。':'清理后为空字符串，跳过这一行。');
+    if(!record){r.print('跳过空行',skip);r.done();return r.finish({preset,cleanFields,source,directories:[]});}
+    const fields=record.split('|');r.assign('fields',fields,'list');r.emit('split',split,'按竖线拆分，结果仍然是字符串列表。');
+    if(fields.length!==4){r.error('ValueError',fields.length<4?'not enough values to unpack (expected 4, got '+fields.length+')':'too many values to unpack (expected 4)',unpack,'四个变量需要四个字段；当前字段数量不匹配。');return r.finish({preset,cleanFields,source,directories:[]});}
+    const names=['order_id','city','amount_text','status'];names.forEach((name,i)=>r.assign(name,fields[i],'str'));r.emit('unpack',unpack,'四个字段分别绑定到有业务含义的变量。');
+    for(const [name,line] of trims){r.assign(name,r.state.vars[name].trim(),'str');r.emit('strip-field',line,'单独清理 '+name+' 两端的空白。');}
+    const amountText=r.state.vars.amount_text;
+    if(!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(amountText.trim())){r.error('ValueError','could not convert string to float: '+repr(amountText),[make,makeEnd],'金额文字不能转换为 float；order 字典没有完成赋值。');return r.finish({preset,cleanFields,source,directories:[]});}
+    const order={'订单号':r.state.vars.order_id,'城市':r.state.vars.city,'金额':Number(amountText),'状态':r.state.vars.status},orderRepr=repr(order,{'金额':'float'});
+    r.assign('order',order,'dict',orderRepr);r.emit('convert',[make,makeEnd],'金额转换为 float，其余字段仍为字符串。');const completed=order['状态']==='已完成';r.assign('is_completed',completed,'bool');r.emit('compare',test,'准确比较状态文字；字段前的空格会影响结果。');r.print(orderRepr,printOrder);r.print(repr(completed),printTest);r.done();
+    return r.finish({preset,cleanFields,source,directories:[]});
+  });
+  api.writing=safe(c=>{
+    const mode=choice(c.mode,'w',['w','a','r'],'打开模式'),method=choice(c.method,'write',['write','print','writelines'],'写入方法'),scenario=choice(c.scenario,'existing',['existing','missingFile','missingDir'],'文件预设'),newlines=boolean(c.newlines,true),runs=Number(c.runs===undefined?1:c.runs);
+    if(![1,2].includes(runs))throw new RangeError('运行次数请选择 1 次或 2 次。');
+    const path='output/summary.txt',initialText=scenario==='existing'?OLD_REPORT:null,files=initialText===null?{}:{[path]:initialText},payload=REPORT_LINES.map(x=>x+(method==='print'?'':newlines?'\n':'')),p=program(),init=p.add('lines = '+repr(payload)),loop=p.add('for run in range('+runs+'):');
+    const open=p.add('  with open("output/summary.txt", '+repr(mode)+', encoding="utf-8") as file:');let textLoop,write;
+    if(method==='writelines')write=p.add('    result = file.writelines(lines)');
+    else{textLoop=p.add('    for text in lines:');write=p.add(method==='print'?'      print(text, file=file)':'      written = file.write(text)');}
+    p.add('');const printClosed=p.add('print(file.closed)');
+    const r=tracer(p,files,{pendingText:null,run:null,writeResultType:null});
+    r.assign('lines',payload,'list');r.emit('assign',init,'准备要写入的字符串；换行由字符串或 print 的默认结尾决定。');
+    for(let run=0;run<runs;run++){
+      r.assign('run',run,'int');r.emit('loop',loop,'开始第 '+(run+1)+' 次打开并写入。',{run:run+1});
+      if(scenario==='missingDir'||(mode==='r'&&!has(r.state.files,path))){r.error('FileNotFoundError',"[Errno 2] No such file or directory: 'output/summary.txt'",open,scenario==='missingDir'?'父目录 output 不存在；open 不会替你创建目录。':'r 模式要求文件已经存在。');return r.finish({mode,method,scenario,newlines,runs,path,initialText,payload,directories:scenario==='missingDir'?[]:['output']});}
+      if(mode==='w'||!has(r.state.files,path))r.state.files[path]='';
+      const initial=r.state.files[path];r.state.pendingText=mode==='r'?null:initial;
+      r.open(path,mode,open);r.state.note=mode==='w'?'w 成功打开时，原内容已经清空。':mode==='a'?'a 保留已有内容，本次写入追加在末尾。':'r 只允许读取，不能写入。';r.trace[r.trace.length-1].note=r.state.note;
+      if(method==='writelines'){
+        if(mode==='r'){r.error('UnsupportedOperation','not writable',write,'r 模式不能写入；异常退出 with 后文件已关闭。');return r.finish({mode,method,scenario,newlines,runs,path,initialText,payload,directories:['output']});}
+        r.state.pendingText+=payload.join('');r.assign('result',null,'NoneType');r.emit('write',write,'writelines 依次写入字符串，不会自动添加换行；返回 None。',{writeResult:null,writeResultType:'NoneType'});
+      }else{
+        for(const text of payload){
+          r.assign('text',text,'str');r.emit('loop',textLoop,'取出下一段待写文本。');
+          if(mode==='r'){r.error('UnsupportedOperation','not writable',write,'r 模式不能写入；异常退出 with 后文件已关闭。');return r.finish({mode,method,scenario,newlines,runs,path,initialText,payload,directories:['output']});}
+          const actual=text+(method==='print'?'\n':'');r.state.pendingText+=actual;
+          if(method==='write'){const count=Array.from(text).length;r.assign('written',count,'int');r.emit('write',write,'write 接收字符串，返回写入的字符数；不会补上换行。',{writeResult:count,writeResultType:'int'});}
+          else r.emit('write',write,'print 的输出目标是文件；默认在文本后添加换行，屏幕没有这段输出。',{writeResult:null,writeResultType:'NoneType'});
+        }
+      }
+      r.state.files[path]=r.state.pendingText;r.state.pendingText=null;r.close(null,'离开 with，关闭文件并刷新缓冲；这里展示关闭后保存的内容。');
+    }
+    r.print('True',printClosed,'file 名称仍存在；closed 为 True。');r.done();
+    return r.finish({mode,method,scenario,newlines,runs,path,initialText,payload,directories:scenario==='missingDir'?[]:['output']});
+  });
+  return api;
+});
+</script>
+  <script>/* File lab: report workflow and controlled CSV experiments. */
+(function(root,factory){
+  'use strict';
+  const core=typeof module==='object'&&module.exports?require('./engine.js'):root.FileLabEngine;
+  const engine=factory(core||{});
+  if(typeof module==='object'&&module.exports)module.exports=engine;
+  else root.FileLabEngine=engine;
+})(typeof window!=='undefined'?window:globalThis,function(E){
+  'use strict';
+  const clone=x=>JSON.parse(JSON.stringify(x));
+  const has=(o,k)=>Object.prototype.hasOwnProperty.call(o||{},k);
+  const py=(v,t)=>E.repr(v,t);
+  const pystr=v=>JSON.stringify(String(v));
+  const money=v=>E.money(v,2);
+  const physicalLines=text=>text.match(/[^\n]*\n|[^\n]+$/g)||[];
+  const type=v=>v===null?'NoneType':typeof v==='boolean'?'bool':typeof v==='string'?'str':Array.isArray(v)?'list':typeof v==='number'?(Number.isInteger(v)?'int':'float'):'dict';
+  const bool=v=>v===true||v==='true';
+  const validBool=v=>v===undefined||v===true||v===false||v==='true'||v==='false';
+  function program(){const lines=[];return {lines,add(line){lines.push(line);return lines.length;}};}
+  function tracer(p,files,extra){
+    const trace=[];
+    const state=Object.assign({kind:'ready',line:null,lines:[],note:'尚未执行。',vars:{},varTypes:{},varReprs:{},files:clone(files),handle:null,stdout:'',done:false,error:null},clone(extra||{}));
+    function emit(kind,lines,note,patch){
+      Object.assign(state,patch||{}, {kind,note,lines:Array.isArray(lines)?lines:lines?[lines]:[]});
+      state.line=state.lines.length?state.lines[0]:null;trace.push(clone(state));
+    }
+    function set(name,value,kind,representation){
+      state.vars[name]=clone(value);state.varTypes[name]=kind||type(value);
+      state.varReprs[name]=representation===undefined?py(value,kind):representation;
+    }
+    function output(text,line,note){state.stdout+=text;emit('print',line,note||'执行 print，产生屏幕输出。');}
+    function open(path,mode,line,note,scope){
+      if(mode==='w')state.files[path]='';
+      const totalLines=physicalLines(state.files[path]||'').length;
+      state.handle={path,mode,closed:false,cursorLine:0,totalLines,atEnd:totalLines===0,scope:scope||'<module>'};
+      emit('open',line,note||'打开文件，创建本次文件对象。');
+    }
+    function close(line,note){if(state.handle)state.handle.closed=true;emit('close',line,note||'离开 with，文件对象自动关闭。');}
+    function error(kind,message,line,note){emit('error',line,note||'发生异常，后续语句不再执行。',{error:{type:kind,message},done:true});}
+    function end(){emit('done',[],'本次程序执行结束。',{done:true,stage:'done',activeLine:null,activeIndex:null,activeRecord:null});}
+    emit('ready',[],'先观察输入文件，再预测程序会生成怎样的结果。');
+    return {state,trace,emit,set,output,open,close,error,end,finish(meta){return Object.assign({ok:true,error:null,code:p.lines.join('\n'),lines:p.lines.slice(),trace,outcome:clone(trace[trace.length-1])},meta||{});}};
+  }
+  function invalid(message){return {ok:false,error:message,code:'',lines:[],trace:[],outcome:null};}
+  const COURSE='O001|杭州|360.00|已完成\nO002|上海|640.00|已完成\nO003|宁波|520.00|已退款\n';
+  const REPORT_SOURCES={
+    course:COURSE,
+    extended:COURSE+'O004|杭州|120.00|已完成\nO005|上海|200.00|已退款\n',
+    blank:'\n  \n'+COURSE.replace('O002','\nO002')+' \t\n',
+    refundOnly:'O003|宁波|520.00|已退款\nO005|上海|200.00|已退款\n',
+    badAmount:'O001|杭州|360.00|已完成\nO002|上海|待确认|已完成\nO003|宁波|520.00|已退款\n'
+  };
+  const EXPECTED={course:[2,1000],extended:[3,1120],blank:[2,1000],refundOnly:[0,0],badAmount:null};
+  const OLD_REPORT='上次统计报告\n此报告尚未更新\n';
+  const orderRepr=order=>py(order,{'金额':'float'});
+  const summaryRepr=summary=>py(summary,{'已完成金额':'float'});
+  E.report=function(config){
+    const c=config||{},preset=c.preset||'course';
+    if(!has(REPORT_SOURCES,preset))return invalid('请选择页面提供的订单文件。');
+    if(!validBool(c.includeRefunds))return invalid('请选择是否把退款订单也计入统计。');
+    const includeRefunds=bool(c.includeRefunds),source=REPORT_SOURCES[preset],expected=EXPECTED[preset],p=program();
+    const imp=p.add('from pathlib import Path');p.add('');
+    const parseDef=p.add('def parse_order(line):');
+    const unpack=p.add('  order_id, city, amount_text, status = line.strip().split("|")');
+    const convert=p.add('  return {"订单号": order_id, "城市": city,');
+    const convert2=p.add('          "金额": float(amount_text), "状态": status}');p.add('');
+    const readDef=p.add('def read_orders(file_path):');
+    const readInit=p.add('  orders = []');
+    const readOpen=p.add('  with open(file_path, "r", encoding="utf-8") as file:');
+    const readLoop=p.add('    for line in file:');
+    const nonblank=p.add('      if line.strip():');
+    const append=p.add('        orders.append(parse_order(line))');
+    const readReturn=p.add('  return orders');p.add('');
+    const summaryDef=p.add('def summarize_orders(orders):');
+    const countInit=p.add('  completed_count = 0');
+    const amountInit=p.add('  completed_amount = 0.0');
+    const summaryLoop=p.add('  for order in orders:');
+    const condition=p.add(includeRefunds?'    if True:  # 故意改错：所有状态都计入':'    if order["状态"] == "已完成":');
+    const countAdd=p.add('      completed_count += 1');
+    const amountAdd=p.add('      completed_amount += order["金额"]');
+    const summaryReturn=p.add('  return {"已完成订单": completed_count, "已完成金额": completed_amount}');p.add('');
+    const writeDef=p.add('def write_report(file_path, summary):');
+    const writeOpen=p.add('  with open(file_path, "w", encoding="utf-8") as file:');
+    const titleWrite=p.add('    print("订单统计报告", file=file)');
+    const countWrite=p.add('    print(f"已完成订单：{summary[\'已完成订单\']}笔", file=file)');
+    const amountWrite=p.add('    print(f"已完成金额：{summary[\'已完成金额\']:.2f}元", file=file)');p.add('');
+    const original=p.add('original_text = Path("data/orders.txt").read_text(encoding="utf-8")');
+    const receiveOrders=p.add('orders = read_orders("data/orders.txt")');
+    const receiveSummary=p.add('summary = summarize_orders(orders)');
+    const writeCall=p.add('write_report("output/summary.txt", summary)');
+    const reopen=p.add('with open("output/summary.txt", "r", encoding="utf-8") as file:');
+    const reread=p.add('  report = file.read()');
+    const reportPrint=p.add('print(report, end="")');p.add('');
+    let expectedLine,countCheck,amountCheck,sourceCheck,checksLine,verifiedPrint;
+    if(expected){
+      p.add('# 按业务规则独立核验，不把程序算出的 summary 当作正确答案');
+      expectedLine=p.add('expected_count, expected_amount = '+expected[0]+', '+py(expected[1],'float'));
+      countCheck=p.add('count_ok = f"已完成订单：{expected_count}笔\\n" in report');
+      amountCheck=p.add('amount_ok = f"已完成金额：{expected_amount:.2f}元\\n" in report');
+      sourceCheck=p.add('source_ok = Path("data/orders.txt").read_text(encoding="utf-8") == original_text');
+      checksLine=p.add('checks = {"订单数量": count_ok, "订单金额": amount_ok, "原始数据未变": source_ok}');
+      verifiedPrint=p.add('print("核验通过：", all(checks.values()))');
+    }
+    const r=tracer(p,{'data/orders.txt':source,'output/summary.txt':OLD_REPORT},{stage:'ready',activeLine:null,activeIndex:null,rawLine:null,records:[],recordLines:[],lineStates:{},selected:[],stats:null,pendingText:null,verification:null,sourceIntact:null,currentOrder:null,condition:null});
+    r.emit('define',[imp,parseDef,readDef,summaryDef,writeDef],'导入 Path 并建立四个函数；此时还没有处理订单。');
+    r.set('original_text',source);r.emit('read',original,'保存一份原始文本，供最后核对输入是否保持不变。',{stage:'read'});
+    r.emit('assign',readInit,'read_orders 创建一个空列表，用于保存成功解析的订单。');
+    r.open('data/orders.txt','r',readOpen,'用只读模式打开订单文件。','read_orders');
+    const physical=physicalLines(source),records=[];
+    for(let i=0;i<physical.length;i++){
+      const line=physical[i];r.state.handle.cursorLine=i+1;r.state.handle.atEnd=i+1===physical.length;
+      r.state.lineStates[i]='read';r.emit('read',readLoop,'读取第 '+(i+1)+' 个物理行，行末换行符仍在字符串中。',{stage:'read',activeLine:i,rawLine:line,currentOrder:null});
+      const record=line.trim();
+      if(!record){r.state.lineStates[i]='skipped';r.emit('skip',nonblank,'这一行清理后为空，跳过它，不创建订单。');continue;}
+      const fields=record.split('|');
+      r.emit('parse',unpack,'按竖线拆分四个文本字段，进入 parse_order。',{stage:'parse'});
+      const amount=Number(fields[2]);
+      if(fields.length!==4||!Number.isFinite(amount)||fields[2].trim()===''){
+        const message=fields.length!==4?'not enough values to unpack (expected 4, got '+fields.length+')':"could not convert string to float: "+py(fields[2]);
+        r.state.lineStates[i]='error';r.emit('raise',fields.length!==4?unpack:[convert,convert2],'这条记录不能完成转换；异常开始向外传递。',{pendingError:{type:'ValueError',message}});
+        r.close(readOpen,'异常离开 read_orders 的 with，输入文件仍会自动关闭。');
+        r.error('ValueError',message,fields.length!==4?unpack:[convert,convert2],'读取订单失败，统计和写报告都没有执行。旧报告保持原样。');
+        return r.finish({preset,includeRefunds,source,physicalLines:physical,initialReport:OLD_REPORT});
+      }
+      const order={'订单号':fields[0],'城市':fields[1],'金额':amount,'状态':fields[3]};
+      r.emit('parse',[convert,convert2],'金额文本转换为 float，parse_order 交回一条订单字典。',{currentOrder:order});
+      records.push(order);r.state.records=clone(records);r.state.recordLines.push(i);r.state.lineStates[i]='parsed';
+      r.emit('append',append,'将这条已经解析成功的订单追加到列表。');
+    }
+    r.close(readOpen,'订单文件遍历结束，离开 with，输入文件自动关闭。');
+    r.emit('return',readReturn,'read_orders 返回订单列表；列表中包含全部成功解析的记录。',{activeLine:null,currentOrder:null});
+    r.set('orders',records,'list','['+records.map(orderRepr).join(', ')+']');
+    r.emit('receive',receiveOrders,'调用者接收 orders，接下来按业务规则统计。');
+    r.state.stats={count:0,amount:0};r.emit('assign',[countInit,amountInit],'统计函数初始化数量 0 和金额 0.0。',{stage:'summarize',activeIndex:null});
+    for(let i=0;i<records.length;i++){
+      const order=records[i];r.emit('take',summaryLoop,'取出第 '+(i+1)+' 笔订单，准备判断状态。',{activeIndex:i,currentOrder:order,condition:null});
+      const qualifies=includeRefunds||order['状态']==='已完成';
+      r.emit('check',condition,qualifies?'这条记录满足当前代码中的统计条件。':'这条记录是已退款，不计入已完成订单统计。',{condition:{result:qualifies,expression:includeRefunds?'True':'order["状态"] == "已完成"'}});
+      if(qualifies){
+        r.state.selected.push(i);r.state.stats.count+=1;r.emit('compute',countAdd,'当前代码的累计订单数量加 1。');
+        r.state.stats.amount+=order['金额'];r.emit('compute',amountAdd,'将当前订单金额加入累计金额。');
+      }
+    }
+    const summary={'已完成订单':r.state.stats.count,'已完成金额':r.state.stats.amount};
+    r.emit('return',summaryReturn,'统计函数把数量和金额放入返回字典。',{activeIndex:null,currentOrder:null,condition:null});
+    r.set('summary',summary,'dict',summaryRepr(summary));r.emit('receive',receiveSummary,'调用者接收 summary，作为写报告的输入。');
+    r.state.stage='write';r.state.pendingText='';
+    r.open('output/summary.txt','w',writeOpen,'w 成功打开报告文件，旧内容立即被清空。','write_report');
+    [['订单统计报告\n',titleWrite],['已完成订单：'+summary['已完成订单']+'笔\n',countWrite],['已完成金额：'+money(summary['已完成金额'])+'元\n',amountWrite]].forEach(([text,line])=>{
+      r.state.pendingText+=text;r.emit('write',line,'print(..., file=file) 将一行文本交给文件对象，默认添加换行；屏幕没有这行输出。');
+    });
+    r.state.files['output/summary.txt']=r.state.pendingText;r.state.pendingText=null;
+    r.close(writeOpen,'离开 with，关闭文件并完成缓冲写入。现在可以重新打开核对报告。');
+    r.emit('return',writeCall,'write_report 已完成；原始订单文件没有被写入。');
+    r.state.stage='verify';r.open('output/summary.txt','r',reopen,'以只读模式重新打开刚才保存的报告。');
+    const report=r.state.files['output/summary.txt'];r.set('report',report);r.state.handle.cursorLine=physicalLines(report).length;r.state.handle.atEnd=true;
+    r.emit('read',reread,'读取报告文件中的实际内容，保存到 report。');
+    r.close(reopen,'报告读取完成，关闭文件。');
+    r.output(report,reportPrint,'把重新读到的报告输出到屏幕。');
+    r.set('expected_count',expected[0]);r.set('expected_amount',expected[1],'float');
+    r.emit('assign',expectedLine,'独立业务期望只统计已完成订单，用来检查程序结果。');
+    const countOk=report.includes('已完成订单：'+expected[0]+'笔\n');
+    const amountOk=report.includes('已完成金额：'+money(expected[1])+'元\n');
+    r.set('count_ok',countOk);r.emit('check',countCheck,'核对报告中的订单数量。');
+    r.set('amount_ok',amountOk);r.emit('check',amountCheck,'核对报告中的订单金额。');
+    const sourceOk=r.state.files['data/orders.txt']===r.state.vars.original_text;
+    r.set('source_ok',sourceOk);r.emit('check',sourceCheck,'重新读取原始文件，与处理前的文本比较。',{sourceIntact:sourceOk});
+    const checks={'订单数量':countOk,'订单金额':amountOk,'原始数据未变':sourceOk};r.set('checks',checks);
+    const verification={passed:countOk&&amountOk&&sourceOk,count:{expected:expected[0],actual:summary['已完成订单'],passed:countOk},amount:{expected:expected[1],actual:summary['已完成金额'],passed:amountOk},source:{passed:sourceOk}};
+    r.emit('check',checksLine,'汇总三项核验。程序能够运行结束，不代表它符合业务规则。',{verification});
+    r.output('核验通过： '+(verification.passed?'True':'False')+'\n',verifiedPrint,verification.passed?'三项核验全部通过，可以下载这份报告。':'核验未通过。请检查统计条件；当前报告不能作为正确结果使用。');
+    r.end();
+    return r.finish({preset,includeRefunds,source,physicalLines:physical,initialReport:OLD_REPORT});
+  };
+
+  const CSV_BASE='订单号,城市,金额,状态\nO001,杭州,360.00,已完成\nO002,上海,640.00,已完成\nO003,宁波,520.00,已退款\n';
+  const CSV_SOURCES={
+    simple:CSV_BASE,
+    comma:CSV_BASE.replace('O001,杭州,','O001,"杭州,滨江",'),
+    quote:CSV_BASE.replace('O001,杭州,','O001,"杭州""滨江""",'),
+    multiline:CSV_BASE.replace('O001,杭州,','O001,"杭州\n滨江",'),
+    bom:'\ufeff'+CSV_BASE
+  };
+  function csvRecords(text){
+    const records=[];let fields=[],field='',quoted=false,line=1,start=1,recordStarted=false;
+    function row(){fields.push(field);records.push({values:fields,startLine:start,endLine:line});fields=[];field='';recordStarted=false;start=line+1;}
+    for(let i=0;i<text.length;i++){
+      const ch=text[i];
+      if(quoted){
+        if(ch==='"'){if(text[i+1]==='"'){field+='"';i++;}else quoted=false;}
+        else {field+=ch;if(ch==='\n')line++;}
+        recordStarted=true;continue;
+      }
+      if(ch==='"'&&field===''){quoted=true;recordStarted=true;}
+      else if(ch===','){fields.push(field);field='';recordStarted=true;}
+      else if(ch==='\n'){row();line++;}
+      else if(ch==='\r'&&text[i+1]==='\n'){row();line++;i++;}
+      else {field+=ch;recordStarted=true;}
+    }
+    if(recordStarted||fields.length||field!=='')row();
+    return records;
+  }
+  E.csv=function(config){
+    const c=config||{},preset=c.preset||'simple',encoding=c.encoding||'utf-8-sig';
+    if(!has(CSV_SOURCES,preset))return invalid('请选择页面提供的 CSV 示例。');
+    if(!['utf-8','utf-8-sig'].includes(encoding))return invalid('请选择 UTF-8 或 UTF-8-sig 编码。');
+    const source=CSV_SOURCES[preset],text=encoding==='utf-8-sig'&&source.startsWith('\ufeff')?source.slice(1):source;
+    const p=program(),imp=p.add('import csv');p.add('');
+    const readOpen=p.add('with open("data/orders.csv", "r", encoding='+pystr(encoding)+', newline="") as file:');
+    const readText=p.add('  text = file.read()');p.add('');
+    const naiveInit=p.add('naive_rows = []');
+    const naiveLoop=p.add('for line in text.splitlines():');
+    const naiveAppend=p.add('  naive_rows.append(line.split(","))');
+    const naivePrint=p.add('print(naive_rows[1])');p.add('');
+    const csvOpen=p.add('with open("data/orders.csv", "r", encoding='+pystr(encoding)+', newline="") as file:');
+    const readerLine=p.add('  reader = csv.DictReader(file)');
+    const fieldsLine=p.add('  fieldnames = reader.fieldnames');
+    const rowsInit=p.add('  rows = []');
+    const csvLoop=p.add('  for row in reader:');
+    const csvAppend=p.add('    rows.append(row)');p.add('');
+    const fieldsPrint=p.add('print(fieldnames)');
+    const accessLoop=p.add('for row in rows:');
+    const accessPrint=p.add('  print(row["订单号"], row["城市"], row["金额"], row["状态"])');
+    const r=tracer(p,{'data/orders.csv':source},{stage:'ready',naiveRows:[],fieldnames:null,rows:[],activeLine:null,activeRecord:null});
+    r.emit('import',imp,'导入 csv 标准库。');
+    r.open('data/orders.csv','r',readOpen,'按选定编码打开 CSV 文本；newline="" 让 csv 按格式处理换行。');
+    r.set('text',text);r.state.handle.cursorLine=physicalLines(source).length;r.state.handle.atEnd=true;
+    r.emit('read',readText,source.startsWith('\ufeff')?(encoding==='utf-8-sig'?'UTF-8-sig 解码时移除了文件开头的 BOM。':'UTF-8 解码后保留开头的 BOM 字符。'):'读取 CSV 文本。');
+    r.close(readOpen,'读取完整文本后关闭文件。');
+    r.set('naive_rows',[],'list');r.emit('assign',naiveInit,'先用简单拆分做对照。',{stage:'naive'});
+    const textLines=text.split(/\r\n|\n|\r/);if(textLines[textLines.length-1]==='')textLines.pop();
+    textLines.forEach((line,i)=>{
+      r.set('line',line);r.emit('take',naiveLoop,'取出第 '+(i+1)+' 个物理行。',{activeLine:i});
+      const fields=line.split(',');r.state.naiveRows.push(fields);r.set('naive_rows',r.state.naiveRows,'list');
+      r.emit('append',naiveAppend,'split(",") 逢逗号就拆分，不理解 CSV 的引号规则。');
+    });
+    r.output(py(r.state.naiveRows[1])+'\n',naivePrint,'显示第一条数据所在物理行的简单拆分结果。');
+    r.state.stage='csv';r.state.activeLine=null;
+    r.open('data/orders.csv','r',csvOpen,'重新打开文件，从文件开头用 CSV 规则读取。');
+    r.emit('assign',readerLine,'创建 DictReader；读取表头和记录在后续步骤发生。');
+    const parsed=csvRecords(text),fieldnames=parsed[0].values;
+    r.set('fieldnames',fieldnames,'list');r.state.fieldnames=fieldnames;r.state.handle.cursorLine=parsed[0].endLine;r.state.handle.atEnd=parsed.length===1;
+    r.emit('read',fieldsLine,'读取表头，作为每条订单字典的键。',{activeLine:0});
+    r.set('rows',[],'list');r.emit('assign',rowsInit,'创建用于保存 CSV 记录的列表。');
+    parsed.slice(1).forEach((record,i)=>{
+      const row={};fieldnames.forEach((name,index)=>row[name]=record.values[index]===undefined?null:record.values[index]);
+      r.set('row',row,'dict');r.state.handle.cursorLine=record.endLine;r.state.handle.atEnd=i===parsed.length-2;
+      r.emit('read',csvLoop,record.endLine>record.startLine?'引号中的换行属于字段内容；这条 CSV 记录跨越两个物理行。':'DictReader 按 CSV 规则读取一条完整记录。',{activeRecord:i,activeLine:record.startLine-1});
+      r.state.rows.push(row);r.set('rows',r.state.rows,'list');r.emit('append',csvAppend,'保存这条订单字典。金额字段仍是字符串，还没有做 float 转换。');
+    });
+    r.close(csvOpen,'CSV 记录读取完成，离开 with 自动关闭文件。');
+    r.output(py(fieldnames)+'\n',fieldsPrint,'输出 DictReader 实际使用的字段名。');
+    r.state.stage='access';
+    for(let i=0;i<r.state.rows.length;i++){
+      const row=r.state.rows[i];r.set('row',row,'dict');r.emit('take',accessLoop,'按标准字段名读取第 '+(i+1)+' 条记录。',{activeRecord:i,activeLine:null});
+      if(!has(row,'订单号')){
+        r.error('KeyError',py('订单号'),accessPrint,'首个键带有 BOM，字典中没有精确匹配的“订单号”键。改用 UTF-8-sig 再比较。');
+        return r.finish({preset,encoding,source,physicalLines:physicalLines(source)});
+      }
+      r.output([row['订单号'],row['城市'],row['金额'],row['状态']].join(' ')+'\n',accessPrint,'用字段名读取四个字符串并输出。');
+    }
+    r.end();
+    return r.finish({preset,encoding,source,physicalLines:physicalLines(source)});
+  };
+  E.extraDefaults={reportSources:clone(REPORT_SOURCES),csvSources:clone(CSV_SOURCES),oldReport:OLD_REPORT};
+  return E;
+});
+</script>
+  <script>(function(root){
+  'use strict';
+  const esc=value=>String(value==null?'':value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const has=(o,k)=>Object.prototype.hasOwnProperty.call(o||{},k);
+  const button=(action,value,label,active,key)=>'<button type="button" data-action="'+esc(action)+'" data-value="'+esc(value)+'"'+(key?' data-key="'+esc(key)+'"':'')+' aria-pressed="'+!!active+'">'+esc(label)+'</button>';
+  const tabs=(items,current,action,key)=>'<div class="segmented">'+items.map(x=>button(action||'set-mode',x[0],x[1],String(current)===String(x[0]),key)).join('')+'</div>';
+  const field=(id,key,label,value,hint)=>'<div class="single-field"><label class="control-label" for="'+id+'-'+key+'">'+esc(label)+'</label><input id="'+id+'-'+key+'" type="text" data-field="'+id+'.'+key+'" value="'+esc(value)+'" maxlength="120" spellcheck="false" autocomplete="off">'+(hint?'<p class="hint">'+esc(hint)+'</p>':'')+'</div>';
+  const errorText=error=>typeof error==='string'?error:error?((error.type||error.name||'')+(error.message?': '+error.message:'')):'请检查输入。';
+  const invalid=model=>'<div class="error-message" role="status"><strong>'+esc(errorText(model.error))+'</strong><p>请修改实验参数后再执行。</p></div>';
+  const metric=(label,value,foot)=>'<div class="flow-metric"><span>'+esc(label)+'</span><strong>'+esc(value===undefined?'—':value)+'</strong>'+(foot?'<small>'+esc(foot)+'</small>':'')+'</div>';
+  const empty={vars:{},varTypes:{},varReprs:{},files:{},handle:null,stdout:'',done:false,error:null};
+  const frame=(model,cursor)=>model.ok?root.FileLabEngine.stateAt(model,cursor):empty;
+  const value=(f,key,format)=>has(f.vars,key)?(format?format(f.vars[key]):f.vars[key]):undefined;
+  function variableTable(names,f){
+    return '<div class="fl-variables">'+names.map(name=>'<div><code>'+esc(name)+'</code><strong>'+esc(has(f.vars,name)?has(f.varReprs,name)?f.varReprs[name]:root.FileLabEngine.repr(f.vars[name],(f.varTypes||{})[name]):'尚未赋值')+'</strong></div>').join('')+'</div>';
+  }
+  function filePaper(path,text,options){
+    const o=options||{};
+    return '<section class="fl-file-paper '+esc(o.className||'')+'"><div class="fl-paper-head"><span class="fl-file-icon" aria-hidden="true">▤</span><code>'+esc(path)+'</code>'+(o.status?'<span class="pill">'+esc(o.status)+'</span>':'')+'</div><pre>'+esc(text===undefined?'文件不存在':text===''?'（空文件）':text)+'</pre></section>';
+  }
+  function handleCard(f){
+    const h=f.handle;
+    return '<section class="fl-handle '+(h&&!h.closed?'is-open':h?'is-closed':'')+'"><div class="fl-handle-heading"><h3>文件对象 <code>file</code></h3><span class="pill">'+(!h?'尚未打开':h.closed?'已关闭':'已打开')+'</span></div>'+
+      '<div class="fl-handle-properties"><span>模式</span><code>'+esc(h?h.mode:'—')+'</code><span>file.closed</span><code>'+esc(h?h.closed?'True':'False':'尚未创建')+'</code></div>'+
+      (h?'<p class="hint">'+esc(h.closed?'名称仍可引用这个对象；读写操作已不可用。':'文件已打开，可执行当前模式允许的操作。')+'</p>':'')+'</section>';
+  }
+  root.FileLabUI={esc,has,button,tabs,field,errorText,invalid,metric,frame,value,variableTable,filePaper,handleCard};
+})(window);
+</script>
+  <script>(function(root){
+  'use strict';
+  const V=root.FileLabViews=root.FileLabViews||{},U=root.FileLabUI,E=root.FileLabEngine;
+  const esc=U.esc,has=U.has;
+  const label=s=>'<span class="control-label">'+s+'</span>';
+  const opts=(items,value,key)=>U.tabs(items,value,'set-option',key);
+  const group=(heading,html)=>'<div class="flow-wide">'+label(heading)+html+'</div>';
+  const wrap=(s,model,controls,visual,summary)=>({controls,visual:model.ok?visual:U.invalid(model),summary,model,frame:U.frame(model,s.cursor),code:model.code||'# 请先检查实验参数。'});
+  const py=(v,type)=>esc(E.repr(v,type));
+  const slot=(f,key)=>has(f.vars,key)?has(f.varReprs,key)?esc(f.varReprs[key]):py(f.vars[key],(f.varTypes||{})[key]):'<span class="flow-muted">尚未执行到这一步</span>';
+
+  V.paths=function(s){
+    const model=E.paths(s),f=U.frame(model,s.cursor),cwd=model.cwd||({project:'/python-course',data:'/python-course/data',outside:'/'}[s.cwd]);
+    const controls=group('当前工作目录',opts([['project','项目文件夹'],['data','进入 data 文件夹'],['outside','文件系统根目录']],s.cwd,'cwd'))+
+      '<div class="flow-wide">'+U.field('paths','target','代码中使用的路径',s.target,'可以修改文件名，或试试 . 与 ..；最多 120 个字符。')+'</div>'+
+      group('快速比较',opts([['data/orders.txt','data/orders.txt'],['orders.txt','orders.txt'],['../data/orders.txt','../data/orders.txt'],['/python-course/data/orders.txt','绝对路径']],s.target,'target'));
+    const nodes=[['/','根目录 /',0,true],['/python-course','python-course/',1,true],['/python-course/data','data/',2,true],['/python-course/data/orders.txt','orders.txt',3,false],['/python-course/output','output/',2,true],['/python-course/output/summary.txt','summary.txt',3,false]];
+    const resolved=f.resolvedPath;
+    const visual='<div class="visual-header"><h2>相对路径从当前工作目录出发</h2><span class="pill">示例项目</span></div>'+
+      '<div class="fl-path-layout"><section class="fl-project-tree" aria-label="示例目录结构">'+nodes.map(n=>'<div class="fl-tree-row '+(cwd===n[0]?'is-cwd':'')+' '+(resolved===n[0]?'is-target':'')+'" style="--depth:'+n[2]+'"><span class="fl-tree-symbol" aria-hidden="true">'+(n[3]?'▸':'▤')+'</span><code>'+esc(n[1])+'</code>'+(cwd===n[0]?'<span class="fl-tree-tag">当前目录</span>':'')+'</div>').join('')+'</section>'+
+      '<section class="fl-path-resolution"><div><span>设定的当前工作目录</span><code>'+esc(cwd)+'</code></div><div><span>传给 Path 的路径</span><code>'+esc(s.target)+'</code></div><div class="fl-path-target"><span>程序解析后的完整路径</span><code>'+esc(resolved||'等待 resolve()')+'</code></div><div class="fl-path-exists"><span>exists() 检查结果</span><strong>'+esc(has(f,'exists')&&f.exists!==null?(f.exists?'True':'False'):'尚未检查')+'</strong></div></section></div>'+
+      (f.error?'<div class="notice">先对照当前目录与完整路径，再检查文件名和所在层级。</div>':'');
+    const summary='<div class="rule-note"><strong>同一段相对路径，起点不同，找到的位置也会不同。</strong><p>这里的 <code>data/orders.txt</code> 表示“从当前工作目录进入 data，再找 orders.txt”。如果已经进入 data，继续使用这段路径，就会多找一层 data。</p><p><code>..</code> 表示上一层目录。绝对路径从文件系统的根开始，与当前工作目录无关；相对路径更便于整体移动项目。</p><p>本实验使用 <code>/python-course</code> 表示示例项目。Windows 的绝对路径通常还包含盘符，例如 <code>C:/python-course/data/orders.txt</code>。实际运行时用 <code>Path.cwd()</code> 确认起点。</p><p><code>exists()</code> 检查路径是否存在。它不能单独保证该位置是可读取的文本文件，例如目录也可以存在。</p></div>';
+    return wrap(s,model,controls,visual,summary);
+  };
+
+  V.opening=function(s){
+    const model=E.opening(s),f=U.frame(model,s.cursor),path=f.handle&&f.handle.path||'data/orders.txt';
+    const controls=group('比较离开 with 的方式',U.tabs([['normal','正常读取并离开'],['insideError','块内发生异常'],['afterClose','关闭后再次读取']],s.mode));
+    const visual='<div class="visual-header"><h2>离开 with，文件关闭；读到的字符串仍可使用</h2><span class="pill">文件状态</span></div>'+
+      '<div class="fl-two-columns">'+U.filePaper(path,f.files[path],{status:'示例文件'})+U.handleCard(f)+'</div>'+
+      '<section class="fl-value-panel"><h3>变量 <code>content</code> 已接收到什么？</h3><pre>'+slot(f,'content')+'</pre></section>'+
+      (s.mode==='insideError'?'<p class="hint">此处的 try/except 只用于展示异常之后的关闭状态；观察 file.closed 何时变成 True。</p>':'')+
+      (f.error?'<div class="notice">仍能访问 file.closed，但已关闭的文件对象不能再执行 read()。</div>':'');
+    const summary='<div class="rule-note"><strong>with 管理文件的使用过程，不创建独立的变量作用域。</strong><p><code>open()</code> 返回文件对象，<code>as file</code> 将它交给名称 file。进入代码块后，可以通过它读取内容。</p><p>正常走完代码块，或因异常离开代码块，文件都会关闭。块外仍能查看 <code>file.closed</code>，但再次读取会产生 <code>ValueError</code>。</p><p><code>content</code> 保存的是已经读到的字符串。关闭文件不会清除这个字符串，因此它仍能用于后续处理。</p></div>';
+    return wrap(s,model,controls,visual,summary);
+  };
+
+  V.reading=function(s){
+    const model=E.reading(s),f=U.frame(model,s.cursor),handle=f.handle;
+    const controls=group('读取方法',opts([['read','read()：剩余全文'],['readline','readline()：下一行'],['readlines','readlines()：剩余行列表'],['iterate','for line in file']],s.method,'method'))+
+      group('文件内容',opts([['normal','三条订单'],['blank','包含空行'],['noFinalNewline','末行没有换行符'],['empty','空文件']],s.preset,'preset'))+
+      (s.method!=='iterate'?group('在同一个文件对象上连续读取',opts([[2,'读取 2 次'],[4,'读取 4 次']],s.times,'times')):'');
+    const source=model.source||'',lines=model.physicalLines||source.match(/[^\n]*\n|[^\n]+$/g)||[];
+    const consumed=handle?Number(handle.cursorLine)||0:0,atEnd=handle&&handle.atEnd;
+    const lineView=lines.length?lines.map((text,i)=>'<div class="fl-source-line '+(handle&&i<consumed?'is-read':'')+' '+(handle&&!handle.closed&&!atEnd&&i===consumed?'is-next':'')+'"><span class="fl-source-number">'+(i+1)+'</span><code>'+py(text)+'</code>'+(handle&&!handle.closed&&!atEnd&&i===consumed?'<span class="fl-line-tag">下一行</span>':'')+'</div>').join(''):'<div class="fl-empty">文件没有任何字符。</div>';
+    const reads=f.reads||[];
+    const visual='<div class="visual-header"><h2>读取会向前移动，同一个对象不会自动回到开头</h2><span class="pill">'+(!handle?'尚未打开':handle.closed?'文件已关闭':atEnd?'已到文件末尾':'下一行：'+(consumed+1))+'</span></div>'+
+      '<div class="fl-read-layout"><section class="fl-source-lines"><h3>文件中的物理行 <span>用 repr 显示换行符</span></h3>'+lineView+'</section>'+
+      '<section class="fl-read-results"><h3>已经读到的结果</h3>'+(reads.length?reads.map((r,i)=>'<div class="fl-read-result"><div><span>第 '+(i+1)+' 次</span><code>'+esc(r.type||'str')+'</code></div><pre>'+esc(r.repr!==undefined?r.repr:E.repr(r.result,r.type))+'</pre></div>').join(''):'<p class="fl-empty">等待第一次读取。</p>')+'</section></div>'+
+      '<p class="hint">左侧标记已读的行和下一次读取位置；这是逻辑示意，不是字节偏移或 tell() 返回值。</p>';
+    const summary='<div class="rule-note"><strong>方法决定一次拿多少，当前位置决定从哪里拿。</strong><p><code>read()</code> 返回剩余全文组成的字符串；<code>readline()</code> 返回下一行字符串；<code>readlines()</code> 返回剩余各行组成的列表。直接遍历文件对象，则每次处理一行。</p><p>到达末尾以后，read 和 readline 返回 <code>\'\'</code>，readlines 返回 <code>[]</code>。真正的空行是 <code>\'\\n\'</code>，仍然是一行内容。</p><p>末行如果没有换行符，读取时也不会凭空添加。重新打开文件可以从头读取；本实验的“从头演示”会恢复起始状态再执行。</p><p>整体读取会一次保存剩余内容。逐行遍历便于一边读取一边处理；如果又把每条记录加入列表，列表仍会占用随记录数增长的内存。</p></div>';
+    return wrap(s,model,controls,visual,summary);
+  };
+
+  V.parsing=function(s){
+    const model=E.parsing(s),f=U.frame(model,s.cursor),v=f.vars||{};
+    const controls=group('选择原始行',opts([['normal','课件订单'],['outerSpace','行首尾有空白'],['innerSpace','字段之间有空白'],['missing','少一个字段'],['badAmount','金额不是数字'],['blank','只有空白字符']],s.preset,'preset'))+
+      group('字段清理规则',opts([['false','只清理整行两端'],['true','再清理各字段两端']],String(s.cleanFields),'cleanFields'));
+    const fields=has(v,'fields')?v.fields:null;
+    const visual='<div class="visual-header"><h2>文本先拆成字段，再把金额转换成数值</h2><span class="pill">逐步转换</span></div>'+
+      '<div class="fl-text-stages"><section><h3>输入的一行</h3><pre>'+py(model.source||'')+'</pre></section><section><h3>strip() 后的 record</h3><pre>'+slot(f,'record')+'</pre></section></div>'+
+      '<section class="fl-fields"><h3>split("|") 得到的字符串列表</h3><div>'+(fields?fields.map((x,i)=>'<div class="fl-field-cell"><span>fields['+i+']</span><code>'+py(x)+'</code></div>').join(''):'<p class="fl-empty">尚未拆分。</p>')+'</div></section>'+
+      '<div class="fl-two-columns"><section class="fl-value-panel"><h3>按四个名称接收字段</h3>'+U.variableTable(['order_id','city','amount_text','status'],f)+'</section><section class="fl-value-panel"><h3>转换后的订单字典</h3><pre>'+slot(f,'order')+'</pre>'+(has(v,'order')?'<p class="hint">金额为 float；订单号、城市和状态仍为 str。</p>':'')+'</section></div>'+
+      (has(v,'is_completed')?'<div class="fl-comparison"><code>order["状态"] == "已完成"</code><strong>'+esc(v.is_completed?'True':'False')+'</strong></div>':'')+
+      (f.error?'<div class="notice">停在发生错误的位置；后面的订单字典或统计判断不会提前生成。</div>':'');
+    const summary='<div class="rule-note"><strong>文件读出来是文本，业务计算需要明确字段和类型。</strong><p><code>strip()</code> 返回清理两端空白后的新字符串，不会修改原文件，也不会删除字符串中间的空格。先判断清理结果是否为空，可以跳过空行。</p><p><code>split("|")</code> 按竖线拆出字符串列表。四个变量必须恰好对应四个字段；缺少字段时，解包会产生 <code>ValueError</code>。</p><p>金额用 <code>float(amount_text)</code> 转换。不能转换的文本会报错；原本表示数字的字符串也不会自动变成数值。</p><p>“字段之间有空白”可用来观察整行 strip 的边界。状态前的空格会影响精确比较；清理每个字段是额外、明确的数据清洗步骤。</p></div>';
+    return wrap(s,model,controls,visual,summary);
+  };
+
+  V.writing=function(s){
+    const model=E.writing(s),f=U.frame(model,s.cursor),path='output/summary.txt',saved=has(f.files,path)?f.files[path]:undefined,handle=f.handle;
+    const controls=group('打开模式',U.tabs([['w','w：重新写入'],['a','a：追加内容'],['r','r：尝试写入只读文件']],s.mode))+
+      group('开始时的文件状态',opts([['existing','已有旧报告'],['missingFile','文件不存在'],['missingDir','父文件夹不存在']],s.scenario,'scenario'))+
+      group('写入方法',opts([['write','write()'],['print','print(..., file=file)'],['writelines','writelines()']],s.method,'method'))+
+      (s.method!=='print'?group('字符串中的换行符',opts([['true','每段文本末尾带 \\n'],['false','不添加 \\n']],String(s.newlines),'newlines')):'')+
+      group('整段 with 代码执行几次',opts([[1,'1 次'],[2,'2 次']],s.runs,'runs'))+
+      '<p class="hint">每次改变选项，都从预设文件重新比较；同一次实验里的第 2 次运行，接着第 1 次留下的文件继续。</p>';
+    const pending=f.pendingText;
+    const pendingView=typeof pending==='string'?U.filePaper('本次写入内容',pending,{status:handle&&handle.closed?'已关闭':'等待关闭保存'}):'<section class="fl-file-paper"><div class="fl-paper-head"><h3>本次写入内容</h3></div><p class="fl-empty">'+(handle&&handle.closed&&!f.error?'本次写入已关闭，结果见左侧文件。':'尚未产生待保存的内容。')+'</p></section>';
+    const visual='<div class="visual-header"><h2>先看打开时发生什么，再看写入和关闭</h2><span class="pill">'+(f.run?'第 '+f.run+' 次运行':'尚未运行')+'</span></div>'+
+      '<div class="fl-two-columns">'+U.filePaper(path,saved,{status:'当前已保存内容'})+pendingView+'</div>'+
+      U.handleCard(f)+
+      (s.mode==='w'&&handle&&!handle.closed&&saved===''?'<div class="notice">以 w 成功打开时，原内容已经清空；即使还没调用 write，也已发生截断。</div>':'')+
+      (has(f,'writeResult')?'<div class="fl-comparison"><span>最近一次写入调用的返回结果</span><code>'+py(f.writeResult,f.writeResultType)+'</code></div>':'');
+    const summary='<div class="rule-note"><strong>w 用于重新生成，a 用于保留历史后继续写入。</strong><p><code>w</code> 成功打开已有文件时，立即清空原内容；<code>a</code> 保留原内容，把新文本追加到末尾。两者可以新建文件，但不会自动创建不存在的父文件夹。</p><p><code>write()</code> 和 <code>writelines()</code> 不会自动加换行符。需要分行时，字符串中应带有 <code>\\n</code>。<code>print(..., file=file)</code> 把输出写入文件，默认添加换行。</p><p>重复运行追加代码，会重复加入文本。重新生成报告通常用 w，记录运行日志通常用 a。</p><p>写入可能先进入缓冲区。这里把写入中的内容与关闭后的文件结果分开展示；离开 with 会完成文件关闭。写入文件的文字不会自动出现在屏幕输出中。</p></div>';
+    return wrap(s,model,controls,visual,summary);
+  };
+})(window);
+</script>
+  <script>/* Views for the report workflow and CSV parsing comparisons. */
+(function(root){
+  'use strict';
+  const V=root.FileLabViews=root.FileLabViews||{},U=root.FileLabUI,E=root.FileLabEngine;
+  const esc=U.esc,has=U.has,py=(v,t)=>E.repr(v,t),money=v=>E.money(v,2)+' 元';
+  const options=(items,value,key)=>U.tabs(items,value,'set-option',key);
+  const caption=text=>'<span class="control-label">'+text+'</span>';
+  const action=(name,label,disabled)=>'<button type="button" class="btn btn-subtle" data-action="'+name+'"'+(disabled?' disabled':'')+'>'+label+'</button>';
+  function sourceLines(source,f){
+    const lines=source.match(/[^\n]*\n|[^\n]+$/g)||[];
+    return '<section class="flx-source-paper"><div class="flx-section-head"><h3><code>data/orders.txt</code></h3><span class="pill">原始输入</span></div><ol class="flx-source-lines">'+lines.map((line,i)=>{
+      const status=(f.lineStates||{})[i],text=line.replace(/\n$/,'');
+      return '<li class="'+(f.activeLine===i?'is-active ':'')+(status==='error'?'is-error':'')+'"><span class="flx-line-number">'+(i+1)+'</span><code>'+esc(text.trim()?text:'（空白行）')+'</code><span class="flx-line-result">'+esc(status==='parsed'?'✓':status==='skipped'?'跳过':status==='error'?'失败':'')+'</span></li>';
+    }).join('')+'</ol></section>';
+  }
+  function stageStrip(f){
+    const stages=[['读取与转换',['read','parse']],['统计',['summarize']],['写入',['write']],['核验',['verify']]];
+    const current=f.stage==='done'?4:stages.findIndex(x=>x[1].includes(f.stage));
+    return '<ol class="flx-stages" aria-label="报告处理流程">'+stages.map((s,i)=>{
+      const failed=(f.error&&i===current)||(i===3&&f.verification&&!f.verification.passed);
+      return '<li class="'+(failed?'is-error':i===current?'is-active':i<current?'is-complete':'')+'"><span>'+(i+1)+'</span><strong>'+s[0]+'</strong></li>';
+    }).join('')+'</ol>';
+  }
+  function reportRows(f){
+    const rows=f.records||[];
+    return '<section class="flx-records"><div class="flx-section-head"><h3>已解析的订单</h3><span class="pill">金额已转为 float</span></div><div class="flow-table-wrap"><table class="flow-table flx-order-table"><thead><tr><th>订单号</th><th>城市</th><th>金额</th><th>状态</th><th>本次统计</th></tr></thead><tbody>'+rows.map((o,i)=>{
+      const selected=(f.selected||[]).includes(i),checked=selected||has(f.vars,'summary')||(f.activeIndex!==null&&f.activeIndex>i)||(f.activeIndex===i&&f.condition&&f.condition.result===false);
+      return '<tr class="'+(f.activeIndex===i?'flx-row-active':selected?'flx-row-selected':'')+'"><th scope="row">'+esc(o['订单号'])+'</th><td>'+esc(o['城市'])+'</td><td><code>'+esc(py(o['金额'],'float'))+'</code></td><td>'+esc(o['状态'])+'</td><td>'+esc(selected?'已计入':checked?'未计入':'待判断')+'</td></tr>';
+    }).join('')+(rows.length?'':'<tr><td colspan="5" class="flow-muted">还没有成功解析并保存的订单。</td></tr>')+'</tbody></table></div></section>';
+  }
+  function verificationBox(f){
+    const v=f.verification;
+    if(v)return '<section class="flx-verification '+(v.passed?'is-passed':'is-failed')+'"><h3>'+esc(v.passed?'核验通过':'核验未通过')+'</h3><div class="flow-table-wrap"><table class="flow-table"><thead><tr><th>核验项</th><th>业务期望</th><th>实际结果</th></tr></thead><tbody>'+
+      '<tr><th>已完成数量</th><td>'+v.count.expected+' 笔</td><td>'+v.count.actual+' 笔 '+(v.count.passed?'✓':'✗')+'</td></tr>'+
+      '<tr><th>已完成金额</th><td>'+esc(money(v.amount.expected))+'</td><td>'+esc(money(v.amount.actual))+' '+(v.amount.passed?'✓':'✗')+'</td></tr>'+
+      '<tr><th>原始文件</th><td>保持不变</td><td>'+(v.source.passed?'保持不变 ✓':'内容改变 ✗')+'</td></tr></tbody></table></div>'+
+      (v.passed?'':'<p>报告已经写出，但当前统计条件不符合“只统计已完成订单”的业务规则。</p>')+'</section>';
+    if(f.pendingText!==null&&f.pendingText!==undefined)return '<section class="flx-pending"><div class="flx-section-head"><h3>文件对象中的写入内容</h3><span class="pill">等待关闭</span></div><pre>'+esc(f.pendingText||'（尚未写入文字）')+'</pre><p>本实验在关闭文件的步骤展示完成保存后的内容。</p></section>';
+    if(has(f.vars,'report'))return U.filePaper('重新读取的 report',f.vars.report,{status:'等待核验'});
+    return '<section class="flx-verification-placeholder"><h3>写入后还要核验</h3><p>'+esc(f.error?'本次读取中断，已有报告没有更新。请先修正输入记录。':'报告保存后，程序会重新读取它，再核对订单数量、金额和原始文件。')+'</p></section>';
+  }
+  V.report=function(state){
+    const s=Object.assign({preset:'course',includeRefunds:false,cursor:0},state),model=E.report(s),f=U.frame(model,s.cursor),wrong=s.includeRefunds===true||s.includeRefunds==='true';
+    const controls='<div class="flx-wide">'+caption('选择订单文件')+options([['course','课件三笔订单'],['extended','追加后的五笔订单'],['blank','包含空白行'],['refundOnly','全部已退款'],['badAmount','金额写成文字']],s.preset,'preset')+'</div>'+
+      '<div class="flx-wide">'+caption('检查统计条件')+options([['false','只统计已完成'],['true','故意把退款也计入']],String(wrong),'includeRefunds')+'</div>'+
+      '<div class="flx-downloads">'+action('download-input','下载示例订单',!model.ok)+action('download-report','下载核验报告',!(f.verification&&f.verification.passed))+'</div>';
+    let visual='';
+    if(model.ok){
+      const phase=f.stage,output=f.files['output/summary.txt'];
+      const savedStatus=f.pendingText!==null?'已清空，等待本次写入完成':output===model.initialReport?'旧报告':phase==='write'||phase==='verify'||phase==='done'?'本次保存的报告':'报告文件';
+      const status=f.error?'输入处理失败':f.verification?f.verification.passed?'已核验':'核验发现问题':f.stage==='ready'?'等待执行':'逐步处理';
+      visual='<div class="visual-header"><h2>读入订单，保存报告，再核对结果</h2><span class="pill">'+status+'</span></div>'+stageStrip(f)+
+        '<div class="flx-input-layout">'+sourceLines(model.source,f)+reportRows(f)+'</div>'+
+        '<div class="flow-metrics">'+U.metric('已解析记录',(f.records||[]).length+' 笔')+U.metric('当前累计数量',f.stats?f.stats.count+' 笔':undefined)+U.metric('当前累计金额',f.stats?money(f.stats.amount):undefined)+'</div>'+
+        '<div class="flx-output-layout">'+U.filePaper('output/summary.txt',output,{status:savedStatus})+verificationBox(f)+'</div>';
+      if(wrong&&f.verification&&!f.verification.passed)visual+='<div class="notice">“程序运行完了”和“报告符合业务规则”是两件事。把统计条件恢复为“只统计已完成”，再运行并比较。</div>';
+      if(f.error)visual+='<div class="notice">输入文件已关闭。错误发生在写报告之前，本次没有覆盖旧报告。</div>';
+    }
+    const summary='<div class="rule-note"><strong>输入、业务计算、输出与核验，各自承担明确任务。</strong><p><code>read_orders()</code> 逐行读取，跳过空白行，把有效订单保存到列表；<code>summarize_orders()</code> 根据状态统计；<code>write_report()</code> 写入新的报告。退款记录仍是有效输入，只是不参与已完成订单统计。</p><p>核验使用按业务规则独立得到的期望，而不是把程序刚算出的数当作正确答案。试着把退款也算进去：程序仍可能顺利结束，最后的核验会指出数量和金额不符。</p><p>逐行读取并不意味着整个流程只占一行内存：这里的订单列表会保存全部解析结果。课件使用 float 练习转换；精度要求严格的金额计算可进一步学习 Decimal 或整数分。</p></div>';
+    return {controls,visual:model.ok?visual:U.invalid(model),summary,code:model.code||'# 请先检查实验选项。',model,frame:f};
+  };
+
+  function naiveTable(f){
+    const rows=f.naiveRows||[];
+    return '<section class="flx-csv-half"><h3><code>split(",")</code><span>按物理行拆分</span></h3><div class="flow-table-wrap"><table class="flow-table flx-naive-table"><thead><tr><th>行</th><th>得到的字符串片段</th><th>数量</th></tr></thead><tbody>'+rows.map((row,i)=>'<tr class="'+(f.stage==='naive'&&f.activeLine===i?'flx-row-active':row.length!==4?'flx-row-mismatch':'')+'"><th scope="row">'+(i+1)+'</th><td><code>'+esc(py(row))+'</code></td><td>'+row.length+'</td></tr>').join('')+(rows.length?'':'<tr><td colspan="3" class="flow-muted">尚未执行拆分。</td></tr>')+'</tbody></table></div></section>';
+  }
+  function csvTable(f){
+    const fields=f.fieldnames,rows=f.rows||[];
+    return '<section class="flx-csv-half"><h3><code>csv.DictReader</code><span>按 CSV 记录解析</span></h3>'+(fields?'<div class="flow-table-wrap"><table class="flow-table flx-csv-table"><thead><tr>'+fields.map(field=>'<th><code>'+esc(py(field))+'</code></th>').join('')+'</tr></thead><tbody>'+rows.map((row,i)=>'<tr class="'+(f.activeRecord===i?'flx-row-active':'')+'">'+fields.map(field=>'<td><code>'+esc(py(row[field]))+'</code></td>').join('')+'</tr>').join('')+(rows.length?'':'<tr><td colspan="'+fields.length+'" class="flow-muted">表头已读取，数据记录尚未追加。</td></tr>')+'</tbody></table></div>':'<div class="flx-empty-records">DictReader 尚未读取表头。</div>')+'</section>';
+  }
+  V.csv=function(state){
+    const s=Object.assign({preset:'simple',encoding:'utf-8-sig',cursor:0},state),model=E.csv(s),f=U.frame(model,s.cursor);
+    const controls='<div class="flx-wide">'+caption('选择 CSV 内容')+options([['simple','普通四列'],['comma','字段中有逗号'],['quote','字段中有双引号'],['multiline','字段中有换行'],['bom','文件开头有 BOM']],s.preset,'preset')+'</div>'+
+      '<div class="flx-wide">'+caption('打开文件的编码')+options([['utf-8-sig','UTF-8-sig'],['utf-8','UTF-8']],s.encoding,'encoding')+'</div>';
+    let visual='';
+    if(model.ok){
+      visual='<div class="visual-header"><h2>逗号和换行，也可能是字段内容</h2><span class="pill">拓展 · CSV</span></div>'+
+        U.filePaper('data/orders.csv',model.source,{status:s.preset==='bom'?'开头含不可见 BOM':'示例输入'})+
+        '<div class="flx-csv-compare">'+naiveTable(f)+csvTable(f)+'</div>'+
+        '<div class="flow-metrics">'+U.metric('输入物理行数',model.physicalLines.length+' 行','含表头')+U.metric('已保存 CSV 数据记录',(f.rows||[]).length+' 条')+U.metric('字段值的类型',(f.rows||[]).length?'str':undefined)+'</div>';
+      if(s.preset==='multiline')visual+='<p class="hint">同一字段中的换行可以让一条 CSV 记录跨越两个物理行；记录数不能直接用文件行数减 1 得到。</p>';
+      if(s.preset==='quote')visual+='<p class="hint">CSV 用两个连续双引号表示字段内容中的一个双引号。即使 split 得到的片段数量碰巧正确，内容也可能没有按 CSV 规则解码。</p>';
+      if(f.error)visual+='<div class="notice">实际首个键是 <code>\u005cufeff订单号</code>，不是 <code>订单号</code>。这里访问标准“订单号”键产生 KeyError；其他没有 BOM 前缀的字段名并不会因此改变。</div>';
+    }
+    const summary='<div class="rule-note"><strong>CSV 的引号规则决定字段边界，不能只看逗号在哪里。</strong><p>字段里有逗号或换行时，可以用双引号包住字段；字段本身含双引号时，用两个连续双引号表示。<code>split(",")</code> 不理解这些规则。</p><p><code>csv.DictReader</code> 用表头作为字典的键，并按 CSV 规则读取完整记录。字段值仍是字符串，金额要参与计算时还需显式转换。<code>newline=""</code> 让 csv 模块处理文件中的换行。</p><p><code>utf-8-sig</code> 会移除文件开头的 UTF-8 BOM；普通 UTF-8 会把它留在首个表头中。本例随后用 <code>row["订单号"]</code> 取值，因此可以观察 BOM 对精确键名匹配的影响。</p></div>';
+    return {controls,visual:model.ok?visual:U.invalid(model),summary,code:model.code||'# 请先检查实验选项。',model,frame:f};
+  };
+})(window);
+</script>
+  <script>(function () {
+  'use strict';
+  const C = window.FileLabContent;
+  const E = window.FileLabEngine;
+  const V = window.FileLabViews;
+  const STORAGE = 'classroom-whiteboard-slide8-v1';
+  let saved = {};
+  try {saved = JSON.parse(localStorage.getItem(STORAGE) || '{}') || {};} catch (_) {}
+  const known = id => C.modules.some(m => m.id === id);
+  const route = () => location.hash.slice(1).split('?')[0];
+  let current = known(route()) ? route() : known(saved.lastLesson) ? saved.lastLesson : C.modules[0].id;
+  const answers = {};
+  C.modules.forEach(m => {
+    const v = saved.answers && saved.answers[m.id];
+    if (Number.isInteger(v) && v >= 0 && v < m.quiz.options.length) answers[m.id] = v;
+  });
+  function initial(id) {
+    return {
+      paths:{cwd:'project',target:'data/orders.txt',cursor:0},
+      opening:{mode:'normal',cursor:0},
+      reading:{method:'read',preset:'normal',times:2,cursor:0},
+      parsing:{preset:'normal',cleanFields:false,cursor:0},
+      writing:{mode:'w',method:'write',scenario:'existing',newlines:true,runs:1,cursor:0},
+      report:{preset:'course',includeRefunds:false,cursor:0},
+      csv:{preset:'simple',encoding:'utf-8-sig',cursor:0}
+    }[id];
+  }
+  const states = Object.fromEntries(C.modules.map(m => [m.id, initial(m.id)]));
+  const openedQuizzes = new Set();
+  const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  let activeCode = '', activeModel = null, toastTimer, projecting = false;
+  function save() {
+    try {localStorage.setItem(STORAGE, JSON.stringify({lastLesson:current,answers}));} catch (_) {}
+  }
+  function toast(message) {
+    const node = document.getElementById('toast');
+    node.textContent = message;
+    node.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => node.classList.remove('visible'), 2400);
+  }
+  function preserveFocus(callback) {
+    const active = document.activeElement;
+    let selector = '', range;
+    if (active && active.dataset.field) selector = '[data-field="' + active.dataset.field + '"]';
+    else if (active && active.dataset.action) {
+      selector = '[data-action="' + active.dataset.action + '"]';
+      if (active.dataset.value !== undefined) selector += '[data-value="' + CSS.escape(active.dataset.value) + '"]';
+    }
+    try {if (active && active.selectionStart !== null) range = [active.selectionStart,active.selectionEnd];} catch (_) {}
+    callback();
+    const next = selector && document.querySelector(selector);
+    if (next && !next.disabled) {
+      next.focus({preventScroll:true});
+      if (range) {try {next.setSelectionRange(range[0],range[1]);} catch (_) {}}
+    }
+  }
+  function highlighted(code, activeLines) {
+    const active = activeLines || [];
+    function line(source) {
+      const pattern = /('[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"|#.*|\b(?:None|True|False|import|from|with|as|try|except|raise|del|print|return|def|assert|in|if|elif|else|for|while|break|continue|and|or|not)\b|\b\d+(?:\.\d+)?\b)/g;
+      let html = '', position = 0, match;
+      while ((match = pattern.exec(source))) {
+        html += esc(source.slice(position,match.index));
+        const token = match[0], type = token[0] === '#' ? 'comment' : /^['"]/.test(token) ? 'str' : /^\d/.test(token) ? 'num' : 'kw';
+        html += '<span class="token-' + type + '">' + esc(token) + '</span>';
+        position = match.index + token.length;
+      }
+      return html + esc(source.slice(position));
+    }
+    return code.split('\n').map((text,i) => '<span class="code-line'+(active.includes(i+1)?' is-current':'')+'"><span class="line-no" aria-hidden="true">' + (i+1) + '</span><span class="line-text">' + (line(text) || ' ') + '</span></span>').join('');
+  }
+  function quiz(module) {
+    const q = module.quiz, answer = answers[module.id], answered = Number.isInteger(answer), right = answer === q.answer;
+    return '<details class="check-panel" data-quiz-panel="' + module.id + '" ' + (openedQuizzes.has(module.id) ? 'open' : '') + '><summary>检验理解' +
+      (answered ? right ? ' · 已答对' : ' · 再想一想' : '') + '</summary><div class="check-content"><p class="check-question">' + esc(q.prompt) +
+      '</p>' + (q.code ? '<pre class="quiz-code">' + esc(q.code) + '</pre>' : '') + '<div class="quiz-options" role="group" aria-label="练习选项">' +
+      q.options.map((option,i) => '<button type="button" class="quiz-option" data-action="quiz-answer" data-value="' + i + '" aria-pressed="' + (answer === i) +
+        '"><span class="quiz-letter">' + String.fromCharCode(65+i) + '</span><span>' + esc(option.label) + '</span></button>').join('') +
+      '</div>' + (answered ? '<div class="quiz-feedback ' + (right ? '' : 'incorrect') + '" role="status"><strong>' + (right ? '判断正确。' : '再想一想。') + '</strong>' + esc(q.options[answer].explanation) + '</div>' : '') + '</div></details>';
+  }
+  function renderNav() {
+    document.getElementById('lesson-nav').innerHTML = C.modules.map((m,i) => '<a href="#' + m.id + '" ' + (m.id === current ? 'aria-current="page"' : '') + '><span class="nav-index">' +
+      String(i+1).padStart(2,'0') + '</span><span>' + esc(m.navTitle || m.title) + '</span>' + (answers[m.id] === m.quiz.answer ? '<span class="nav-done" aria-label="练习已答对">✓</span>' : '') + '</a>').join('');
+    const count = C.modules.filter(m => answers[m.id] === m.quiz.answer).length;
+    document.getElementById('quiz-progress').textContent = count ? '练习答对 ' + count + ' / ' + C.modules.length : C.modules.length + ' 个动手实验';
+  }
+  function tracePanel(model,frame,state) {
+    if (!model || !model.ok || !model.trace || !model.trace.length) return '';
+    const end=model.trace.length-1, cursor=Math.max(0,Math.min(end,Number(state.cursor)||0));
+    const last=model.trace[end];
+    const stateName=frame.error?'异常终止':frame.paused?'演示暂停':frame.done?'执行结束':cursor===0?'尚未开始':'执行中';
+    const line=Number(frame.line), currentLine=line>0?(model.lines||model.code.split('\n'))[line-1]:'';
+    return '<div class="flow-execution"><div class="flow-stepper" role="group" aria-label="逐步执行">'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-start" '+(cursor===0?'disabled':'')+'>从头演示</button>'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-back" '+(cursor===0?'disabled':'')+'>上一步</button>'+
+      '<button type="button" class="btn btn-primary" data-action="trace-next" '+(cursor===end?'disabled':'')+'>下一步 →</button>'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-end" '+(cursor===end?'disabled':'')+'>'+(last.paused?'运行至暂停':'运行到最后')+'</button>'+
+      '<span class="flow-step-count">'+cursor+' / '+end+' 步 · '+stateName+'</span></div>'+
+      '<div class="flow-step-note" role="status" aria-live="polite"><strong>'+esc(frame.note||'先预测，再点击下一步。')+'</strong>'+
+      (currentLine?'<div class="flow-current-code"><span>第 '+line+' 行</span><code>'+esc(currentLine)+'</code></div>':'')+'</div>'+
+      '<div class="flow-output"><span>程序输出</span><pre>'+(frame.stdout?esc(frame.stdout):'<span class="flow-muted">尚未产生输出</span>')+
+      (frame.error?'\n<span class="flow-error-text">'+esc(FileLabUI.errorText(frame.error))+'</span>':'')+'</pre></div></div>';
+  }
+  function renderLesson() {
+    const module=C.modules.find(m=>m.id===current), state=states[current], view=V[current](state);
+    activeCode=view.code||''; activeModel=view.model||null;
+    const frame=view.frame || (activeModel&&activeModel.ok?E.stateAt(activeModel,state.cursor):{});
+    const lines=frame.lines || (frame.line?[frame.line]:[]);
+    document.getElementById('lesson').innerHTML='<div class="lesson-heading"><div><p class="source-tag">'+esc(module.pages)+
+      '</p><h1 id="lesson-title" tabindex="-1">'+esc(module.title)+'</h1><p class="lesson-question">'+esc(module.question)+
+      '</p></div><button type="button" class="btn btn-subtle" data-action="reset-experiment">重置实验</button></div>'+
+      '<div class="workbench"><section class="control-panel" aria-label="实验操作">'+view.controls+'</section><section class="visual-panel" aria-label="可视化结果">'+view.visual+tracePanel(activeModel,frame,state)+'</section></div>'+
+      '<div class="evidence"><section class="rule-panel" aria-label="理解原理">'+view.summary+'</section><section class="code-panel" aria-label="对应的 Python 代码"><div class="code-toolbar"><span>对应的 Python · 蓝色行是当前位置</span><button type="button" class="btn btn-subtle" data-action="copy-code">复制代码</button></div><pre><code>'+highlighted(activeCode,lines)+'</code></pre></section></div>'+
+      '<div class="try-next"><strong>再试一步</strong><span>'+esc(module.try)+'</span></div>'+quiz(module);
+    const detail=document.querySelector('[data-quiz-panel]');
+    detail.addEventListener('toggle',()=>{if(detail.open)openedQuizzes.add(module.id);else openedQuizzes.delete(module.id);});
+  }
+  function setProjection(value) {
+    projecting = value;
+    document.body.classList.toggle('projecting',value);
+    const button = document.getElementById('projection-toggle');
+    button.textContent = value ? '退出投影' : '投影模式';
+    button.setAttribute('aria-pressed',String(value));
+  }
+  function navigate() {
+    if (!known(route())) return;
+    current = route();
+    renderNav(); renderLesson(); save();
+    document.getElementById('lesson-title').focus({preventScroll:true});
+    if (window.innerWidth < 901) document.getElementById('lesson').scrollIntoView({block:'start'});
+  }
+  async function copyCode() {
+    try {
+      if (!navigator.clipboard || !window.isSecureContext) throw Error('fallback');
+      await navigator.clipboard.writeText(activeCode); toast('Python 代码已复制');
+    } catch (_) {
+      const area = document.createElement('textarea');
+      area.value = activeCode; area.setAttribute('readonly',''); area.style.cssText = 'position:fixed;left:-9999px;top:0';
+      document.body.appendChild(area); area.select();
+      let success = false;
+      try {success = document.execCommand('copy');} catch (_) {}
+      area.remove();
+      toast(success ? 'Python 代码已复制' : '浏览器未允许自动复制，请选中代码后复制。');
+    }
+  }
+  function downloadText(text,filename) {
+    const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));
+    const link=document.createElement('a');
+    link.href=url;link.download=filename;document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+    toast('已生成 '+filename+' 下载文件');
+  }
+  function downloadDemo(action) {
+    if(current!=='report'||!activeModel||!activeModel.ok)return;
+    const f=E.stateAt(activeModel,states[current].cursor);
+    if(action==='download-input')downloadText(activeModel.source||'', 'orders.txt');
+    else if(f.verification&&f.verification.passed===true&&typeof f.files['output/summary.txt']==='string')downloadText(f.files['output/summary.txt'],'summary.txt');
+    else toast('请先运行到报告核验通过。');
+  }
+  document.addEventListener('click',event=>{
+    if(event.target.closest('#projection-toggle')){setProjection(!projecting);return;}
+    const button=event.target.closest('[data-action]');
+    if(!button||button.disabled)return;
+    const action=button.dataset.action,value=button.dataset.value;
+    if(action==='copy-code'){copyCode();return;}
+    if(action==='download-input'||action==='download-report'){downloadDemo(action);return;}
+    preserveFocus(()=>{
+      const s=states[current];
+      switch(action){
+        case 'reset-experiment':states[current]=initial(current);break;
+        case 'set-mode':s.mode=value;s.cursor=0;break;
+        case 'set-option':
+          if(['newlines','cleanFields','includeRefunds'].includes(button.dataset.key))s[button.dataset.key]=value==='true';
+          else s[button.dataset.key]=value;
+          s.cursor=0;break;
+        case 'trace-start':s.cursor=0;break;
+        case 'trace-back':s.cursor=Math.max(0,s.cursor-1);break;
+        case 'trace-next':if(activeModel&&activeModel.ok)s.cursor=Math.min(activeModel.trace.length-1,s.cursor+1);break;
+        case 'trace-end':if(activeModel&&activeModel.ok)s.cursor=activeModel.trace.length-1;break;
+        case 'quiz-answer':answers[current]=Number(value);openedQuizzes.add(current);save();renderNav();break;
+        case 'reset-quizzes':Object.keys(answers).forEach(key=>delete answers[key]);save();renderNav();toast('本讲练习记录已清除');break;
+        default:return;
+      }
+      renderLesson();
+    });
+  });
+  function updateField(event) {
+    const field=event.target.dataset.field;
+    if(!field)return;
+    const parts=field.split('.'),id=parts[0],key=parts[1];
+    if(!states[id])return;
+    preserveFocus(()=>{
+      states[id][key]=event.target.value;
+      states[id].cursor=0;
+      renderLesson();
+    });
+  }
+  document.addEventListener('input',event=>{if(event.target.tagName!=='SELECT')updateField(event);});
+  document.addEventListener('change',event=>{if(event.target.tagName==='SELECT')updateField(event);});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')setProjection(false);});
+  window.addEventListener('hashchange',navigate);
+  renderNav();renderLesson();save();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="通过订单结算与商品分类，逐步观察 Python 函数调用、参数匹配、返回值、作用域、断言与递归。">
+  <meta name="color-scheme" content="light">
+  <title>函数与数据流实验室｜Python 第七讲</title>
+  <style>:root {
+  --bg:#f2f5fa; --surface:#fff; --ink:#17283d; --muted:#536477;
+  --accent:#245fc4; --accent-ink:#fff; --selected:#e4edfc; --line:#d6dfeb;
+  --changed:#6d4c00; --changed-bg:#fff0c9; --error:#a32d32; --error-bg:#fff0f0;
+  --soft:#f6f8fc; --code-bg:#eef3fa; --code-ink:#17314d;
+  --token-str:#236242; --token-kw:#754b9a; --token-num:#9a4a0f;
+  --radius:10px; --tile-radius:12px; --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono","PingFang SC","Microsoft YaHei",monospace;
+  font-family:var(--font); color:var(--ink); font-synthesis:none; font-size:17px; color-scheme:light;
+}
+* {box-sizing:border-box}
+.fn-batch-inputs {display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.fn-order-chip {display:flex;gap:12px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:7px;background:var(--soft)}
+.fn-order-chip small {font-size:14px;font-family:var(--mono)}
+.fn-order-chip.is-current {border-color:var(--accent);background:var(--selected);color:var(--accent)}
+body {margin:0;background:var(--bg);color:var(--ink);line-height:1.7;min-width:320px}
+button,input,select {font:inherit;color:inherit}
+button,summary,a,input,select {-webkit-tap-highlight-color:transparent}
+button {cursor:pointer}
+button:disabled {cursor:default;opacity:.5}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+a {color:var(--accent);text-decoration-thickness:1px;text-underline-offset:4px}
+h1,h2,h3,p {margin:0}
+button,input,select {border-radius:var(--radius)}
+button {transition:background-color .15s,border-color .15s}
+button:hover:not(:disabled) {filter:brightness(.98)}
+code,pre,.mono {font-family:var(--mono)}
+code {font-size:.95em}
+.skip-link {position:fixed;left:16px;top:-100px;z-index:30;padding:12px 20px;background:var(--surface)}
+.skip-link:focus {top:10px}
+.topbar {display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:92px;padding:18px 36px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand {display:flex;gap:13px;align-items:center;color:var(--ink);text-decoration:none;font-size:21px;font-weight:750;line-height:1.25;white-space:nowrap}
+.brand small {display:block;font-weight:500;color:var(--muted);font-size:12px;letter-spacing:.06em;margin-top:7px}
+.brand-mark {display:flex;align-items:center;justify-content:center;gap:2px;color:var(--accent);font:700 36px/1 var(--mono);width:48px;height:48px;background:var(--selected);border-radius:12px}
+.brand-mark b {font-weight:500}
+.top-actions {display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.theme-options {display:flex;gap:5px;padding:4px;background:var(--soft);border:1px solid var(--line);border-radius:12px}
+.theme-options button {display:flex;align-items:center;gap:8px;min-height:42px;padding:7px 12px;background:transparent;border:1px solid transparent;font-size:14px;white-space:nowrap}
+.theme-options button[aria-pressed=true] {background:var(--surface);border-color:var(--line);font-weight:700}
+.theme-dot {width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.2)}
+.dot-a {background:#245fc4}.dot-b {background:#086a5b}.dot-c {background:#173a58;outline:1px solid #83d8f3}
+.btn {display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:9px 17px;border:1px solid var(--line);background:var(--surface);font-size:15px;font-weight:600;line-height:1.5;text-align:center}
+.btn-primary {background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-subtle {background:transparent;color:var(--muted)}
+.btn-small {font-size:13px;padding:7px 12px;min-height:38px}
+.shell {display:grid;grid-template-columns:218px minmax(0,1fr);max-width:1580px;margin:auto}
+.sidebar {padding:36px 22px 26px 28px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:29px}
+.course-name span {font-size:13px;color:var(--muted)}
+.course-name strong {display:block;font-size:22px;line-height:1.5;font-weight:650;margin-top:8px;letter-spacing:-.03em}
+.lesson-nav {display:flex;flex-direction:column;gap:9px}
+.lesson-nav a {position:relative;display:flex;gap:13px;align-items:center;min-height:48px;padding:10px 12px;text-decoration:none;color:var(--muted);font-size:16px;border-radius:7px}
+.lesson-nav a[aria-current=page] {background:var(--selected);color:var(--accent);font-weight:700}
+.nav-index {font:500 13px/1 var(--mono);opacity:.8}
+.nav-done {margin-left:auto;font-size:14px;color:var(--accent)}
+.sidebar-bottom {margin-top:auto;padding-top:36px;color:var(--muted);font-size:13px}
+.progress-note {display:block;margin-top:12px;font-size:12px}
+.lesson {min-width:0;padding:31px 34px 38px}
+.lesson-heading {display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}
+.source-tag {color:var(--muted);font-size:13px;margin-bottom:7px}
+h1 {font-size:32px;line-height:1.35;font-weight:750;letter-spacing:-.035em}
+.lesson-question {font-size:17px;line-height:1.7;color:var(--muted);margin-top:10px;max-width:800px}
+.lesson-heading>.btn {flex-shrink:0;margin-top:7px}
+.workbench {display:grid;grid-template-columns:minmax(225px,.72fr) minmax(0,2.4fr);gap:20px;align-items:stretch}
+.control-panel {display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);padding:22px;border-radius:var(--radius);min-width:0}
+.visual-panel {min-width:0;display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:25px 25px 22px}
+.control-label {display:block;font-size:14px;font-weight:700;line-height:1.5;margin-bottom:8px}
+.hint {font-size:13px;color:var(--muted);line-height:1.75}
+.field-row {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.field-row label {font-size:13px;display:flex;flex-direction:column;gap:5px;color:var(--muted)}
+.field-row input {width:100%;min-height:46px;border:1px solid var(--line);background:var(--soft);font-family:var(--mono);font-size:18px;padding:7px 9px;color:var(--ink)}
+.single-field input,.single-field select,.control-panel select,.control-panel>input {width:100%;min-height:46px;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.segmented {display:flex;gap:5px;flex-wrap:wrap}
+.segmented button {min-height:42px;padding:8px 12px;flex:1 0 auto;background:var(--soft);border:1px solid var(--line);font-size:14px;line-height:1.4}
+.segmented button[aria-pressed=true],.segmented .is-active,.segmented .active {color:var(--accent);border-color:var(--accent);background:var(--selected);font-weight:700}
+.action-stack {display:flex;flex-direction:column;gap:8px}
+.action-stack .btn {width:100%;justify-content:flex-start;font-size:14px}
+.action-stack .btn[aria-pressed=true] {color:var(--accent);border-color:var(--accent);background:var(--selected)}
+.preset-row {display:flex;gap:6px;flex-wrap:wrap}
+.preset-row button {border:1px solid var(--line);background:var(--surface);padding:6px 10px;min-height:38px;font-size:13px}
+.preset-row button:hover {border-color:var(--accent)}
+.control-panel hr {border:0;border-top:1px solid var(--line);margin:0}
+.visual-header {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.visual-header h2 {font-size:17px;font-weight:650;line-height:1.4}
+.visual-header code {font-size:17px;font-weight:650}
+.pill {font-size:12px;line-height:1.4;padding:5px 8px;border-radius:5px;background:var(--soft);color:var(--muted)}
+.pill.changed {background:var(--changed-bg);color:var(--changed)}
+.rail-scroll {overflow-x:auto;padding:6px 2px 7px;max-width:100%}
+.list-rail {display:flex;gap:8px;align-items:stretch;min-width:min-content;padding:8px 0}
+.list-tile {display:flex;flex:1 0 90px;min-width:0;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:var(--tile-radius);background:var(--soft);position:relative;text-align:center;overflow:hidden}
+.pos-index,.neg-index {font-family:var(--mono);font-size:13px;line-height:1.4;padding:7px 7px 6px;color:var(--muted);width:100%;background:var(--surface)}
+.pos-index {border-bottom:1px solid var(--line)}
+.neg-index {border-top:1px solid var(--line)}
+.tile-value {display:flex;align-items:center;justify-content:center;flex:1;padding:17px 9px;min-height:70px;font-size:17px;font-weight:650;white-space:nowrap}
+.list-tile.selected {border:2px solid var(--accent);background:var(--selected)}
+.list-tile.selected .pos-index,.list-tile.selected .neg-index {background:var(--selected);color:var(--accent)}
+.list-tile.changed {border-color:var(--changed);background:var(--changed-bg)}
+.list-tile.changed .pos-index {background:var(--changed-bg);color:var(--changed)}
+.list-tile.stop {border-style:dashed;border-color:var(--muted)}
+.take-order {font-size:11px;font-weight:650;color:var(--accent);padding:3px 5px 5px}
+.stop-flag {font-size:11px;padding:3px 5px 5px;color:var(--muted)}
+.list-legend {display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px}
+.list-legend span {display:flex;gap:6px;align-items:center}
+.legend-swatch {display:inline-block;width:11px;height:11px;border:1px solid var(--accent);background:var(--selected)}
+.sublist {display:flex;gap:5px;align-items:center;padding:0 5px;font-size:14px;font-family:var(--mono)}
+.sublist-item {padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:4px;white-space:nowrap;font-family:var(--font)}
+.list-tile.nested {min-width:180px;flex:1.5 0 180px}
+.empty-list {font:22px/1.5 var(--mono);padding:20px;color:var(--muted);background:var(--soft);border:1px dashed var(--line);border-radius:var(--radius);width:100%}
+.selection-result {border-top:1px solid var(--line);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.result-title {font-size:14px;color:var(--muted);font-weight:500}
+.result-value {font-size:18px;line-height:1.6;color:var(--accent);overflow-wrap:anywhere}
+.path {display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.path b {border:1px solid var(--line);border-radius:5px;min-width:28px;padding:1px 6px;text-align:center;background:var(--surface);color:var(--accent)}
+.result-pair {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.result-cell {min-width:0;padding:15px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);font-size:14px}
+.result-cell h3,.result-cell strong {font-size:14px;display:block;margin-bottom:7px}
+.result-cell code,.result-cell pre {display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin:0}
+.compare-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.comparison {min-width:0;display:flex;flex-direction:column;gap:12px}
+.comparison+ .comparison {border-left:1px solid var(--line);padding-left:20px}
+.comparison h3 {font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)}
+.comparison .list-tile {flex-basis:65px}
+.comparison .tile-value {font-size:15px;min-height:62px;padding:12px 7px}
+.comparison .list-rail {gap:5px}
+.return-line {display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;border-top:1px solid var(--line);padding-top:10px;color:var(--muted)}
+.return-line code {color:var(--ink);font-size:16px;font-weight:650;white-space:pre-wrap;overflow-wrap:anywhere}
+.evidence {display:grid;grid-template-columns:minmax(230px,.9fr) minmax(0,1.5fr);gap:20px;margin-top:20px;align-items:start}
+.rule-panel {padding:6px 2px;min-width:0;font-size:16px;line-height:1.85}
+.rule-panel p+p {margin-top:11px}
+.rule-note {line-height:1.8}
+.rule-note strong {color:var(--accent)}
+.rule-note .hint {display:block;margin-top:9px}
+.code-panel {min-width:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--code-bg)}
+.code-toolbar {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 15px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.code-toolbar .btn {min-height:31px;font-size:12px;padding:4px 9px}
+.code-panel pre {font-size:15px;line-height:1.8;color:var(--code-ink);padding:16px 18px;margin:0;overflow-x:auto}
+.code-line {display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;min-height:1.8em}
+.line-no {color:var(--muted);font-size:11px;user-select:none;line-height:2.4}
+.line-text {white-space:pre-wrap;overflow-wrap:anywhere}
+.token-str {color:var(--token-str)}.token-kw {color:var(--token-kw)}.token-num {color:var(--token-num)}.token-comment {color:var(--muted)}
+.error-message {padding:14px 17px;border-radius:var(--radius);background:var(--error-bg);color:var(--error);line-height:1.7;font-size:14px;border:1px solid currentColor}
+.status-note {font-size:14px;line-height:1.7;color:var(--muted)}
+.notice {padding:11px 14px;background:var(--changed-bg);color:var(--changed);border-radius:var(--radius);font-size:14px;line-height:1.7}
+.try-next {display:flex;gap:12px;font-size:14px;color:var(--muted);padding:20px 0 16px;border-bottom:1px solid var(--line);margin-top:2px}
+.try-next strong {flex-shrink:0;color:var(--ink);font-size:14px}
+.check-panel {margin-top:17px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.check-panel summary {cursor:pointer;padding:15px 20px;font-size:15px;font-weight:650}
+.check-content {padding:0 20px 20px}
+.check-question {font-size:17px;line-height:1.7;margin:8px 0 12px}
+.quiz-code {white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.8 var(--mono);padding:12px 15px;background:var(--soft);border-radius:7px;margin:0 0 14px;color:var(--muted)}
+.quiz-options {display:grid;gap:9px}
+.quiz-option {display:flex;gap:12px;text-align:left;align-items:flex-start;padding:12px 14px;background:var(--surface);border:1px solid var(--line);min-height:46px;font-size:14px;line-height:1.65}
+.quiz-letter {font-family:var(--mono);font-size:12px;flex-shrink:0;padding-top:2px;color:var(--muted)}
+.quiz-option[aria-pressed=true] {border-color:var(--accent);background:var(--selected)}
+.quiz-feedback {margin-top:13px;padding:12px 15px;line-height:1.8;font-size:14px;background:var(--selected);border-radius:var(--radius)}
+.quiz-feedback.incorrect {background:var(--changed-bg);color:var(--changed)}
+.chart-bars {display:flex;flex-direction:column;gap:10px;padding:8px 0}
+.bar-line {display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center}
+.bar-index {font:11px/1 var(--mono);color:var(--muted);text-align:right}
+.bar-track {position:relative;min-height:31px;display:flex;align-items:center;background:var(--soft)}
+.bar-fill {position:absolute;left:0;top:0;bottom:0;background:var(--selected);border-left:2px solid var(--accent)}
+.bar-label {position:relative;padding:2px 9px;font-size:13px;font-family:var(--mono);color:var(--ink);white-space:nowrap}
+.bar-scale {display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-left:40px;border-top:1px solid var(--line);padding-top:2px}
+.raw-value {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+.sort-trap {margin-top:8px;border-top:1px solid var(--line);padding-top:15px}
+.sort-trap summary {font-size:14px;color:var(--muted);cursor:pointer}
+.sort-trap .notice {margin-top:12px}
+.copy-graph {width:100%;height:auto;display:block}
+.copy-graph text {font-family:var(--font)}
+.memory-graph {width:100%;overflow-x:auto}
+.data-table {width:100%;border-collapse:separate;border-spacing:0;font-size:16px}
+.data-table th {font-size:12px;font-weight:500;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+.data-table td {padding:0;border-bottom:1px solid var(--line);background:var(--surface)}
+.data-table td:first-child {padding:10px 12px;color:var(--muted);font-family:var(--mono);font-size:13px;width:55px}
+.data-table button {width:100%;min-height:56px;display:block;text-align:left;padding:12px;border:2px solid transparent;background:transparent;border-radius:0;font-size:16px}
+.data-table tr.selected-row td,.data-table tr.is-row td {background:var(--soft)}
+.data-table button.selected,.data-table button[aria-pressed=true],.data-table .is-cell button {background:var(--selected);border-color:var(--accent);color:var(--accent);font-weight:700}
+.table-wrap {overflow-x:auto;width:100%}
+.table-scroll {overflow-x:auto;width:100%}
+.table-edit-row {display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}
+.table-edit-row input {min-height:46px;min-width:100px;flex:1;width:100%;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.table-edit-controls>.control-label {margin-top:12px}
+.table-lookup-results {margin-top:24px}
+.table-lookup-results .python-value {margin:12px 0 4px;overflow-wrap:anywhere;font-family:var(--mono);font-size:17px}
+.data-table .is-selected-row td {background:var(--soft)}
+.data-table tbody th {border-bottom:1px solid var(--line)}
+.data-table .is-selected-row th {background:var(--soft)}
+.practice-actions {display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.practice-step-title {font-size:17px}
+.practice-panel summary>.hint {display:block;margin-top:4px}
+.practice-data-table {min-width:265px}
+.practice-data-table td {padding:8px;font-size:12px}
+.practice-data-table th {font-size:10px;padding:7px}
+.practice-comparison h4 {font-size:14px;margin:0 0 10px}
+.practice-statistics .result-cell>strong {font-size:28px;color:var(--accent)}
+.sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.copy-diagram {overflow-x:auto;width:100%}
+.table-path {font-size:22px;font-family:var(--mono);padding:12px 0;color:var(--accent)}
+.table-reading {display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.practice-panel {margin-top:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.practice-panel summary {padding:13px 16px;cursor:pointer;font-weight:650;font-size:15px}
+.practice-body {padding:0 16px 18px;font-size:14px}
+.practice-body p {margin:8px 0}
+.practice-body pre {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;background:var(--code-bg);padding:12px;margin:12px 0;border-radius:7px}
+.practice-controls {display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.practice-panel .result-pair {grid-template-columns:repeat(2,minmax(0,1fr))}
+.site-footer {display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-top:1px solid var(--line);max-width:1580px;margin:auto;padding:20px 36px;font-size:12px;color:var(--muted)}
+.site-guide {max-width:680px;min-width:160px}
+.site-guide summary {cursor:pointer;text-align:right;color:var(--muted)}
+.site-guide>div {padding:18px 0;font-size:14px}
+.site-guide p+p {margin-top:12px}
+.site-guide .btn {margin-top:14px}
+.toast {position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:8px;font-size:14px;z-index:40;pointer-events:none;opacity:0;transition:opacity .15s}
+.toast.visible {opacity:1}
+.noscript {padding:30px;background:var(--error-bg);color:var(--error)}
+
+/* A: the list is the main blackboard; the controls sit directly below it. */
+body[data-theme=whiteboard] .workbench {grid-template-columns:1fr}
+body[data-theme=whiteboard] .visual-panel {grid-row:1}
+body[data-theme=whiteboard] .control-panel {display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;padding:18px 22px}
+body[data-theme=whiteboard] .control-panel>div {flex:1 1 160px}
+body[data-theme=whiteboard] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=whiteboard] .control-panel>.btn {flex:0 0 auto}
+body[data-theme=whiteboard] .control-panel hr {display:none}
+body[data-theme=whiteboard] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=whiteboard] .action-stack .btn {width:auto;justify-content:center;flex:1 1 auto}
+body[data-theme=whiteboard] .list-tile {flex-basis:85px}
+body[data-theme=whiteboard] .tile-value {font-size:21px;min-height:74px}
+
+/* B: a green business desk with horizontal navigation and a task column. */
+body[data-theme=workbench] {--bg:#ecf3f0;--surface:#fff;--ink:#173c36;--muted:#4d6860;--accent:#086a5b;--accent-ink:#fff;--selected:#dcefe8;--line:#ccdcd5;--soft:#f3f8f5;--changed:#745200;--changed-bg:#fcedbc;--code-bg:#edf4f0;--code-ink:#193f35;--token-str:#236242;--token-kw:#7b4283;--token-num:#91501c;--radius:4px;--tile-radius:4px}
+body[data-theme=workbench] .shell {grid-template-columns:1fr}
+body[data-theme=workbench] .sidebar {padding:14px 36px;border-right:0;border-bottom:1px solid var(--line);flex-direction:row;align-items:center;gap:30px;background:var(--surface)}
+body[data-theme=workbench] .course-name,body[data-theme=workbench] .sidebar-bottom {display:none}
+body[data-theme=workbench] .lesson-nav {flex-direction:row;flex-wrap:wrap;gap:9px;width:100%}
+body[data-theme=workbench] .lesson-nav a {flex:1;justify-content:center;font-size:15px;border-radius:3px;min-height:43px;white-space:nowrap}
+body[data-theme=workbench] .nav-done {margin-left:0}
+body[data-theme=workbench] .lesson {padding:28px 44px 40px}
+body[data-theme=workbench] .workbench {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .control-panel {border-top:3px solid var(--accent)}
+body[data-theme=workbench] .evidence {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .brand-mark {border-radius:4px}
+body[data-theme=workbench] .comparison h3 {font-size:22px}
+
+/* C: an object diagram on a deep-blue laboratory bench. */
+body[data-theme=blueprint] {--bg:#101b2d;--surface:#17253a;--ink:#f0f5fc;--muted:#b4c5db;--accent:#83d8f3;--accent-ink:#112339;--selected:#263f5a;--line:#38516c;--soft:#1d2e46;--changed:#f3c97f;--changed-bg:#3c3324;--error:#ffb4bb;--error-bg:#482b37;--code-bg:#132136;--code-ink:#dce8f8;--token-str:#a4dbc0;--token-kw:#d4b9f4;--token-num:#f3c97f;--radius:7px;--tile-radius:3px;color-scheme:dark}
+body[data-theme=blueprint] .topbar {border-bottom-color:var(--line)}
+body[data-theme=blueprint] .sidebar {background:#101b2d}
+body[data-theme=blueprint] .brand-mark {background:transparent;border:1px solid var(--accent);border-radius:3px}
+body[data-theme=blueprint] .workbench {grid-template-columns:1fr}
+body[data-theme=blueprint] .visual-panel {grid-row:1;border:1px solid var(--line);border-top:3px solid var(--accent)}
+body[data-theme=blueprint] .control-panel {flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;background:var(--soft)}
+body[data-theme=blueprint] .control-panel>div {flex:1 1 170px}
+body[data-theme=blueprint] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=blueprint] .control-panel hr {display:none}
+body[data-theme=blueprint] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=blueprint] .action-stack .btn {width:auto;flex:1 1 auto;justify-content:center}
+body[data-theme=blueprint] .list-tile {border-width:1px}
+body[data-theme=blueprint] .list-tile.selected {border-width:2px}
+body[data-theme=blueprint] .pos-index {background:var(--selected)}
+body[data-theme=blueprint] .tile-value {font-size:21px}
+body[data-theme=blueprint] .evidence {grid-template-columns:minmax(230px,1fr) minmax(0,1.6fr)}
+
+/* Projection raises teaching text sizes without scaling the whole page. */
+body.projecting {font-size:20px}
+body.projecting .theme-options,body.projecting .course-name,body.projecting .sidebar-bottom,body.projecting .check-panel,body.projecting .site-footer {display:none}
+body.projecting .shell {grid-template-columns:185px minmax(0,1fr)}
+body.projecting .sidebar {padding:25px 15px}
+body.projecting .lesson {padding:26px}
+body.projecting .lesson-nav a {font-size:16px}
+body.projecting h1 {font-size:38px}
+body.projecting .lesson-question,body.projecting .rule-panel {font-size:20px}
+body.projecting .tile-value {font-size:25px;min-height:84px}
+body.projecting .code-panel pre {font-size:20px}
+body.projecting .hint,body.projecting .control-label,body.projecting .btn,body.projecting .status-note,body.projecting .result-title {font-size:17px}
+body.projecting .result-value {font-size:22px}
+body.projecting[data-theme=workbench] .shell {grid-template-columns:1fr}
+body.projecting[data-theme=workbench] .sidebar {padding:10px 26px}
+
+@media (max-width:1150px) {
+  .topbar {padding:16px 24px;gap:18px}.top-actions {gap:10px}.theme-options button {font-size:12px;padding:7px 9px}.brand {font-size:19px}
+  .shell {grid-template-columns:185px minmax(0,1fr)}.sidebar {padding:28px 15px 25px 20px}.lesson {padding:27px 25px}.lesson-nav a {font-size:14px;padding:10px}
+  .course-name strong {font-size:20px}.workbench {grid-template-columns:220px minmax(0,1fr)}.visual-panel {padding:22px 20px}.control-panel {padding:20px}
+  body[data-theme=workbench] .lesson {padding:25px 30px}.theme-dot {width:8px;height:8px}.theme-options {gap:2px}
+}
+@media (max-width:900px) {
+  .topbar {flex-wrap:wrap;gap:14px;min-height:unset;padding:16px 22px}.top-actions {flex:1}.theme-options button {font-size:12px}.brand {font-size:18px}.projection-button {font-size:12px;padding:8px 12px}
+  .shell,.projecting .shell {grid-template-columns:1fr!important}.sidebar {padding:12px 20px;border-right:0;border-bottom:1px solid var(--line);background:var(--surface)}
+  .course-name,.sidebar-bottom {display:none}.lesson-nav {flex-direction:row;flex-wrap:wrap;gap:5px}.lesson-nav a {padding:7px 10px;min-height:38px;font-size:13px}.nav-index {font-size:11px}.nav-done {margin-left:3px}
+  .lesson {padding:24px}.workbench,body[data-theme=workbench] .workbench {grid-template-columns:1fr}.control-panel {flex-direction:row;flex-wrap:wrap}.control-panel>div {flex:1 1 180px}.control-panel>.hint {flex:1 1 180px}
+  .visual-panel {grid-row:1}.evidence,body[data-theme=workbench] .evidence,body[data-theme=blueprint] .evidence {grid-template-columns:1fr}.evidence {gap:14px}.rule-panel {padding:2px}
+  body[data-theme=workbench] .sidebar {padding:12px 20px}.site-footer {padding:20px 24px}.control-panel hr {display:none}.action-stack {flex-direction:row;flex-wrap:wrap}.action-stack .btn {width:auto;flex:1;justify-content:center}
+  h1 {font-size:29px}.lesson-question {font-size:15px}.lesson-heading>.btn {font-size:12px;padding:8px 10px}.source-tag {font-size:12px}
+}
+@media (max-width:600px) {
+  .topbar {padding:14px 16px}.brand-mark {width:38px;height:38px;font-size:29px}.brand {font-size:17px}.brand small {font-size:10px}
+  .top-actions {display:contents}.theme-options {order:3;width:100%;justify-content:space-between}.theme-options button {flex:1;justify-content:center;padding:8px 3px;font-size:11px;gap:5px;min-height:40px}.projection-button {margin-left:auto;font-size:12px}
+  .sidebar,body[data-theme=workbench] .sidebar {padding:10px 12px}.lesson-nav {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:3px}.lesson-nav a,body[data-theme=workbench] .lesson-nav a {font-size:12px;padding:8px 5px;gap:7px;justify-content:center}.nav-done {display:none}
+  .lesson,body[data-theme=workbench] .lesson,body.projecting .lesson {padding:20px 14px}.lesson-heading {gap:10px;margin-bottom:18px}.source-tag {font-size:11px}h1 {font-size:26px}.lesson-question {font-size:14px}.lesson-heading>.btn {font-size:11px;padding:7px 10px;min-height:38px}
+  .visual-panel {padding:18px 14px;gap:14px}.control-panel,body[data-theme=whiteboard] .control-panel,body[data-theme=blueprint] .control-panel {padding:16px 14px;gap:14px;flex-direction:column;align-items:stretch}
+  .control-panel>div,.control-panel>.hint,body[data-theme=whiteboard] .control-panel>div,body[data-theme=blueprint] .control-panel>div,body[data-theme=whiteboard] .control-panel>.hint,body[data-theme=blueprint] .control-panel>.hint {flex:initial}
+  .list-tile,body[data-theme=whiteboard] .list-tile {flex-basis:82px}.tile-value,body[data-theme=whiteboard] .tile-value,body[data-theme=blueprint] .tile-value {font-size:16px;min-height:62px}.pos-index,.neg-index {font-size:12px}
+  .compare-grid {grid-template-columns:1fr;gap:20px}.comparison+.comparison {border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px}.result-pair {grid-template-columns:1fr}.result-value {font-size:16px}.visual-header h2 {font-size:15px}
+  .rule-panel {font-size:15px}.code-panel pre {font-size:13px;padding:14px 12px}.code-line {gap:7px;grid-template-columns:18px minmax(0,1fr)}.try-next {font-size:13px;gap:9px;flex-direction:column}.try-next strong {font-size:13px}
+  .site-footer {padding:18px 16px;flex-direction:column;font-size:11px}.site-guide {min-width:0;max-width:100%}.site-guide summary {text-align:left}.data-table button {font-size:14px;padding:9px;min-height:52px}.data-table th {padding:8px;font-size:11px}.data-table td:first-child {width:35px;padding:8px}
+  .check-panel summary {padding:14px}.check-content {padding:0 14px 16px}.quiz-code {font-size:11px}.quiz-option {font-size:12px}.check-question {font-size:15px}.table-path {font-size:18px}.memory-graph svg,.copy-diagram svg {min-width:650px}
+  .practice-panel .result-pair {grid-template-columns:1fr}.btn,.segmented button,.theme-options button,.lesson-nav a,.preset-row button,.code-toolbar .btn {min-height:44px}
+  body.projecting h1 {font-size:30px}body.projecting .code-panel pre {font-size:16px}
+}
+@media (prefers-reduced-motion:reduce) {*,*:before,*:after {transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media print {.top-actions,.sidebar,.control-panel,.check-panel,.site-footer,.try-next,.toast {display:none!important}.shell {display:block}.lesson {padding:0}.code-panel,.visual-panel {break-inside:avoid}body {background:#fff;color:#17283d}.workbench,.evidence {display:block}.rule-panel {padding:16px 0}}
+
+/* Sixth lecture: execution state, not object references. */
+textarea {font:inherit;color:inherit}
+textarea:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+.flow-wide {flex:1 1 100%!important;min-width:0}
+.control-panel .single-field {min-width:160px}
+.preset-row button[aria-pressed=true] {background:var(--selected);color:var(--accent);border-color:var(--accent);font-weight:650}
+.flow-branches {display:grid;gap:10px}
+.flow-branch {display:grid;grid-template-columns:38px 1fr;gap:12px;padding:15px 18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft)}
+.flow-branch.is-selected {border-color:var(--accent);background:var(--selected)}
+.flow-branch.is-false {background:var(--surface);color:var(--muted)}
+.flow-branch-number {font:13px/1.8 var(--mono);padding-top:1px;color:var(--muted)}
+.flow-branch code {font-size:14px;overflow-wrap:anywhere}
+.flow-branch h3 {font-size:18px;line-height:1.5;margin-top:3px}
+.flow-branch p {font-size:13px;color:var(--muted);margin-top:3px}
+.flow-branch>div:last-child {display:grid;grid-template-columns:minmax(170px,1fr) minmax(100px,.7fr) minmax(180px,1.2fr);gap:14px;align-items:center;min-width:0}
+.flow-branch h3,.flow-branch p {margin-top:0}
+.flow-branch.is-selected p {color:var(--accent)}
+.flow-decision-result,.flow-outside {display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 16px;background:var(--selected);border-radius:var(--radius)}
+.flow-decision-result span,.flow-outside span {color:var(--muted);font:14px var(--mono)}
+.flow-decision-result strong {font-size:23px;color:var(--accent)}
+.flow-outside code {font-size:14px}
+.flow-outside strong {font-size:14px}
+.flow-metrics {display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.flow-metric {display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;min-width:0}
+.flow-metric span {font-size:13px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+.flow-metric strong {font-size:25px;line-height:1.3;color:var(--accent);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.flow-metric small {font-size:12px;color:var(--muted)}
+.flow-four-metrics {grid-template-columns:repeat(4,minmax(0,1fr))}
+.flow-four-metrics strong {font-size:22px}
+.flow-table-wrap {overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:var(--radius)}
+.flow-table {width:100%;border-collapse:collapse;text-align:left;font-size:14px;white-space:normal}
+.flow-table th,.flow-table td {padding:11px 13px;border-bottom:1px solid var(--line);line-height:1.5}
+.flow-table thead {background:var(--soft);font-size:13px;color:var(--muted)}
+.flow-table tbody tr:last-child th,.flow-table tbody tr:last-child td {border-bottom:0}
+.flow-table tbody th {font-weight:650}
+.flow-current-row {background:var(--changed-bg)}
+.flow-current-row th:first-child {box-shadow:inset 3px 0 var(--changed)}
+.flow-selected-row {background:var(--selected)}
+.flow-order-status {font:12px var(--mono);color:var(--muted)}
+.flow-order-status.is-paid {color:var(--accent)}
+.flow-current-item {display:flex;flex-direction:column;gap:6px;border-left:3px solid var(--accent);padding:10px 14px;background:var(--soft)}
+.flow-current-item span {font-size:13px;color:var(--muted)}
+.flow-current-item code {font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.flow-banner {display:flex;justify-content:space-between;gap:16px;align-items:center;border:1px solid var(--line);padding:10px 14px;border-radius:var(--radius)}
+.flow-banner code {font-size:14px;overflow-wrap:anywhere}
+.flow-banner strong {color:var(--accent)}
+.flow-execution {border-top:1px solid var(--line);padding-top:18px;display:grid;gap:14px}
+.flow-stepper {display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flow-stepper .btn {font-size:14px;min-height:40px;padding:7px 12px}
+.flow-step-count {margin-left:auto;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.flow-step-note {padding:11px 14px;background:var(--selected);border-left:3px solid var(--accent);border-radius:4px;min-height:56px;font-size:14px;line-height:1.65}
+.flow-step-note>strong {font-weight:550}
+.flow-current-code {display:flex;gap:13px;margin-top:7px;align-items:baseline;min-width:0}
+.flow-current-code span {font:11px var(--mono);white-space:nowrap;color:var(--muted)}
+.flow-current-code code {font:13px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.flow-output {display:grid;grid-template-columns:80px minmax(0,1fr);gap:12px;padding:12px 14px;background:var(--soft);border-radius:var(--radius)}
+.flow-output>span {font-size:12px;color:var(--muted)}
+.flow-output pre {margin:0;font:14px/1.7 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;max-height:185px;overflow-y:auto}
+.flow-muted {color:var(--muted);font-size:13px}
+.flow-error-text {color:var(--error)}
+.code-line.is-current {background:var(--selected);box-shadow:inset 3px 0 var(--accent)}
+.code-line.is-current .line-no {color:var(--accent);font-weight:700}
+.code-line {padding:0 4px}
+.flow-edit-table input,.flow-edit-table select {min-width:0;width:100%;min-height:40px;padding:5px 8px;border:1px solid var(--line);background:var(--surface);border-radius:5px;font-size:14px}
+.flow-edit-table th:first-child {width:17%}
+.flow-edit-table td:nth-child(2) {width:30%}
+.flow-edit-table td:nth-child(3) {width:53%}
+body.projecting .flow-step-note,body.projecting .flow-current-code code,body.projecting .flow-table,body.projecting .flow-output pre {font-size:18px}
+body.projecting .flow-branch h3 {font-size:22px}
+body.projecting .flow-metric strong {font-size:28px}
+@media(max-width:1100px) {.flow-four-metrics {grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1100px) and (min-width:901px) {.flow-branch>div:last-child {grid-template-columns:minmax(140px,1fr) minmax(90px,.7fr)}.flow-branch p {grid-column:1/-1}}
+@media(max-width:600px) {
+  .flow-branch {grid-template-columns:25px 1fr;gap:8px;padding:12px}
+  .flow-branch>div:last-child {display:block}.flow-branch h3,.flow-branch p {margin-top:3px}
+  .flow-branch code {font-size:12px}.flow-branch h3 {font-size:17px}
+  .flow-metrics {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .flow-metric {padding:11px 12px}.flow-metric strong {font-size:21px}
+  .flow-table {font-size:12px}.flow-table th,.flow-table td {padding:9px 7px}
+  .flow-order-status {font-size:10px}
+  .flow-stepper .btn {font-size:12px;padding:7px 10px;flex:1 1 38%}
+  .flow-step-count {margin-left:0;flex-basis:100%;text-align:center}
+  .flow-output {grid-template-columns:1fr;gap:6px}
+  .flow-output pre {font-size:12px}
+  .flow-current-code {display:block}.flow-current-code span {display:block;margin-bottom:5px}
+  .flow-edit-table input,.flow-edit-table select {font-size:12px;padding:5px}
+  body[data-theme=whiteboard] .control-panel>.flow-wide,body[data-theme=whiteboard] .control-panel>.flow-cv-wide {flex:initial!important}
+}
+
+/* Function input, local execution and return value follow the fixed A palette. */
+.fn-call-flow {display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1.35fr) 20px minmax(0,.85fr);gap:12px;align-items:stretch}
+.fn-input-box,.fn-call-box,.fn-channel,.fn-caller-box {min-width:0;border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:var(--soft)}
+.fn-input-box h3,.fn-call-box h3,.fn-caller-box h3 {font-size:15px;line-height:1.5;margin:0 0 11px;overflow-wrap:anywhere}
+.fn-call-box h3 {font-family:var(--mono);font-size:14px}
+.fn-input-box>code {display:block;font-size:12px;overflow-wrap:anywhere;margin-top:12px}
+.fn-arguments {display:flex;gap:12px;justify-content:space-around}
+.fn-arguments>span {display:flex;flex-direction:column;gap:6px;text-align:center}
+.fn-arguments strong {font-size:27px;color:var(--accent);font-variant-numeric:tabular-nums}
+.fn-arguments small {font-size:12px;color:var(--muted)}
+.fn-arrow {display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--accent)}
+.fn-box-heading {display:flex;flex-direction:column;gap:3px;margin-bottom:12px}
+.fn-box-heading h3 {margin:0}
+.fn-box-heading>span {font-size:12px;color:var(--muted)}
+.fn-call-box.is-running {background:var(--selected);border-color:var(--accent)}
+.fn-call-box.is-running .fn-box-heading>span {color:var(--accent)}
+.fn-call-box.is-history {border-style:dashed}
+.fn-call-box>.hint {margin-top:12px}
+.fn-variables {display:flex;flex-direction:column;gap:8px;min-width:0}
+.fn-variables>div {display:flex;justify-content:space-between;gap:13px;align-items:baseline;border-bottom:1px solid var(--line);padding:5px 0;min-width:0}
+.fn-variables>div:last-child {border-bottom:0}
+.fn-variables code {font:12px/1.6 var(--mono);overflow-wrap:anywhere}
+.fn-variables strong {font:600 15px/1.6 var(--mono);overflow-wrap:anywhere;white-space:pre-wrap;text-align:right}
+.fn-channel {display:flex;flex-direction:column;justify-content:center;gap:12px;text-align:center}
+.fn-channel>span {font-size:13px;color:var(--muted)}
+.fn-channel>strong {font:650 26px/1.35 var(--mono);color:var(--accent);overflow-wrap:anywhere;white-space:pre-wrap}
+.fn-channel>small {font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.fn-channel.has-value {background:var(--selected);border-color:var(--accent)}
+.fn-receiver {display:flex;gap:20px;align-items:center;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);min-width:0}
+.fn-receiver>span {font-size:13px;flex-shrink:0;color:var(--muted)}
+.fn-receiver>.fn-variables {flex:1}
+.fn-receiver .fn-variables>div {justify-content:flex-start}
+.fn-return-layout {display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px}
+.fn-call-expression {background:var(--soft);border-left:3px solid var(--accent);padding:12px 15px;min-width:0}
+.fn-call-expression>span {display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.fn-call-expression>code {font:14px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.fn-defaults {display:flex;gap:18px;flex-wrap:wrap;align-items:baseline;padding:10px 0}
+.fn-defaults>span {font-size:12px;color:var(--muted)}
+.fn-defaults>strong {font-size:15px;font-weight:550}
+.fn-pipeline {display:grid;gap:9px}
+.fn-pipeline-row {display:grid;grid-template-columns:22px minmax(190px,1.2fr) minmax(120px,.8fr) minmax(130px,.8fr);gap:13px;align-items:center;border:1px solid var(--line);background:var(--soft);padding:13px 16px;border-radius:var(--radius);min-width:0}
+.fn-pipeline-row.is-running {border-color:var(--accent);background:var(--selected)}
+.fn-pipeline-row.is-finished {background:var(--surface)}
+.fn-pipeline-row>div {display:flex;flex-direction:column;min-width:0}
+.fn-pipeline-row code {font-size:13px;overflow-wrap:anywhere}
+.fn-pipeline-row>div>span,.fn-pipeline-row small {font-size:12px;color:var(--muted)}
+.fn-pipeline-row strong {font-size:16px;font-weight:600;overflow-wrap:anywhere}
+.fn-pipeline-number {font:12px var(--mono);color:var(--muted)}
+.fn-stack-path {display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:10px 0}
+.fn-stack-path>span {font-size:12px;color:var(--muted)}
+.fn-stack-path code {padding:5px 9px;border:1px solid var(--line);background:var(--soft);border-radius:5px;font-size:12px}
+.fn-stack-path code.is-current {border-color:var(--accent);color:var(--accent);background:var(--selected)}
+body.projecting .fn-variables code,body.projecting .fn-variables strong,body.projecting .fn-pipeline-row strong {font-size:18px}
+body.projecting .fn-input-box h3,body.projecting .fn-call-box h3,body.projecting .fn-caller-box h3 {font-size:18px}
+@media(max-width:1150px) {
+  .fn-call-flow {grid-template-columns:minmax(0,1fr) 18px minmax(0,1.3fr)}
+  .fn-call-flow>.fn-arrow:nth-child(4) {display:none}
+  .fn-call-flow>.fn-channel {grid-column:1/-1;flex-direction:row;align-items:center;text-align:left}
+  .fn-pipeline-row {grid-template-columns:20px minmax(160px,1.2fr) minmax(95px,.8fr) minmax(100px,.8fr);gap:10px}
+}
+@media(max-width:600px) {
+  .fn-call-flow {display:flex;flex-direction:column;gap:8px}
+  .fn-call-flow>.fn-arrow {transform:rotate(90deg);height:24px}
+  .fn-call-flow>.fn-arrow:nth-child(4) {display:flex}
+  .fn-call-flow>.fn-channel {flex-direction:column;text-align:center;gap:7px}
+  .fn-input-box,.fn-call-box,.fn-channel,.fn-caller-box {padding:13px}
+  .fn-arguments strong {font-size:24px}
+  .fn-return-layout {grid-template-columns:1fr}
+  .fn-receiver {flex-direction:column;align-items:stretch;gap:8px}
+  .fn-receiver .fn-variables>div {justify-content:space-between}
+  .fn-pipeline-row {grid-template-columns:18px minmax(0,1fr);gap:8px;padding:12px}
+  .fn-pipeline-row>div:nth-child(3),.fn-pipeline-row>div:nth-child(4) {grid-column:2}
+  .fn-pipeline-row>div:nth-child(3),.fn-pipeline-row>div:nth-child(4) {display:flex;flex-direction:row;justify-content:space-between;gap:10px;align-items:baseline}
+  .fn-pipeline-row code {font-size:12px}
+  .fn-pipeline-row strong {font-size:14px}
+  body[data-theme=whiteboard] .control-panel>.flow-wide,body[data-theme=whiteboard] .control-panel>.fnv-wide {flex:initial!important}
+}
+
+/* Scope, assertion, and recursive call visualizations. */
+.fnv-wide {flex:1 1 100%!important;min-width:0}
+.fnv-scope-layout {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.fnv-scope-box {padding:17px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft);min-width:0}
+.fnv-scope-box.is-active {background:var(--selected);border-color:var(--accent)}
+.fnv-scope-box h3 {font-size:16px;margin:0 0 12px;line-height:1.5;overflow-wrap:anywhere}
+.fnv-variable-table {display:grid;gap:9px}
+.fnv-variable {display:grid;grid-template-columns:minmax(110px,1fr) minmax(0,1fr);gap:12px;align-items:baseline;border-top:1px solid var(--line);padding-top:9px}
+.fnv-variable:first-child {padding-top:0;border-top:0}
+.fnv-variable code {font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.fnv-variable strong {font:17px/1.5 var(--mono);overflow-wrap:anywhere;font-weight:600}
+.fnv-empty-call {font-size:14px;line-height:1.8;color:var(--muted);margin:0;min-height:70px}
+.fnv-return-channel {display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--accent);border-radius:var(--radius);background:var(--selected)}
+.fnv-return-channel span {font-size:13px;overflow-wrap:anywhere}
+.fnv-return-channel strong {font-size:24px;line-height:1.3;color:var(--accent)}
+.fnv-return-channel small {font-size:12px;color:var(--muted);margin-left:auto}
+.fnv-return-channel.is-pending {background:var(--soft);border-color:var(--line)}
+.fnv-return-channel.is-pending strong {font-size:17px;color:var(--muted);font-weight:500}
+.fnv-access {display:flex;gap:16px;align-items:center;justify-content:space-between;padding:11px 15px;border:1px solid var(--line);border-radius:var(--radius);font-size:14px}
+.fnv-access code {font-size:14px}
+.fnv-access span {font-size:13px;color:var(--muted)}
+.fnv-access.is-error {background:var(--error-bg);border-color:var(--error);color:var(--error)}
+.fnv-access.is-error span {color:var(--error)}
+.fnv-data-source,.fnv-testing-purpose {border-left:3px solid var(--accent);padding:11px 15px;background:var(--soft);border-radius:3px;font-size:14px}
+.fnv-data-source p,.fnv-testing-purpose p {font-size:13px;line-height:1.8;color:var(--muted);margin:5px 0 0}
+.fnv-test-table th:first-child {width:57%;font-weight:500}
+.fnv-test-table th:first-child code {font-size:13px;overflow-wrap:anywhere;white-space:pre-wrap}
+.fnv-test-table td {white-space:nowrap}
+.fnv-test-passed {background:var(--selected)}
+.fnv-test-failed {background:var(--error-bg);color:var(--error)}
+.fnv-test-calling {background:var(--changed-bg);color:var(--changed)}
+.fnv-test-status {font-size:12px;font-weight:600}
+.fnv-test-complete {padding:11px 15px;border:1px solid var(--accent);background:var(--selected);border-radius:var(--radius);font-size:14px}
+.fnv-recursion-layout {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px}
+.fnv-recursion-layout h3 {font-size:16px;margin:0 0 14px;line-height:1.5}
+.fnv-recursion-layout h3 small {font-size:12px;font-weight:400;color:var(--muted);display:block;margin-top:3px}
+.fnv-tree,.fnv-tree ul {list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.fnv-tree ul {margin:9px 0 0 14px;padding-left:18px;border-left:1px solid var(--line)}
+.fnv-tree-node {display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;border:1px solid var(--line);border-radius:8px;background:var(--soft);padding:10px 12px}
+.fnv-tree-node strong {font-size:16px}
+.fnv-tree-node span {font-size:11px;color:var(--muted);margin-left:auto}
+.fnv-tree-node small {font-size:11px;color:var(--muted);width:100%}
+.fnv-tree-node.is-current {border-color:var(--accent);background:var(--selected);box-shadow:inset 3px 0 var(--accent)}
+.fnv-tree-node.is-current span {color:var(--accent);font-weight:600}
+.fnv-tree-node.is-complete {background:var(--surface)}
+.fnv-tree-node.is-complete strong:before {content:"✓ ";color:var(--accent)}
+.fnv-tree-node.is-visited {background:var(--changed-bg)}
+.fnv-stack {list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.fnv-stack li {border:1px solid var(--line);border-radius:8px;background:var(--soft);padding:11px 13px}
+.fnv-stack li.is-current {border-color:var(--accent);background:var(--selected)}
+.fnv-stack li>div {display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fnv-stack li span {font-size:11px;color:var(--muted)}
+.fnv-stack li span:last-child {margin-left:auto}
+.fnv-stack li strong {font-size:16px}
+.fnv-stack li code {display:block;font-size:13px;margin-top:5px}
+.fnv-stack-empty {font-size:14px;color:var(--muted);padding:18px;border:1px dashed var(--line);border-radius:var(--radius)}
+.fnv-recursion-counters {display:flex;flex-wrap:wrap;gap:9px 25px;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:var(--muted)}
+.fnv-recursion-counters strong {font-size:17px;color:var(--accent);font-variant-numeric:tabular-nums;margin:0 3px}
+.fnv-recursion-return {background:var(--selected);padding:10px 14px;border-radius:var(--radius);font-size:14px}
+body.projecting .fnv-variable strong {font-size:21px}
+body.projecting .fnv-scope-box h3,body.projecting .fnv-recursion-layout h3 {font-size:19px}
+body.projecting .fnv-tree-node strong,body.projecting .fnv-stack li strong {font-size:20px}
+@media(max-width:700px) {
+  .fnv-scope-layout,.fnv-recursion-layout {grid-template-columns:1fr;gap:14px}
+  .fnv-scope-box {padding:14px}
+  .fnv-variable {grid-template-columns:minmax(90px,1fr) minmax(0,1fr)}
+  .fnv-variable code {font-size:12px}.fnv-variable strong {font-size:16px}
+  .fnv-return-channel small {flex-basis:100%;margin-left:0}
+  .fnv-access {align-items:flex-start;flex-direction:column;gap:5px}
+  .fnv-test-table th:first-child code {font-size:11px}
+  .fnv-test-table th,.fnv-test-table td {padding:9px 7px}
+  .fnv-test-status {font-size:11px}
+  .fnv-tree ul {margin-left:9px;padding-left:12px}
+}
+@media(max-width:600px) {
+  body[data-theme=whiteboard] .control-panel>.fnv-wide {flex:initial!important}
+}
+</style>
+</head>
+<body data-theme="whiteboard">
+  <a class="skip-link" href="#lesson-title">跳到当前实验</a>
+  <header class="topbar">
+    <a class="brand" href="#call" aria-label="函数与数据流实验室首页"><span class="brand-mark" aria-hidden="true">ƒ</span><span>函数与数据流实验室<small>Python 第七讲</small></span></a>
+    <div class="top-actions"><button type="button" class="btn btn-subtle projection-button" id="projection-toggle" aria-pressed="false">投影模式</button></div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="course-name"><span>这一讲</span><strong>传入数据，<br>交回计算结果。</strong></div>
+      <nav class="lesson-nav" id="lesson-nav" aria-label="知识点目录"></nav>
+      <div class="sidebar-bottom"><p>先预测下一步，<br>再观察程序。</p><span id="quiz-progress" class="progress-note">7 个动手实验</span></div>
+    </aside>
+    <main id="lesson" class="lesson"></main>
+  </div>
+  <footer class="site-footer">
+    <span>课件案例：订单结算与商品分类</span>
+    <details class="site-guide"><summary>使用说明与来源</summary><div>
+      <p>选择知识点后，先预测，再点击“下一步”观察执行。可以退回、运行到最后或从头演示；改变参数会重新开始当前实验。投影模式增大字号，按 Esc 退出。</p>
+      <p>采用课堂白板 A 统一模板，依据 slide-7.pdf 第七讲“函数”。一份 HTML 集中展示课件中的 7 组精选知识点，页码见各模块。</p>
+      <p>页面模拟指定场景中的 Python 执行过程，不执行任意代码。样式与脚本均已内嵌，操作无需联网。对应代码可复制到 Python 环境复现；自动复制受限时，可手动选中复制。</p>
+      <p>一个“步骤”可以对应函数定义、参数绑定、函数体执行、返回或接收结果。蓝色代码行表示当前讲解位置；准备数据会合并展示。各级代码缩进使用 2 个空格，并保持同层一致。</p>
+      <p>数值范围属于本实验的界面限制。函数的当前局部变量与已结束调用的历史记录分开展示；返回 None 与尚未返回是不同状态。金额卡片统一保留两位小数，控制台输出遵循对应 Python 代码。</p>
+      <p>本页只在当前浏览器保存最近打开的模块和练习选择，不上传学生数据。刷新后，实验参数恢复初始值。</p>
+      <p><a href="https://docs.python.org/3/tutorial/controlflow.html#defining-functions" target="_blank" rel="noopener noreferrer">Python 官方：函数</a> · <a href="https://docs.python.org/3/reference/executionmodel.html#resolution-of-names" target="_blank" rel="noopener noreferrer">名字与作用域</a></p>
+      <button type="button" class="btn btn-subtle" data-action="reset-quizzes">清除本讲练习记录</button>
+    </div></details>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">请在浏览器中启用 JavaScript 后使用交互实验。页面不需要联网。</p></noscript>
+  <script>/* 第七讲：函数。依据 slide-7.pdf 的精选知识点。 */
+window.FunctionLabContent = {
+  modules: [
+    {
+      id: 'call',
+      title: '定义与调用',
+      pages: '课件 7–8 页',
+      question: '定义好商品金额函数以后，程序什么时候才会真正执行里面的计算？',
+      try: '先停在函数定义之后，再进入一次调用；观察参数、局部结果和调用者变量分别何时出现。',
+      quiz: {
+        prompt: '下面三行输出会按什么顺序出现？',
+        code: "def calculate_subtotal(unit_price, quantity):\n  print('函数体开始')\n  return unit_price * quantity\n\nprint('准备调用')\norder_subtotal = calculate_subtotal(120, 3)\nprint(order_subtotal)",
+        options: [
+          {label: '函数体开始 → 准备调用 → 360', explanation: '读取 def 时不会执行函数体中的 print。程序先运行定义之后的“准备调用”，之后才调用函数。'},
+          {label: '准备调用 → 函数体开始 → 360', explanation: '先定义函数，再输出“准备调用”。调用时进入函数体，输出提示并返回 360；调用者接收返回值后，再输出它。'},
+          {label: '准备调用 → 360，函数体中的提示不会输出', explanation: '调用 calculate_subtotal 后，函数体会从上到下执行，因此先输出“函数体开始”，再执行 return。'}
+        ],
+        answer: 1
+      }
+    },
+    {
+      id: 'returns',
+      title: '返回还是输出',
+      pages: '课件 9 页',
+      question: '屏幕上显示了运费，是否就意味着调用者已经拿到了这笔运费？',
+      try: '对比“return 运费”和“只 print 运费”，分别观察屏幕输出、接收变量和后续计算。',
+      quiz: {
+        prompt: '执行后，result 接收到什么？',
+        code: "def show_shipping(shipping):\n  print(f'运费：{shipping}元')\n\nresult = show_shipping(20)\nprint(result)",
+        options: [
+          {label: '整数 20', explanation: '20 被传给了参数 shipping，也被用于输出，但这个函数没有用 return 把 20 交给调用者。'},
+          {label: '字符串“运费：20元”', explanation: '这段文本被 print 显示在屏幕上。输出文本不会自动成为函数的返回值。'},
+          {label: 'None', explanation: '函数执行了 print，然后自然结束，没有显式返回一个值，因此调用者得到 None。屏幕先显示运费文本，再显示 None。'}
+        ],
+        answer: 2
+      }
+    },
+    {
+      id: 'parameters',
+      title: '参数怎样匹配',
+      pages: '课件 10–11 页',
+      question: '一次调用中的数值，怎样对应到函数参数；没有提供的参数又从哪里取值？',
+      try: '切换位置与关键字调用，再覆盖本次调用的默认参数，观察绑定值与函数定义中的默认值。',
+      quiz: {
+        prompt: '这次调用的运费是多少？',
+        code: "def calculate_shipping(payable, free_shipping_threshold=400, standard_fee=20):\n  if payable >= free_shipping_threshold:\n    return 0\n  return standard_fee\n\nfee = calculate_shipping(380, standard_fee=30)\nprint(fee)",
+        options: [
+          {label: '30', explanation: '380 按位置传给 payable；关键字 standard_fee 将普通运费覆盖为 30。免运费门槛没有提供，仍使用默认值 400。'},
+          {label: '20', explanation: '20 是定义中的默认运费，但本次调用明确提供 standard_fee=30，所以这一次使用 30。'},
+          {label: '0', explanation: '本次只修改普通运费，没有把免运费门槛改成 300。380 仍小于默认门槛 400，因此不免运费。'}
+        ],
+        answer: 0
+      }
+    },
+    {
+      id: 'scope',
+      title: '函数内外的数据',
+      pages: '课件 12–13、21 页',
+      question: '函数内部算出的数据怎样交给外部；外部规则变了，同样写法的调用会得到相同结果吗？',
+      try: '区分局部变量和调用者接收变量，再比较隐藏的全局折扣率与显式传入的折扣率。',
+      quiz: {
+        prompt: '此前没有定义外部变量 subtotal。下面两次 print 会怎样执行？',
+        code: "def calculate_subtotal(unit_price, quantity):\n  subtotal = unit_price * quantity\n  return subtotal\n\norder_subtotal = calculate_subtotal(120, 3)\nprint(order_subtotal)\nprint(subtotal)",
+        options: [
+          {label: '连续输出两次 360', explanation: 'return 把数值交给外部变量 order_subtotal，但不会把局部变量名 subtotal 自动变成外部变量。'},
+          {label: '先输出 360，再产生 NameError', explanation: 'order_subtotal 已接收返回值，所以第一条 print 成功。外部没有名为 subtotal 的变量，第二条 print 会产生 NameError。'},
+          {label: '第一次 print 就产生 NameError', explanation: '局部变量可以通过 return 把值交回。调用者已经用 order_subtotal 接收，所以第一条 print 能正常输出 360。'}
+        ],
+        answer: 1
+      }
+    },
+    {
+      id: 'testing',
+      title: '用边界测试规则',
+      pages: '课件 14–15、22 页',
+      question: '“满 400 元免运费”只改错一个比较符，哪条测试最容易把问题找出来？',
+      try: '把 >= 改成 >，比较普通金额与恰好 400 元的测试结果，再观察断言失败后的语句是否执行。',
+      quiz: {
+        prompt: '按“满 400 元免运费”的要求，这段代码运行后会怎样？',
+        code: "def calculate_shipping(payable, threshold=400):\n  if payable > threshold:\n    return 0\n  return 20\n\nassert calculate_shipping(399) == 20\nassert calculate_shipping(400) == 0\nprint('全部通过')",
+        options: [
+          {label: '两条断言都通过，输出“全部通过”', explanation: '当金额恰好为 400 时，400 > 400 为 False，函数返回 20，与第二条断言要求的 0 不一致。'},
+          {label: '第一条断言失败，因为 399 小于 400', explanation: '399 小于门槛，函数返回 20，正好符合第一条断言的预期；这条测试会通过。'},
+          {label: '第一条通过，第二条产生 AssertionError，不输出“全部通过”', explanation: '普通金额测试通过，边界测试暴露了 > 与 >= 的差异。第二条断言失败后抛出异常，后面的 print 不再执行。'}
+        ],
+        answer: 2
+      }
+    },
+    {
+      id: 'checkout',
+      title: '订单结算工坊',
+      pages: '课件 16–18、20 页',
+      question: '商品金额、优惠与运费由不同函数处理时，怎样把每一步的结果接起来？',
+      try: '先观察一笔订单在三个小函数之间流转，再比较商品金额为 499 与 500 的结算结果。',
+      quiz: {
+        prompt: '一笔订单商品金额为 640 元，满 500 元优惠 10%，优惠后满 400 元免运费。运费函数应接收哪个金额？',
+        options: [
+          {label: '640 元：原商品金额', explanation: '运费规则根据优惠后金额判断。把原商品金额传入，会在一些临界订单上得到错误的运费。'},
+          {label: '64 元：优惠金额', explanation: '64 元是被减去的优惠，不是顾客优惠后需要支付的商品金额。'},
+          {label: '576 元：优惠后金额', explanation: '商品金额 640 减去优惠 64，得到 576。这个结果成为运费函数的输入，符合“优惠后满 400 元免运费”的规则。'}
+        ],
+        answer: 2
+      }
+    },
+    {
+      id: 'recursion',
+      title: '递归处理分类',
+      pages: '课件 25 页 · 拓展',
+      question: '分类下面还有分类，函数怎样逐层处理，又怎样返回上一层？',
+      try: '跟随“商品 → 数码 → 手机”的调用过程，观察每层的 node、level，以及子调用结束后回到哪里。',
+      quiz: {
+        prompt: '执行到“服装”节点时，为什么这一层不会继续调用自身？',
+        code: "def show_categories(node, level=0):\n  print('  ' * level + node['name'])\n  for child in node['children']:\n    show_categories(child, level + 1)\n\nshow_categories({'name': '服装', 'children': []})",
+        options: [
+          {label: '空列表会自动终止整个 Python 程序', explanation: '空列表不会结束整个程序。它只是没有元素可供本层 for 遍历，因此本层不再发起子调用。'},
+          {label: 'children 为空，for 执行 0 次；这一层自然结束并返回', explanation: '本层先打印“服装”，随后没有子项可取，循环体不执行。这次调用自然结束，若有等待中的父调用，就返回父调用继续处理。'},
+          {label: 'level 达到某个固定值，Python 自动停止递归', explanation: '这段代码没有按 level 设置停止规则。level 只用于显示缩进；这里停止继续调用，是因为没有子节点。'}
+        ],
+        answer: 1
+      }
+    }
+  ]
+};
+</script>
+  <script>/* Slide 7: bounded teaching models, Python source and execution snapshots.
+ * Each frame follows the indicated operation. No free-form Python execution.
+ */
+(function (root,factory) {
+  'use strict';
+  const api=factory();
+  if(typeof module==='object'&&module.exports)module.exports=api;
+  if(root)root.FunctionLabEngine=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+  'use strict';
+  const clone=value=>JSON.parse(JSON.stringify(value));
+  function repr(value,type) {
+    if (value === null) return 'None';
+    if (value === true) return 'True';
+    if (value === false) return 'False';
+    if (typeof value === 'number') {
+      if (!Number.isFinite(value)) throw new TypeError('只支持有限数值。');
+      return Object.is(value,-0) ? '-0.0' : type==='float'&&Number.isInteger(value) ? value+'.0' : String(value);
+    }
+    if (typeof value === 'string') return "'" + Array.from(value).map(ch => {
+      if (ch === '\\') return '\\\\';
+      if (ch === "'") return "\\'";
+      if (ch === '\n') return '\\n';
+      if (ch === '\r') return '\\r';
+      if (ch === '\t') return '\\t';
+      const n = ch.codePointAt(0);
+      return n < 32 || (n >= 127 && n <= 160) ? '\\x' + n.toString(16).padStart(2,'0') : ch;
+    }).join('') + "'";
+    if (Array.isArray(value)) return '[' + value.map(repr).join(', ') + ']';
+    if (value && typeof value === 'object') return '{' + Object.keys(value).map(key => repr(key) + ': ' + repr(value[key])).join(', ') + '}';
+    throw new TypeError('不支持的教学数据类型。');
+  }
+  function money(value, precision = 2) {
+    if (!Number.isFinite(value) || !Number.isInteger(precision) || precision < 0 || precision > 6) throw new RangeError('格式化参数无效。');
+    const negative = value < 0 || Object.is(value,-0);
+    const view = new DataView(new ArrayBuffer(8));
+    view.setFloat64(0,Math.abs(value),false);
+    const high = view.getUint32(0,false), low = view.getUint32(4,false), exponent = (high >>> 20) & 2047;
+    let mantissa = (BigInt(high & 1048575) << 32n) + BigInt(low), shift;
+    if (exponent === 0) shift = -1074;
+    else { mantissa += 1n << 52n; shift = exponent - 1023 - 52; }
+    let numerator = mantissa * (10n ** BigInt(precision)), denominator = 1n;
+    if (shift >= 0) numerator <<= BigInt(shift); else denominator <<= BigInt(-shift);
+    let quotient = numerator / denominator;
+    const remainder = numerator % denominator;
+    if (remainder * 2n > denominator || (remainder * 2n === denominator && quotient % 2n === 1n)) quotient += 1n;
+    let digits = quotient.toString().padStart(precision+1,'0');
+    if (precision) digits = digits.slice(0,-precision)+'.'+digits.slice(-precision);
+    return (negative ? '-' : '') + digits;
+  }
+  function numeric(value,min,max,label,decimal=false) {
+    const raw = String(value).trim();
+    const valid = decimal ? /^(?:\d+(?:\.\d{1,2})?|\.\d{1,2})$/.test(raw) : /^\d+$/.test(raw);
+    const n = Number(raw);
+    if (!valid || !Number.isFinite(n) || n < min || n > max || (!decimal && !Number.isSafeInteger(n))) throw new RangeError(label+'请填写 '+min+'～'+max+(decimal?' 的数值，最多两位小数。':' 的整数。'));
+    return n;
+  }
+
+  const ORDERS=[
+    {id:'O001',unit_price:120,quantity:3},
+    {id:'O002',unit_price:80,quantity:8},
+    {id:'O003',unit_price:260,quantity:2}
+  ];
+  const BOUNDARY_ORDERS=[399,400,499,500].map(n=>({id:'B'+n,unit_price:n,quantity:1}));
+  const CATEGORY={name:'商品',children:[{name:'服装',children:[]},{name:'数码',children:[{name:'手机',children:[]}]}]};
+  const typeOf=x=>x===null?'NoneType':Array.isArray(x)?'list':typeof x==='number'?(Number.isInteger(x)?'int':'float'):typeof x==='boolean'?'bool':typeof x==='string'?'str':'dict';
+  const rateLiteral=n=>Number.isInteger(n)?n+'.0':String(n);
+  const numberText=(n,type)=>type==='float'&&Number.isInteger(n)?n+'.0':String(n);
+  const pyText=(v,type)=>v===null?'None':typeof v==='number'?numberText(v,type):typeof v==='string'?v:repr(v);
+  const integer=(v,defaultValue,label,max=10000)=>numeric(v===undefined?defaultValue:v,0,max,label);
+  const rate=(v,defaultValue=.1)=>numeric(v===undefined?defaultValue:v,0,1,'优惠比例',true);
+  function program(){
+    const lines=[];
+    return {lines,add(text){lines.push(text);return lines.length;}};
+  }
+  function runner(p,extra={}){
+    const trace=[],state=Object.assign({
+      kind:'ready',line:null,lines:[],note:'尚未执行。',
+      vars:{},varTypes:{},stack:[],definitions:[],bindings:[],
+      returnChannel:null,lastCall:null,condition:null,output:[],
+      activeIndex:null,done:false,paused:false,error:null
+    },clone(extra));
+    let calls=0;
+    function emit(kind,lines,note,patch={}){
+      Object.assign(state,patch,{kind,note,lines:Array.isArray(lines)?lines:(lines?[lines]:[])});
+      state.line=state.lines.length?state.lines[0]:null;
+      trace.push(clone(state));
+    }
+    function global(name,value,type){state.vars[name]=clone(value);state.varTypes[name]=type||typeOf(value);}
+    function local(name,value,type){const f=state.stack[state.stack.length-1];f.locals[name]=clone(value);f.localTypes[name]=type||typeOf(value);}
+    function define(name,line){state.definitions.push(name);emit('define',line,'定义 '+name+'，此时不执行函数体。');}
+    function enter(name,locals,line,types={},meta={}){
+      const localTypes={};Object.keys(locals).forEach(k=>localTypes[k]=types[k]||typeOf(locals[k]));
+      const f=Object.assign({name,callId:++calls,locals:clone(locals),localTypes},meta);
+      state.stack.push(f);state.returnChannel=null;state.lastCall=null;state.condition=null;
+      emit('call',line,'调用 '+name+'，把传入值绑定到本次调用的参数。');
+      return f;
+    }
+    function leave(value,type,line,note){
+      const f=state.stack.pop();
+      state.lastCall=Object.assign(clone(f),{value:clone(value),type:type||typeOf(value),closed:true});
+      const to=state.stack.length?state.stack[state.stack.length-1].name:'<module>';
+      state.returnChannel={from:f.name,fromCallId:f.callId,to,value:clone(value),type:type||typeOf(value),consumed:false};
+      emit('return',line,note||'return 交回结果，并结束本次 '+f.name+' 调用。');
+    }
+    function receive(name,value,type,line,note){
+      if(state.stack.length)local(name,value,type);else global(name,value,type);
+      if(state.returnChannel){state.returnChannel.consumed=true;state.returnChannel.target=name;}
+      emit('receive',line,note||'调用者把返回值保存到 '+name+'。');
+    }
+    function output(text,line,note){state.output.push(text);emit('print',line,note||'执行 print，产生一行输出。');}
+    function error(type,message,line,note){emit('error',line,note||'程序产生异常，后续语句不再执行。',{error:{type,message},done:true});}
+    function end(note){emit('done',[],note||'程序执行结束。',{done:true,condition:null,activeIndex:null});}
+    emit('ready',[],'尚未执行。');
+    return {state,trace,emit,global,local,define,enter,leave,receive,output,error,end,
+      finish(meta={}){return Object.assign({ok:true,error:null,code:p.lines.join('\n'),lines:p.lines.slice(),trace,outcome:clone(trace[trace.length-1])},meta);}
+    };
+  }
+  function safe(fn){return function(c={}){try{return fn(c||{});}catch(e){const p=program(),r=runner(p);r.trace[0].note=e.message;return Object.assign(r.finish(),{ok:false,error:e.message});}};}
+  function stateAt(model,cursor=0){const n=Number(cursor);return model.trace[Math.max(0,Math.min(model.trace.length-1,Number.isFinite(n)?Math.floor(n):0))];}
+  function shippingCode(p,name='calculate_shipping',payableName='payable',threshold=400,fee=20,operator='>=',withDefaults=false,typed=false){
+    const signature='def '+name+'('+payableName+(typed?': float':'')+(withDefaults?', threshold'+(typed?': float':'')+'='+threshold+', standard_fee'+(typed?': float':'')+'='+fee:'')+')'+(typed?' -> float':'')+':';
+    const def=p.add(signature),check=p.add('  if '+payableName+' '+operator+' '+(withDefaults?'threshold':threshold)+':'),free=p.add('    return 0'),paid=p.add('  return '+(withDefaults?'standard_fee':fee));
+    return {def,check,free,paid,name,payableName,threshold,fee,operator,withDefaults};
+  }
+  function runShipping(r,fn,amount,threshold,fee,callLine,meta={},amountType='int'){
+    const locals={};locals[fn.payableName]=amount;
+    if(fn.withDefaults){locals.threshold=threshold;locals.standard_fee=fee;}
+    const types={};types[fn.payableName]=amountType;
+    r.enter(fn.name,locals,callLine,types,meta);
+    const passed=fn.operator==='>'?amount>threshold:amount>=threshold;
+    const expression=fn.payableName+' '+fn.operator+' '+(fn.withDefaults?'threshold':threshold);
+    r.emit('check',fn.check,'判断本次金额是否达到免运费门槛。',{condition:{expression,result:passed}});
+    const value=passed?0:fee;
+    r.leave(value,'int',passed?fn.free:fn.paid,passed?'执行 return 0，本次调用立即结束；后面的 return 不再执行。':'条件不成立，返回普通运费。');
+    return value;
+  }
+  const call=safe(c=>{
+    const mode=c.mode||'call';if(!['call','define'].includes(mode))throw new RangeError('未知调用模式。');
+    const price=integer(c.unitPrice,120,'商品单价'),quantity=integer(c.quantity,3,'购买数量',20),p=program();
+    const def=p.add('def calculate_subtotal(unit_price, quantity):'),calc=p.add('  subtotal = unit_price * quantity'),ret=p.add('  return subtotal');
+    p.add('');
+    const callLine=mode==='call'?p.add('order_subtotal = calculate_subtotal('+price+', '+quantity+')'):null;
+    const print=mode==='call'?p.add('print(order_subtotal)'):null;
+    const r=runner(p);r.define('calculate_subtotal',def);
+    if(mode==='call'){
+      r.state.bindings=[{param:'unit_price',value:price,type:'int',source:'第 1 个位置参数'},{param:'quantity',value:quantity,type:'int',source:'第 2 个位置参数'}];
+      r.enter('calculate_subtotal',{unit_price:price,quantity},callLine);
+      const subtotal=price*quantity;r.local('subtotal',subtotal);r.emit('compute',calc,'在当前调用内部计算商品金额。');
+      r.leave(subtotal,'int',ret);r.receive('order_subtotal',subtotal,'int',callLine);r.output(String(subtotal),print);
+    }
+    r.end(mode==='define'?'只完成函数定义；没有调用，因此函数体没有执行。':undefined);
+    return r.finish({mode,signature:'calculate_subtotal(unit_price, quantity)',inputs:{unitPrice:price,quantity}});
+  });
+  const returns=safe(c=>{
+    const mode=c.mode||'return';if(!['return','print','reusePrint'].includes(mode))throw new RangeError('未知返回值实验。');
+    const payable=integer(c.payable,380,'优惠后金额'),shipping=integer(c.shipping,20,'输出的运费'),p=program();
+    let r;
+    if(mode==='return'){
+      const fn=shippingCode(p);p.add('');
+      const callLine=p.add('shipping = calculate_shipping('+payable+')'),totalLine=p.add('total = '+payable+' + shipping'),print=p.add('print(total)');
+      r=runner(p);r.define(fn.name,fn.def);
+      r.state.bindings=[{param:'payable',value:payable,type:'int',source:'第 1 个位置参数'}];
+      const fee=runShipping(r,fn,payable,400,20,callLine);r.receive('shipping',fee,'int',callLine);
+      r.global('total',payable+fee);r.emit('compute',totalLine,'返回值可以继续参与金额计算。');r.output(String(payable+fee),print);r.end();
+    }else{
+      const def=p.add('def show_shipping(shipping):'),body=p.add('  print(f"运费：{shipping}元")');p.add('');
+      const callLine=p.add('result = show_shipping('+shipping+')'),printResult=p.add('print(result)');
+      const totalLine=mode==='reusePrint'?p.add('total = '+payable+' + result'):null,printTotal=mode==='reusePrint'?p.add('print(total)'):null;
+      r=runner(p);r.define('show_shipping',def);
+      r.state.bindings=[{param:'shipping',value:shipping,type:'int',source:'第 1 个位置参数'}];
+      r.enter('show_shipping',{shipping},callLine);r.output('运费：'+shipping+'元',body,'print 显示文字，但没有把运费作为函数返回值交回。');
+      r.leave(null,'NoneType',null,'函数体执行到末尾，没有显式 return，因此隐式返回 None。');
+      r.receive('result',null,'NoneType',callLine);r.output('None',printResult);
+      if(mode==='reusePrint')r.error('TypeError',"unsupported operand type(s) for +: 'int' and 'NoneType'",totalLine,'result 是 None，不能作为数值参与加法。');
+      else r.end();
+    }
+    return r.finish({mode,inputs:{payable,shipping}});
+  });
+  const parameters=safe(c=>{
+    const mode=c.mode||'binding',p=program();
+    if(!['binding','defaults'].includes(mode))throw new RangeError('未知参数实验。');
+    if(mode==='binding'){
+      const amount=integer(c.amount,1000,'订单金额'),discountRate=rate(c.rate),style=c.style||'positional';
+      const allowed=['positional','keyword','mixed','duplicate','missing','unknown'];if(!allowed.includes(style))throw new RangeError('未知调用写法。');
+      const def=p.add('def calculate_discount(amount, discount_rate):'),ret=p.add('  return amount * discount_rate');p.add('');
+      const literal=rateLiteral(discountRate),calls={
+        positional:'calculate_discount('+amount+', '+literal+')',
+        keyword:'calculate_discount(discount_rate='+literal+', amount='+amount+')',
+        mixed:'calculate_discount('+amount+', discount_rate='+literal+')',
+        duplicate:'calculate_discount('+amount+', amount='+amount+', discount_rate='+literal+')',
+        missing:'calculate_discount('+amount+')',
+        unknown:'calculate_discount('+amount+', discount_rate='+literal+', fee=20)'
+      };
+      const line=p.add('discount = '+calls[style]),print=p.add('print(discount)');
+      const r=runner(p);r.define('calculate_discount',def);
+      if(['duplicate','missing','unknown'].includes(style)){
+        const messages={duplicate:"calculate_discount() got multiple values for argument 'amount'",missing:"calculate_discount() missing 1 required positional argument: 'discount_rate'",unknown:"calculate_discount() got an unexpected keyword argument 'fee'"};
+        r.error('TypeError',messages[style],line,'参数无法正确匹配，函数体没有开始执行。');
+      }else{
+        r.state.bindings=[
+          {param:'amount',value:amount,type:'int',source:style==='keyword'?'关键字 amount':'第 1 个位置参数'},
+          {param:'discount_rate',value:discountRate,type:'float',source:style==='positional'?'第 2 个位置参数':'关键字 discount_rate'}
+        ];
+        r.enter('calculate_discount',{amount,discount_rate:discountRate},line,{discount_rate:'float'});
+        const result=amount*discountRate;r.leave(result,'float',ret);r.receive('discount',result,'float',line);r.output(numberText(result,'float'),print);r.end();
+      }
+      return r.finish({mode,style,parameters:['amount','discount_rate'],callText:calls[style],signature:'calculate_discount(amount, discount_rate)',inputs:{amount,rate:discountRate}});
+    }
+    const payable=integer(c.payable,380,'优惠后金额'),threshold=integer(c.threshold,300,'本次免运费门槛'),fee=integer(c.fee,20,'本次普通运费');
+    const override=c.override===true||c.override==='true';
+    const def=p.add('def calculate_shipping(payable, free_shipping_threshold=400, standard_fee=20):'),check=p.add('  if payable >= free_shipping_threshold:'),free=p.add('    return 0'),paid=p.add('  return standard_fee');p.add('');
+    const callText='calculate_shipping('+payable+(override?', free_shipping_threshold='+threshold+', standard_fee='+fee:'')+')';
+    const line=p.add('shipping = '+callText),print=p.add('print(shipping)');
+    const r=runner(p);r.define('calculate_shipping',def);
+    const usedThreshold=override?threshold:400,usedFee=override?fee:20;
+    r.state.bindings=[{param:'payable',value:payable,type:'int',source:'第 1 个位置参数'},{param:'free_shipping_threshold',value:usedThreshold,type:'int',source:override?'本次关键字参数':'定义中的默认值'},{param:'standard_fee',value:usedFee,type:'int',source:override?'本次关键字参数':'定义中的默认值'}];
+    r.enter('calculate_shipping',{payable,free_shipping_threshold:usedThreshold,standard_fee:usedFee},line);
+    const passed=payable>=usedThreshold;r.emit('check',check,'使用本次绑定的门槛检查金额。',{condition:{expression:'payable >= free_shipping_threshold',result:passed}});
+    const result=passed?0:usedFee;r.leave(result,'int',passed?free:paid);r.receive('shipping',result,'int',line);r.output(String(result),print);r.end();
+    return r.finish({mode,override,parameters:['payable','free_shipping_threshold','standard_fee'],callText,signature:'calculate_shipping(payable, free_shipping_threshold=400, standard_fee=20)',defaults:{free_shipping_threshold:400,standard_fee:20},inputs:{payable,threshold,fee}});
+  });
+  const scope=safe(c=>{
+    const mode=c.mode||'local';if(!['local','hidden','explicit'].includes(mode))throw new RangeError('未知作用域实验。');
+    const p=program();
+    if(mode==='local'){
+      const price=integer(c.unitPrice,120,'商品单价'),quantity=integer(c.quantity,3,'购买数量',20),accessLocal=c.accessLocal!==false&&c.accessLocal!=='false';
+      const def=p.add('def calculate_subtotal(unit_price, quantity):'),calc=p.add('  subtotal = unit_price * quantity'),ret=p.add('  return subtotal');p.add('');
+      const line=p.add('order_subtotal = calculate_subtotal('+price+', '+quantity+')'),print=p.add('print(order_subtotal)'),bad=accessLocal?p.add('print(subtotal)'):null;
+      const r=runner(p);r.define('calculate_subtotal',def);
+      r.enter('calculate_subtotal',{unit_price:price,quantity},line);const subtotal=price*quantity;
+      r.local('subtotal',subtotal);r.emit('compute',calc,'subtotal 是本次函数调用内部的局部变量。');
+      r.leave(subtotal,'int',ret);r.receive('order_subtotal',subtotal,'int',line);r.output(String(subtotal),print,'外部变量 order_subtotal 已接收到返回值，可以正常读取。');
+      if(accessLocal)r.error('NameError',"name 'subtotal' is not defined",bad,'外部作用域没有名为 subtotal 的变量。返回值并不会把局部变量名带到外面。');
+      else r.end();
+      return r.finish({mode,accessLocal,inputs:{unitPrice:price,quantity}});
+    }
+    const amount=integer(c.amount,1000,'订单金额'),globalRate=rate(c.globalRate),newRate=rate(c.newRate,.15),argumentRate=rate(c.argumentRate);
+    const globalLine=p.add('discount_rate = '+rateLiteral(globalRate));
+    const def=p.add('def calculate_discount(amount'+(mode==='explicit'?', discount_rate':'')+'):');
+    const ret=p.add('  return amount * discount_rate');p.add('');
+    const callText='calculate_discount('+amount+(mode==='explicit'?', '+rateLiteral(argumentRate):'')+')';
+    const first=p.add('first_discount = '+callText),change=p.add('discount_rate = '+rateLiteral(newRate)),second=p.add('second_discount = '+callText);
+    const print1=p.add('print(first_discount)'),print2=p.add('print(second_discount)');
+    const r=runner(p);r.global('discount_rate',globalRate,'float');r.emit('assign',globalLine,'在函数外部设置全局折扣率。');r.define('calculate_discount',def);
+    function run(target,line,visibleRate){
+      const used=mode==='explicit'?argumentRate:visibleRate;
+      const locals=mode==='explicit'?{amount,discount_rate:argumentRate}:{amount};
+      r.enter('calculate_discount',locals,line,mode==='explicit'?{discount_rate:'float'}:{});
+      r.state.dependency={source:mode==='explicit'?'parameter':'global',name:'discount_rate',value:used,type:'float'};
+      r.emit('lookup',ret,mode==='explicit'?'从本次调用的参数读取折扣率。':'参数中没有折扣率，函数读取当前全局变量 discount_rate。');
+      const value=amount*used;r.leave(value,'float',ret);r.receive(target,value,'float',line);
+    }
+    run('first_discount',first,globalRate);
+    r.global('discount_rate',newRate,'float');r.emit('assign',change,'在函数外部修改全局折扣率。',{dependency:null});
+    run('second_discount',second,newRate);
+    r.output(numberText(r.state.vars.first_discount,'float'),print1);r.output(numberText(r.state.vars.second_discount,'float'),print2);r.end();
+    return r.finish({mode,callText,inputs:{amount,globalRate,newRate,argumentRate}});
+  });
+  const testing=safe(c=>{
+    const threshold=integer(c.threshold,400,'免运费门槛'),fee=integer(c.fee,20,'普通运费'),operator=c.operator==='gt'?'>':'>=',caseSet=c.caseSet||'boundary';
+    if(!['boundary','override','wrong'].includes(caseSet))throw new RangeError('未知断言组。');
+    const p=program(),fn=shippingCode(p,'calculate_shipping','payable',threshold,fee,operator,true,true);p.add('');
+    const amounts=[Math.max(0,threshold-200),Math.max(0,threshold-1),threshold,Math.min(10000,threshold+400)];
+    let cases=caseSet==='override'?
+      [{amount:380,threshold,fee,override:false},{amount:380,threshold:300,fee,override:true},{amount:200,threshold:300,fee,override:true}]:
+      amounts.map(amount=>({amount,threshold,fee,override:false}));
+    if(caseSet==='wrong')cases=cases.concat([{amount:threshold,threshold,fee,override:false,wrong:true},{amount:Math.min(10000,threshold+100),threshold,fee,override:false}]);
+    const tests=cases.map((item,i)=>{
+      const expected=item.wrong?(fee===0?1:fee):(item.amount>=item.threshold?0:item.fee);
+      const expression='calculate_shipping('+item.amount+(item.override?', threshold='+item.threshold:'')+')';
+      const message='第 '+(i+1)+' 项运费测试失败';
+      const line=p.add('assert '+expression+' == '+expected+', '+repr(message));
+      return Object.assign({id:'test-'+i,expression,expected,actual:null,status:'pending',line,message},item);
+    });
+    const r=runner(p,{tests:clone(tests),activeTest:null});r.define(fn.name,fn.def);
+    for(let i=0;i<tests.length;i++){
+      const test=r.state.tests[i];r.state.activeTest=i;test.status='calling';
+      const actual=runShipping(r,fn,test.amount,test.threshold,test.fee,test.line);
+      test.actual=actual;r.emit('result',test.line,'先得到函数返回值，再与测试中的预期值比较。');
+      test.status=actual===test.expected?'passed':'failed';
+      if(r.state.returnChannel)r.state.returnChannel.consumed=true;
+      if(test.status==='failed'){
+        r.error('AssertionError',test.message,test.line,'断言不成立：实际 '+actual+'，预期 '+test.expected+'。程序在这里停止，后续断言未执行。');
+        return r.finish({operator,caseSet,tests:clone(tests),inputs:{threshold,fee}});
+      }
+      r.emit('assert',test.line,'断言通过；assert 本身通常不产生输出。');
+    }
+    r.end('所有断言都通过；没有额外 print，因此控制台没有输出。');
+    return r.finish({operator,caseSet,tests:clone(tests),inputs:{threshold,fee}});
+  });
+  function checkoutOrders(c){
+    let list=c.orders;
+    if(list===undefined){
+      if((c.mode||'single')==='single')list=[{id:'O002',unit_price:integer(c.unitPrice,80,'商品单价'),quantity:integer(c.quantity,8,'购买数量',20)}];
+      else list=c.preset==='empty'?[]:c.preset==='boundary'?BOUNDARY_ORDERS:ORDERS;
+    }
+    if(!Array.isArray(list)||list.length>8)throw new RangeError('本实验最多支持 8 笔订单。');
+    return list.map((o,i)=>{
+      if(!o||typeof o.id!=='string'||!o.id||Array.from(o.id).length>30)throw new RangeError('第 '+(i+1)+' 笔订单编号无效。');
+      return {id:o.id,unit_price:integer(o.unit_price,0,'商品单价'),quantity:integer(o.quantity,0,'购买数量',20)};
+    });
+  }
+  const checkout=safe(c=>{
+    const mode=c.mode||'single';if(!['single','batch'].includes(mode))throw new RangeError('未知订单结算模式。');
+    const data=checkoutOrders(c),discountThreshold=integer(c.discountThreshold,500,'优惠门槛'),discountRate=rate(c.rate),shippingThreshold=integer(c.shippingThreshold,400,'免运费门槛'),fee=integer(c.fee,20,'普通运费'),p=program();
+    const subtotalDef=p.add('def calculate_subtotal(unit_price, quantity):'),subtotalRet=p.add('  return unit_price * quantity');p.add('');
+    const discountDef=p.add('def calculate_discount(subtotal, threshold='+discountThreshold+', rate='+rateLiteral(discountRate)+'):'),discountCheck=p.add('  if subtotal >= threshold:'),discountYes=p.add('    return subtotal * rate'),discountNo=p.add('  return 0');p.add('');
+    const shippingFn=shippingCode(p,'calculate_shipping','after_discount',shippingThreshold,fee,'>=',true);p.add('');
+    const settleDef=p.add('def settle_order(order):'),subCall=p.add('  subtotal = calculate_subtotal(order["unit_price"], order["quantity"])'),discountCall=p.add('  discount = calculate_discount(subtotal)'),afterLine=p.add('  after_discount = subtotal - discount'),shippingCall=p.add('  shipping = calculate_shipping(after_discount)'),payLine=p.add('  payable = after_discount + shipping');
+    const dictLine=p.add('  return {"id": order["id"], "subtotal": subtotal, "discount": discount,');
+    const dictEnd=p.add('          "shipping": shipping, "payable": payable}');p.add('');
+    let init,line,append,totalInit,totalAdd,print,totalPrint;
+    const formatted='f"{result[\'id\']} 商品金额：{result[\'subtotal\']:.2f}元，优惠：{result[\'discount\']:.2f}元，运费：{result[\'shipping\']:.2f}元，实付：{result[\'payable\']:.2f}元"';
+    if(mode==='single'){
+      if(data.length!==1)throw new RangeError('单笔模式需要恰好一笔订单。');
+      init=p.add('order = '+repr(data[0]));line=p.add('result = settle_order(order)');print=p.add('print('+formatted+')');
+    }else{
+      init=p.add('orders = [');data.forEach(o=>p.add('  '+repr(o)+','));p.add(']');
+      const resultsInit=p.add('results = []');totalInit=p.add('total_payable = 0');
+      const loop=p.add('for order in orders:');line=p.add('  result = settle_order(order)');append=p.add('  results.append(result)');totalAdd=p.add('  total_payable += result["payable"]');print=p.add('  print('+formatted+')');totalPrint=p.add('print(f"实付金额合计：{total_payable:.2f}元")');
+      init={data:init,results:resultsInit,total:totalInit,loop};
+    }
+    const r=runner(p,{completed:[],activeIndex:null});
+    [[subtotalDef,'calculate_subtotal'],[discountDef,'calculate_discount'],[shippingFn.def,'calculate_shipping'],[settleDef,'settle_order']].forEach(([l,n])=>r.define(n,l));
+    function settle(order,callLine){
+      r.enter('settle_order',{order},callLine);
+      r.enter('calculate_subtotal',{unit_price:order.unit_price,quantity:order.quantity},subCall);
+      const subtotal=order.unit_price*order.quantity;
+      r.leave(subtotal,'int',subtotalRet);r.receive('subtotal',subtotal,'int',subCall);
+      r.enter('calculate_discount',{subtotal,threshold:discountThreshold,rate:discountRate},discountCall,{rate:'float'});
+      const qualified=subtotal>=discountThreshold;
+      r.emit('check',discountCheck,'先检查商品金额是否达到优惠门槛。',{condition:{expression:'subtotal >= threshold',result:qualified}});
+      const discount=qualified?subtotal*discountRate:0,discountType=qualified?'float':'int';
+      r.leave(discount,discountType,qualified?discountYes:discountNo);r.receive('discount',discount,discountType,discountCall);
+      const afterDiscount=subtotal-discount,afterType=discountType==='float'?'float':'int';
+      r.local('after_discount',afterDiscount,afterType);r.emit('compute',afterLine,'先扣除优惠，再把优惠后金额交给运费函数。');
+      const shipping=runShipping(r,shippingFn,afterDiscount,shippingThreshold,fee,shippingCall,{},afterType);
+      r.receive('shipping',shipping,'int',shippingCall);
+      const payable=afterDiscount+shipping;r.local('payable',payable,afterType);r.emit('compute',payLine,'优惠后金额加上运费，得到实付金额。');
+      const result={id:order.id,subtotal,discount,shipping,payable};
+      r.leave(result,'dict',[dictLine,dictEnd],'settle_order 把各项结果整理成字典，交给调用者。');
+      return {result,payType:afterType};
+    }
+    function printResult(result){return result.id+' 商品金额：'+money(result.subtotal)+'元，优惠：'+money(result.discount)+'元，运费：'+money(result.shipping)+'元，实付：'+money(result.payable)+'元';}
+    if(mode==='single'){
+      r.global('order',data[0]);r.emit('assign',init,'准备一笔订单。',{activeIndex:0});
+      const result=settle(data[0],line).result;r.receive('result',result,'dict',line);r.state.completed.push(0);r.output(printResult(result),print);r.end();
+    }else{
+      r.global('orders',data);r.global('results',[],'list');r.global('total_payable',0,'int');r.emit('assign',[init.data,init.results,init.total],'准备订单列表、结果列表和实付金额合计。');
+      let total=0,totalType='int';
+      data.forEach((order,i)=>{
+        r.global('order',order);r.emit('take',init.loop,'循环取得第 '+(i+1)+' 笔订单。',{activeIndex:i});
+        const {result,payType}=settle(order,line);r.receive('result',result,'dict',line);
+        r.state.vars.results.push(clone(result));r.state.completed.push(i);r.emit('append',append,'把这一笔已经返回的结算结果保存到列表。');
+        total+=result.payable;if(payType==='float')totalType='float';
+        r.global('total_payable',total,totalType);r.emit('compute',totalAdd,'把当前订单的实付金额加入合计。');
+        r.output(printResult(result),print);
+      });
+      r.output('实付金额合计：'+money(total)+'元',totalPrint,'所有订单处理完成，输出实付金额合计。');r.end();
+    }
+    return r.finish({mode,data,inputs:{discountThreshold,rate:discountRate,shippingThreshold,fee}});
+  });
+  function treeWithIds(node,id='root'){return {id,name:node.name,children:node.children.map((child,i)=>treeWithIds(child,id+'/'+i))};}
+  const recursion=safe(c=>{
+    const preset=c.preset||'default';if(!['default','leaf','deeper'].includes(preset))throw new RangeError('未知分类树示例。');
+    const data=preset==='leaf'?{name:'商品',children:[]}:clone(CATEGORY);
+    if(preset==='deeper')data.children[1].children.push({name:'电脑',children:[{name:'笔记本',children:[]}]});
+    const tree=treeWithIds(data),p=program();
+    const init=p.add('category = '+repr(data));p.add('');
+    const def=p.add('def show_categories(node, level=0):'),print=p.add('  print("  " * level + node["name"])'),loop=p.add('  for child in node["children"]:'),recursive=p.add('    show_categories(child, level + 1)');p.add('');
+    const callLine=p.add('show_categories(category)'),r=runner(p,{activeNodeId:null,visited:[],completed:[]});
+    r.global('category',data);r.emit('assign',init,'准备具有相同结构的分类节点。');r.define('show_categories',def);
+    function visit(node,level,id,line){
+      r.state.activeNodeId=id;r.enter('show_categories',{node,level},line,{}, {nodeId:id});
+      r.state.visited.push(id);r.output('  '.repeat(level)+node.name,print,'先输出当前分类，缩进由本次调用的 level 决定。');
+      for(let i=0;i<node.children.length;i++){
+        const child=node.children[i];r.local('child',child);r.emit('take',loop,'当前调用取得一个子分类，准备递归处理。');
+        visit(child,level+1,id+'/'+i,recursive);
+        if(r.state.returnChannel){r.state.returnChannel.consumed=true;r.state.returnChannel.discarded=true;}
+        r.emit('resume',recursive,'子调用已经返回，继续父调用尚未完成的循环。');
+      }
+      r.state.completed.push(id);
+      r.state.activeNodeId=r.state.stack.length>1?r.state.stack[r.state.stack.length-2].nodeId:null;
+      r.leave(null,'NoneType',null,node.children.length?'本节点的子分类都已处理，当前调用执行到末尾并返回 None。':'children 为空，循环体执行 0 次；当前调用自然返回 None。');
+    }
+    visit(data,0,'root',callLine);
+    if(r.state.returnChannel){r.state.returnChannel.consumed=true;r.state.returnChannel.discarded=true;}
+    r.end('所有递归调用都已返回，调用栈为空。');
+    return r.finish({preset,tree,data});
+  });
+  return {
+    call,returns,parameters,scope,testing,checkout,recursion,
+    stateAt,repr,money,formatFixed:money,
+    defaults:{orders:clone(ORDERS),boundaryOrders:clone(BOUNDARY_ORDERS),category:clone(CATEGORY)}
+  };
+});
+</script>
+  <script>(function (root) {
+  'use strict';
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const button = (action,value,label,active,key) => '<button type="button" data-action="'+esc(action)+'" data-value="'+esc(value)+'"'+(key?' data-key="'+esc(key)+'"':'')+' aria-pressed="'+!!active+'">'+esc(label)+'</button>';
+  const tabs = (items,current,action,key) => '<div class="segmented">'+items.map(x=>button(action||'set-mode',x[0],x[1],current===x[0],key)).join('')+'</div>';
+  const field = (id,key,label,value,hint) => '<div class="single-field"><label class="control-label" for="'+id+'-'+key+'">'+esc(label)+'</label><input id="'+id+'-'+key+'" type="text" inputmode="decimal" data-field="'+id+'.'+key+'" value="'+esc(value)+'" maxlength="14">'+(hint?'<p class="hint">'+esc(hint)+'</p>':'')+'</div>';
+  const errorText = error => typeof error==='string'?error:error?((error.type||error.name||'')+(error.message?': '+error.message:'')):'请检查输入。';
+  const invalid = model => '<div class="error-message" role="status"><strong>'+esc(errorText(model.error))+'</strong><p>参数尚未通过界面检查，请修改输入后再执行。</p></div>';
+  const metric = (label,value,foot) => '<div class="flow-metric"><span>'+esc(label)+'</span><strong>'+esc(value===undefined?'—':value)+'</strong>'+(foot?'<small>'+esc(foot)+'</small>':'')+'</div>';
+  const value = (frame,key,format) => Object.prototype.hasOwnProperty.call(frame.vars||{},key) ? (format?format(frame.vars[key]):frame.vars[key]) : undefined;
+  const empty = {vars:{},output:[],visited:[],selected:[],activeIndex:null,done:false,paused:false};
+  const frame = (model,cursor) => model.ok ? root.FunctionLabEngine.stateAt(model,cursor) : empty;
+  function variableTable(names,values,types) {
+    return '<div class="fn-variables">'+names.map(name=>{
+      const exists=Object.prototype.hasOwnProperty.call(values||{},name);
+      return '<div><code>'+esc(name)+'</code><strong>'+esc(exists?root.FunctionLabEngine.repr(values[name],(types||{})[name]):'尚未绑定')+'</strong></div>';
+    }).join('')+'</div>';
+  }
+  function callFrame(f,name) {
+    const active=(f.stack||[]).findLast ? (f.stack||[]).findLast(x=>x.name===name) : (f.stack||[]).slice().reverse().find(x=>x.name===name);
+    if(active)return {record:active,history:false};
+    if(f.lastCall&&f.lastCall.name===name)return {record:f.lastCall,history:true};
+    return {record:null,history:false};
+  }
+  function returnCard(f,receiver) {
+    const r=f.returnChannel;
+    return '<section class="fn-channel'+(r?' has-value':'')+'"><span>返回给调用者</span><strong>'+esc(r?root.FunctionLabEngine.repr(r.value,r.type):'尚未返回')+'</strong>'+
+      (r?'<small>'+esc((r.type||'')+' · '+(r.consumed?'调用者已接收':'等待调用者接收'))+'</small>':'<small>'+esc(receiver||'')+'</small>')+'</section>';
+  }
+  root.FunctionLabUI={esc,button,tabs,field,invalid,metric,value,frame,errorText,variableTable,callFrame,returnCard};
+})(window);
+</script>
+  <script>(function(root){
+  'use strict';
+  const V=root.FunctionLabViews=root.FunctionLabViews||{},U=root.FunctionLabUI,E=root.FunctionLabEngine;
+  const esc=U.esc,has=(o,k)=>Object.prototype.hasOwnProperty.call(o||{},k);
+  const caption=t=>'<span class="control-label">'+t+'</span>';
+  const money=x=>E.money(x)+' 元';
+  const wrap=(model,s,controls,visual,summary)=>({model,frame:U.frame(model,s.cursor),controls,visual:model.ok?visual:U.invalid(model),summary,code:model.code||'# 请先修改实验参数。'});
+  const defined=(f,name)=>(f.definitions||[]).some(x=>(typeof x==='string'?x:x.name)===name);
+  function localPanel(f,name,variables) {
+    const c=U.callFrame(f,name);
+    return '<section class="fn-call-box '+(c.history?'is-history':c.record?'is-running':'')+'"><div class="fn-box-heading"><h3>'+esc(name)+'()</h3><span>'+(!c.record?'等待调用':c.history?'调用已结束':'当前调用')+'</span></div>'+
+      U.variableTable(variables,c.record?c.record.locals:{},c.record?c.record.localTypes:{})+
+      (c.history?'<p class="hint">这里保留刚才的局部变量记录，供回看。</p>':'')+'</section>';
+  }
+  function expression(model) {
+    return (model.lines||[]).filter(line=>/^[A-Za-z_]\w*\s*=/.test(line)&&/calculate_|show_shipping/.test(line)).join('\n');
+  }
+
+  V.call=function(s){
+    const model=E.call(s),f=U.frame(model,s.cursor);
+    const controls='<div class="flow-wide">'+caption('观察定义与调用')+U.tabs([['call','定义后调用函数'],['define','只定义，暂不调用']],s.mode)+'</div>'+
+      U.field('call','unitPrice','商品单价（元）',s.unitPrice,'0–10000 的整数。')+U.field('call','quantity','购买数量',s.quantity,'0–20 的整数。')+
+      '<div class="flow-wide"><div class="preset-row">'+[['O001','120 × 3'],['O002','80 × 8'],['O003','260 × 2']].map(x=>U.button('preset',x[0],x[1])).join('')+'</div></div>';
+    const visual='<div class="visual-header"><h2>一次调用，把输入变成可接收的结果</h2><span class="pill">'+(defined(f,'calculate_subtotal')?'函数已定义':'函数尚未定义')+'</span></div>'+
+      '<div class="fn-call-flow"><section class="fn-input-box"><h3>准备传入的值</h3><div class="fn-arguments"><span><strong>'+esc(s.unitPrice)+'</strong><small>商品单价</small></span><span><strong>'+esc(s.quantity)+'</strong><small>购买数量</small></span></div><code>calculate_subtotal('+esc(s.unitPrice)+', '+esc(s.quantity)+')</code></section>'+
+      '<div class="fn-arrow" aria-hidden="true">→</div>'+localPanel(f,'calculate_subtotal',['unit_price','quantity','subtotal'])+
+      '<div class="fn-arrow" aria-hidden="true">→</div>'+U.returnCard(f,'order_subtotal')+'</div>'+
+      '<div class="fn-receiver"><span>函数外接收结果</span>'+U.variableTable(['order_subtotal'],f.vars,f.varTypes)+'</div>'+
+      (s.mode==='define'?'<div class="notice">当前代码只有函数定义，没有调用语句。参数尚未绑定，函数体不会在定义时计算商品金额。</div>':'');
+    const summary='<div class="rule-note"><strong>定义保存规则，调用才执行函数体。</strong><p>读取 <code>def</code> 时，Python 建立函数；调用 <code>calculate_subtotal(120, 3)</code> 时，才把实际传入的值绑定给 <code>unit_price</code> 与 <code>quantity</code>。</p><p>当前调用在内部计算 <code>subtotal</code>，再通过 <code>return</code> 交回结果。函数外的 <code>order_subtotal</code> 只有接收到返回值后才获得数值。</p><p>改变输入，可以复用同一条计算规则。循环负责重复处理数据，函数让规则可以在多个位置被调用。</p></div>';
+    return wrap(model,s,controls,visual,summary);
+  };
+
+  V.returns=function(s){
+    const model=E.returns(s),f=U.frame(model,s.cursor),returns=s.mode==='return';
+    const controls='<div class="flow-wide">'+caption('选择要比较的行为')+U.tabs([['return','return：交回运费'],['print','print：显示运费'],['reusePrint','把输出当作返回值计算']],s.mode)+'</div>'+
+      (returns?U.field('returns','payable','优惠后金额（元）',s.payable,'0–10000 的整数；满 400 免运费。')+'<div><div class="preset-row">'+['380','399','400'].map(x=>U.button('preset',x,x+' 元',String(s.payable)===x)).join('')+'</div></div>':
+      U.field('returns','shipping','要显示的运费（元）',s.shipping,'0–10000 的整数。'));
+    const name=returns?'calculate_shipping':'show_shipping';
+    const receiver=returns?'shipping':'result';
+    const visual='<div class="visual-header"><h2>'+(returns?'返回值可以保存，再参与计算':'屏幕出现了文字，调用者收到了什么？')+'</h2><span class="pill">'+(returns?'return':'print + 隐式返回')+'</span></div>'+
+      '<div class="fn-return-layout">'+localPanel(f,name,returns?['payable']:['shipping'])+U.returnCard(f,receiver)+'</div>'+
+      '<div class="fn-receiver"><span>调用者中的变量</span>'+U.variableTable(returns?['shipping','total']:s.mode==='reusePrint'?['result','total']:['result'],f.vars,f.varTypes)+'</div>'+
+      (f.error?'<div class="notice">函数已经显示运费，但接收的结果是 None；后面的加法没有得到 total。</div>':'');
+    const summary='<div class="rule-note"><strong>屏幕输出与交回调用者，是两条不同的路径。</strong><p><code>return</code> 把结果交回调用者，并立即结束当前函数调用。因此免运费时返回 0，后面的 <code>return 20</code> 不会再执行。</p><p><code>print</code> 负责显示内容。这里的 <code>show_shipping</code> 没有写 return，执行到函数末尾时返回 <code>None</code>。接收变量得到的是 None，并不是屏幕上的“运费：20元”。</p><p>页面用“尚未返回”表示还没有完成调用，用 <code>None</code> 表示已经返回的实际结果，两者不能混为一谈。</p></div>';
+    return wrap(model,s,controls,visual,summary);
+  };
+
+  V.parameters=function(s){
+    const model=E.parameters(s),f=U.frame(model,s.cursor),binding=s.mode==='binding';
+    let controls='<div class="flow-wide">'+caption('选择参数实验')+U.tabs([['binding','位置与关键字匹配'],['defaults','默认值与覆盖']],s.mode)+'</div>';
+    if(binding){
+      controls+=U.field('parameters','amount','商品金额 amount',s.amount,'0–10000 的整数。')+U.field('parameters','rate','优惠比例 discount_rate',s.rate,'0–1，最多两位小数。')+
+        '<div class="flow-wide">'+caption('调用写法')+U.tabs([['positional','按位置'],['keyword','按名字，调整顺序'],['mixed','位置 + 关键字'],['duplicate','同一参数提供两次'],['missing','遗漏必需参数'],['unknown','写错参数名称']],s.style,'set-option','style')+'</div>';
+    } else {
+      controls+=U.field('parameters','payable','优惠后金额 payable',s.payable,'0–10000 的整数。')+
+        '<div>'+caption('本次调用的规则')+U.tabs([['false','使用定义中的默认值'],['true','通过关键字覆盖']],String(s.override),'set-option','override')+'</div>';
+      if(s.override)controls+=U.field('parameters','threshold','本次免运费门槛',s.threshold,'0–10000 的整数。')+U.field('parameters','fee','本次普通运费',s.fee,'0–10000 的整数。');
+    }
+    const params=model.parameters||[],bindings=f.bindings||[];
+    const rows=params.map(param=>{
+      const b=bindings.find(x=>x.param===param);
+      return '<tr class="'+(b?'flow-selected-row':'')+'"><th scope="row"><code>'+esc(param)+'</code></th><td>'+esc(b?b.source:'等待调用时匹配')+'</td><td><code>'+esc(b?E.repr(b.value,b.type):'尚未绑定')+'</code></td></tr>';
+    }).join('');
+    let visual='<div class="visual-header"><h2>'+(binding?'先匹配参数，再进入函数体':'没有提供的参数，使用定义中的默认值')+'</h2><span class="pill">'+(bindings.length?(f.stack&&f.stack.length?'本次参数匹配':'本次匹配记录'):'尚未进入函数体')+'</span></div>'+
+      '<div class="fn-call-expression"><span>本次调用</span><code>'+esc(expression(model)||'请检查输入参数')+'</code></div>'+
+      (!binding?'<div class="fn-defaults"><span>函数定义中的默认规则</span><strong>满 400 元免运费 · 普通运费 20 元</strong></div>':'')+
+      '<div class="flow-table-wrap"><table class="flow-table"><thead><tr><th>形参</th><th>值从哪里来</th><th>本次绑定值</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+      '<div class="fn-return-layout">'+U.returnCard(f,binding?'discount':'shipping')+'<section class="fn-caller-box"><h3>调用者已接收</h3>'+U.variableTable(binding?['discount']:['shipping'],f.vars,f.varTypes)+'</section></div>';
+    if(f.error)visual+='<div class="notice">调用时的参数匹配失败，没有进入函数体，也没有产生可接收的计算结果。</div>';
+    const summary='<div class="rule-note"><strong>'+(binding?'位置参数看先后，关键字参数看名字。':'默认参数让常用规则可以省略，也可以明确覆盖。')+'</strong>'+
+      (binding?'<p>位置写法把第一个值交给 <code>amount</code>，第二个值交给 <code>discount_rate</code>。关键字写法通过名称对应，两个关键字的书写顺序可以调整。</p><p>一个必需参数不能遗漏，也不能重复提供；使用函数没有定义的参数名会产生 <code>TypeError</code>。这里演示的是普通参数调用，不涉及特殊参数语法。</p>':
+      '<p>省略免运费门槛和普通运费时，本次调用使用函数定义中的 400 和 20。通过关键字提供其他值，只改变这一次调用使用的参数，不会改写函数的默认值。</p><p>先用金额 380 比较默认门槛 400 与本次门槛 300，观察同一个函数怎样适应不同业务规则。</p>')+'</div>';
+    return wrap(model,s,controls,visual,summary);
+  };
+
+  V.checkout=function(s){
+    const model=E.checkout(s),f=U.frame(model,s.cursor),batch=s.mode==='batch';
+    let controls='<div class="flow-wide">'+caption('选择结算任务')+U.tabs([['single','观察一笔订单的调用过程'],['batch','同一组函数处理多笔订单']],s.mode)+'</div>';
+    if(!batch)controls+=U.field('checkout','unitPrice','商品单价（元）',s.unitPrice,'0–10000 的整数。')+U.field('checkout','quantity','购买数量',s.quantity,'0–20 的整数。')+
+      '<div class="flow-wide"><div class="preset-row">'+[['O001','120 × 3'],['O002','80 × 8'],['O003','260 × 2'],['edge399','商品金额 399'],['edge400','商品金额 400'],['edge499','商品金额 499'],['edge500','商品金额 500']].map(x=>U.button('preset',x[0],x[1])).join('')+'</div></div>';
+    else controls+='<div class="flow-wide">'+caption('选择一组订单')+U.tabs([['course','课件三笔订单'],['boundary','金额边界订单'],['empty','空订单列表']],s.preset,'set-option','preset')+'</div>';
+    controls+='<div class="flow-wide">'+caption('统一结算规则')+'<p class="hint">修改规则后，从头执行这些函数。优惠比例 0.10 表示减去 10%。</p></div>'+
+      U.field('checkout','discountThreshold','折扣起点（元）',s.discountThreshold)+U.field('checkout','rate','优惠比例',s.rate)+U.field('checkout','shippingThreshold','免运费起点（元）',s.shippingThreshold)+U.field('checkout','fee','普通运费（元）',s.fee)+
+      '<p class="hint">金额与门槛为 0–10000 整数；优惠比例为 0–1，最多两位小数。运费按优惠后金额判断。</p>';
+    const stack=f.stack||[],parent=stack.find(x=>x.name==='settle_order');
+    const activeOrder=parent&&parent.locals.order?parent.locals.order:f.vars&&f.vars.order;
+    const history=!parent&&f.lastCall&&f.lastCall.name==='settle_order'&&(!activeOrder||f.lastCall.locals.order.id===activeOrder.id)?f.lastCall:null;
+    const current=parent||history;
+    const local=current?current.locals:{},active=stack.length?stack[stack.length-1].name:null;
+    const result=f.vars&&f.vars.result&&(!activeOrder||f.vars.result.id===activeOrder.id)?f.vars.result:null;
+    const values=Object.keys(local).length?local:result||{};
+    const rows=[
+      ['calculate_subtotal','商品金额',activeOrder?activeOrder.unit_price+' × '+activeOrder.quantity:batch?'等待本笔订单':esc(s.unitPrice)+' × '+esc(s.quantity),'subtotal'],
+      ['calculate_discount','优惠金额',has(values,'subtotal')?money(values.subtotal):'等待商品金额','discount'],
+      ['calculate_shipping','运费',has(values,'after_discount')?money(values.after_discount):'等待优惠后金额','shipping']
+    ];
+    const inputOrders=batch?'<div class="fn-batch-inputs"><span>订单输入</span>'+((model.data||[]).length?(model.data||[]).map((o,i)=>'<span class="fn-order-chip '+(f.activeIndex===i?'is-current':'')+'"><strong>'+esc(o.id)+'</strong><small>'+esc(o.unit_price)+' × '+esc(o.quantity)+'</small></span>').join(''):'<code>[] 空订单列表</code>')+'</div>':'';
+    let visual='<div class="visual-header"><h2>小函数处理规则，settle_order 组织顺序</h2><span class="pill">'+(active?'正在执行 '+esc(active):f.done?'本次演示结束':'等待调用')+'</span></div>'+inputOrders+
+      '<div class="fn-pipeline">'+rows.map((r,i)=>'<div class="fn-pipeline-row '+(active===r[0]?'is-running':has(values,r[3])?'is-finished':'')+'"><span class="fn-pipeline-number">'+(i+1)+'</span><div><code>'+r[0]+'()</code><span>'+r[1]+'</span></div><div><small>输入</small><strong>'+r[2]+'</strong></div><div><small>已接收的返回值</small><strong>'+esc(has(values,r[3])?money(values[r[3]]):'尚未接收')+'</strong></div></div>').join('')+'</div>'+
+      '<div class="flow-metrics">'+U.metric('优惠后金额',has(values,'after_discount')?money(values.after_discount):undefined)+U.metric('本笔实付金额',has(values,'payable')?money(values.payable):undefined)+'</div>';
+    if(stack.length)visual+='<div class="fn-stack-path"><span>当前调用层次</span>'+stack.map((x,i)=>'<code class="'+(i===stack.length-1?'is-current':'')+'">'+esc(x.name)+'()</code>').join('<span aria-hidden="true">→</span>')+'</div>';
+    else if(history)visual+='<p class="hint">上方为最近一次 settle_order 调用的计算记录；该调用已经结束。</p>';
+    if(batch){
+      const results=Array.isArray(f.vars&&f.vars.results)?f.vars.results:[];
+      const totalName=['total_payable','grand_total','total'].find(k=>has(f.vars,k));
+      visual+='<div class="flow-table-wrap"><table class="flow-table"><thead><tr><th>已完成订单</th><th>商品金额</th><th>优惠</th><th>运费</th><th>实付</th></tr></thead><tbody>'+results.map(r=>'<tr><th scope="row">'+esc(r.id)+'</th>'+['subtotal','discount','shipping','payable'].map(k=>'<td>'+esc(E.money(r[k]))+'</td>').join('')+'</tr>').join('')+(results.length?'':'<tr><td colspan="5" class="flow-muted">尚无已保存的结算结果。</td></tr>')+'</tbody></table></div>'+
+        '<div class="flow-metrics">'+U.metric('已保存结果数量',has(f.vars,'results')?results.length:undefined)+U.metric('实付金额合计',totalName?money(f.vars[totalName]):undefined)+'</div>';
+    }
+    const summary='<div class="rule-note"><strong>每一步都把上一步的结果交给下一步。</strong><p>先计算商品金额，再计算优惠金额；两者相减得到优惠后金额，才用它判断运费。最后将优惠后金额与运费相加，得到实付金额。</p><p><code>settle_order()</code> 负责组织调用，并把编号与各项金额放进返回字典。调用小函数时，主函数暂时等待；收到结果后才继续下一步。</p><p>批量模式用循环调用同一个结算函数，把每笔结果放入列表，再累计实付金额。商品金额达到折扣起点时，优惠开始生效，实付金额可能随规则出现下降。</p></div>';
+    return wrap(model,s,controls,visual,summary);
+  };
+})(window);
+</script>
+  <script>/* Function lab: scopes, boundary tests, and recursive category traversal. */
+(function (root) {
+  'use strict';
+  const V = root.FunctionLabViews = root.FunctionLabViews || {};
+  const E = () => root.FunctionLabEngine;
+  const esc = value => String(value === undefined ? '' : value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const has = (o,k) => Object.prototype.hasOwnProperty.call(o || {},k);
+  const py = (value,type) => E().repr(value,type);
+  const btn = (action,value,label,selected,key) => '<button type="button" data-action="'+esc(action)+'" data-value="'+esc(value)+'"'+(key?' data-key="'+esc(key)+'"':'')+' aria-pressed="'+!!selected+'">'+esc(label)+'</button>';
+  const options = (pairs,value,key) => '<div class="segmented">'+pairs.map(x=>btn('set-option',x[0],x[1],String(value)===String(x[0]),key)).join('')+'</div>';
+  const input = (id,key,label,value,hint) => '<div class="single-field"><label class="control-label" for="'+id+'-'+key+'">'+label+'</label><input id="'+id+'-'+key+'" data-field="'+id+'.'+key+'" type="text" inputmode="decimal" value="'+esc(value)+'" maxlength="12">'+(hint?'<p class="hint">'+hint+'</p>':'')+'</div>';
+  const errorMessage = error => typeof error === 'string' ? error : error ? (error.type || error.name || 'Error')+(error.message?': '+error.message:'') : '请检查输入。';
+  const invalid = model => '<div class="error-message" role="status"><strong>'+esc(errorMessage(model.error))+'</strong><p>请修改参数后再开始这次演示。</p></div>';
+  function frame(model,s) {return model.ok ? E().stateAt(model,s.cursor) : null;}
+  function variableTable(data,emptyText,types) {
+    const entries=Object.entries(data || {});
+    return '<div class="fnv-variable-table">'+(entries.length?entries.map(([key,value])=>'<div class="fnv-variable"><code>'+esc(key)+'</code><strong>'+esc(py(value,(types||{})[key]))+'</strong></div>').join(''):'<p class="flow-muted">'+esc(emptyText || '尚未创建数据变量。')+'</p>')+'</div>';
+  }
+  function returnBox(channel) {
+    if(!channel)return '<div class="fnv-return-channel is-pending"><span>返回通道</span><strong>尚无返回值</strong></div>';
+    return '<div class="fnv-return-channel"><span>'+esc(channel.from)+' → '+esc(channel.to || '调用者')+'</span><strong><code>'+esc(py(channel.value,channel.type))+'</code></strong><small>'+esc(channel.consumed?'调用者已接收':'已返回，等待调用者接收')+(channel.type?' · '+esc(channel.type):'')+'</small></div>';
+  }
+
+  V.scope = function (state) {
+    const s=Object.assign({mode:'local',unitPrice:'120',quantity:'3',amount:'1000',globalRate:'0.10',newRate:'0.15',argumentRate:'0.10',accessLocal:true,cursor:0},state);
+    const model=E().scope(s),f=frame(model,s),local=s.mode==='local',explicit=s.mode==='explicit';
+    let controls='<div class="fnv-wide"><span class="control-label">选择实验</span><div class="segmented">'+[
+      ['local','局部变量在哪里'],['hidden','读取外部折扣率'],['explicit','通过参数传入折扣率']
+    ].map(x=>btn('set-mode',x[0],x[1],s.mode===x[0])).join('')+'</div></div>';
+    if(local) {
+      controls+=input('scope','unitPrice','商品单价（元）',s.unitPrice,'0–10000 的整数。')+input('scope','quantity','商品数量',s.quantity,'0–20 的整数。')+
+        '<div class="fnv-wide"><span class="control-label">函数外额外读取 subtotal</span>'+options([['true','尝试直接读取'],['false','只使用接收到的返回值']],String(s.accessLocal),'accessLocal')+'</div>';
+    } else {
+      controls+=input('scope','amount','订单金额 amount（元）',s.amount,'0–10000 的整数。')+
+        input('scope','globalRate','最初的外部 discount_rate',s.globalRate,'0–1，最多两位小数。')+
+        input('scope','newRate','第二次调用前的外部折扣率',s.newRate,'0–1，最多两位小数。');
+      if(explicit) controls+=input('scope','argumentRate','两次调用实际传入的折扣率',s.argumentRate,'外部同名变量改变，也使用这个参数值。');
+    }
+    let visual='';
+    if(f) {
+      const stack=f.stack || [],active=stack.length?stack[stack.length-1]:null;
+      visual='<div class="visual-header"><h2>'+(local?'返回的是值，局部名称留在本次调用中':explicit?'把计算所需的数据写进调用参数':'同样的调用，外部数据改变会怎样？')+'</h2><span class="pill">'+(active?'正在执行 '+esc(active.name):f.done?'本次程序已结束':'调用者')+'</span></div>'+
+        '<div class="fnv-scope-layout"><section class="fnv-scope-box"><h3>调用者的数据</h3>'+variableTable(f.vars,'当前还没有创建外部数据变量。',f.varTypes)+'</section>'+
+        '<section class="fnv-scope-box '+(active?'is-active':'')+'"><h3>'+esc(active?active.name+' 的局部数据':'当前函数调用')+'</h3>'+
+        (active?variableTable(active.locals,'本次调用还没有绑定局部数据。',active.localTypes):'<p class="fnv-empty-call">'+esc(f.lastCall?'最近一次调用已经返回。局部名称不因此成为调用者的变量。':'尚未进入函数体。')+'</p>')+'</section></div>'+returnBox(f.returnChannel);
+      if(local && s.accessLocal) visual+='<div class="fnv-access '+(f.error?'is-error':'')+'"><code>print(subtotal)</code><span>'+esc(f.error&&f.error.type==='NameError'?'函数外没有这个名称：NameError':'等待执行这次外部访问')+'</span></div>';
+      if(!local) visual+='<div class="fnv-data-source"><strong>'+esc(explicit?'本次计算读取：函数参数 discount_rate':'本次计算读取：外部 discount_rate')+'</strong><p>'+esc(explicit?'调用中的实参决定局部参数值。试着只改变外部折扣率，再对比两次调用的返回值。':'函数的参数列表没有折扣率，但函数体仍会从外部读取它。两次调用之间，外部值可能改变。')+'</p></div>';
+    }
+    const summary='<div class="rule-note"><strong>'+(local?'返回值连接函数内外，名字的作用范围不会自动扩展。':explicit?'参数让依赖关系在调用时可见。':'外部变量会形成隐藏的依赖。')+'</strong>'+
+      (local?'<p>本例的 <code>unit_price</code>、<code>quantity</code> 和 <code>subtotal</code> 属于当前函数调用。调用者用 <code>order_subtotal</code> 接收返回值，随后可以继续使用这个值。</p><p>程序没有在外部创建名为 <code>subtotal</code> 的变量，因此直接读取它会产生 <code>NameError</code>。返回后，图中的局部区域也不再表示正在执行的调用。</p>':
+      explicit?'<p>函数的参数列表明确列出金额和折扣率。传入的数据绑定到本次调用的局部参数；外部恰好有同名变量，不会替代已经传入的值。</p><p>比较两种写法时，先看调用需要提供哪些数据，再看返回值如何交给外部变量。</p>':
+      '<p>函数可以读取外部的 <code>discount_rate</code>。如果两次调用之间修改了它，同样的金额可能得到不同的优惠金额。</p><p>本例在函数外修改折扣率。读取全局变量不需要 <code>global</code>；若在函数内部重新绑定该全局名称，课件第 21 页使用 <code>global</code> 声明。初学时优先通过参数传入所需数据，便于检查和测试。</p>')+'</div>';
+    return {controls,visual:model.ok?visual:invalid(model),summary,code:model.code || '# 请先检查输入。',model,frame:f};
+  };
+
+  V.testing = function (state) {
+    const s=Object.assign({operator:'gte',caseSet:'boundary',threshold:'400',fee:'20',cursor:0},state);
+    const model=E().testing(s),f=frame(model,s);
+    const controls='<div class="fnv-wide"><span class="control-label">函数中的免运费条件</span>'+options([['gte','payable ≥ 400'],['gt','改成 payable > 400']],s.operator,'operator')+'</div>'+
+      '<div class="fnv-wide"><span class="control-label">选择一组断言</span>'+options([['boundary','普通值与边界'],['override','覆盖默认门槛'],['wrong','故意写错期望']],s.caseSet,'caseSet')+'</div>'+
+      '<p class="hint">本实验的业务规则固定为满 400 元免运费，否则 20 元；测试中的实际返回值只有运行到相应位置后才出现。</p>';
+    let visual='';
+    if(f) {
+      const tests=f.tests || [],doneCount=tests.filter(t=>t.status==='passed'||t.status==='failed').length;
+      const status=t=>t.status==='passed'?'通过':t.status==='failed'?'失败':t.status==='calling'?'正在执行':f.error?'未执行':'等待执行';
+      visual='<div class="visual-header"><h2>测试期望与函数实际返回是否一致？</h2><span class="pill">已检查 '+doneCount+' / '+tests.length+'</span></div>'+
+        '<div class="flow-table-wrap"><table class="flow-table fnv-test-table"><thead><tr><th scope="col">调用或断言</th><th scope="col">期望</th><th scope="col">实际返回</th><th scope="col">状态</th></tr></thead><tbody>'+
+        tests.map(t=>'<tr class="fnv-test-'+esc(t.status)+'"><th scope="row"><code>'+esc(t.expression || t.call || t.id)+'</code></th><td><code>'+esc(py(t.expected))+'</code></td><td><code>'+esc(t.actual===null||t.actual===undefined?'—':py(t.actual))+'</code></td><td><span class="fnv-test-status">'+status(t)+'</span></td></tr>').join('')+'</tbody></table></div>'+
+        (f.error?'<div class="notice">当前断言失败，程序已中断。'+(tests.some(t=>t.status==='pending')?'表中后续断言没有执行。':'请核对函数实现与本条测试的期望。')+'</div>':f.done?'<div class="fnv-test-complete">这组断言已通过。成功的 assert 本身不会自动打印“通过”。</div>':'')+
+        '<div class="fnv-testing-purpose"><strong>'+esc(s.caseSet==='override'?'这组检查：传入的门槛是否真正生效':s.caseSet==='wrong'?'这组检查：期望值本身也可能写错':'这组检查：普通值与恰好达到门槛')+'</strong><p>'+esc(s.caseSet==='wrong'?'期望来自业务规则。规则要求满 400 元免运费，如果却断言 400 元应收 20 元，即使函数正确，这条断言也会失败。':s.caseSet==='override'?'同样的金额，覆盖 threshold 后应按新门槛计算。测试可以发现参数写进了接口，却没有在函数内部使用的错误。':'399 与 400 只差 1 元，却位于规则边界两侧。把 ≥ 改为 >，可观察是哪一条测试首先发现问题。')+'</p></div>';
+    }
+    const summary='<div class="rule-note"><strong>测试将业务期望写成可以重复核对的条件。</strong><p><code>assert</code> 的条件为 True 时继续执行，通常没有输出；为 False 时产生 <code>AssertionError</code>，未被处理的异常会阻止后续语句继续执行。</p><p>普通值检查基本计算，边界值检查比较符，覆盖默认值检查参数是否生效。测试失败后，要同时核对函数实现与测试期望。</p><p>代码中的类型提示与文档字符串用于说明接口。Python 不会仅凭 <code>: float</code> 或 <code>→ float</code> 自动完成输入验证。断言适合开发测试，不应代替正式的用户输入校验。</p></div>';
+    return {controls,visual:model.ok?visual:invalid(model),summary,code:model.code || '# 请先检查测试配置。',model,frame:f};
+  };
+
+  function treeMarkup(node,f) {
+    const current=f.activeNodeId===node.id,done=(f.completed || []).includes(node.id),seen=(f.visited || []).includes(node.id);
+    const label=current?'当前处理':done?'本次调用已返回':seen?'已输出，继续处理子类':'尚未处理';
+    const children=node.children || [];
+    return '<li><div class="fnv-tree-node '+(current?'is-current':done?'is-complete':seen?'is-visited':'')+'"><strong>'+esc(node.name)+'</strong><span>'+label+'</span>'+(children.length?'':'<small>无子分类</small>')+'</div>'+
+      (children.length?'<ul>'+children.map(child=>treeMarkup(child,f)).join('')+'</ul>':'')+'</li>';
+  }
+  function callStack(stack,tree,f) {
+    if(!stack.length)return '<div class="fnv-stack-empty">'+esc(f.done||(f.completed||[]).length?'所有分类调用都已返回。':'还没有进入 show_categories()。')+'</div>';
+    return '<ol class="fnv-stack">'+stack.map((call,i)=>{
+      const current=i===stack.length-1,locals=call.locals || {},node=locals.node;
+      const name=node&&node.name?node.name:call.nodeId || call.name;
+      return '<li class="'+(current?'is-current':'')+'"><div><span>第 '+(i+1)+' 层调用</span><strong>'+esc(name)+'</strong><span>'+esc(current?'当前执行':'等待子调用返回')+'</span></div><code>level = '+esc(has(locals,'level')?locals.level:'尚未绑定')+'</code></li>';
+    }).join('')+'</ol>';
+  }
+  V.recursion = function (state) {
+    const s=Object.assign({preset:'default',cursor:0},state),model=E().recursion(s),f=frame(model,s);
+    const controls='<div class="fnv-wide"><span class="control-label">选择分类结构</span>'+options([['default','课件分类树'],['leaf','只有一个分类'],['deeper','增加一层分类']],s.preset,'preset')+'</div>';
+    let visual='';
+    if(f) {
+      const stack=f.stack || [],tree=model.tree;
+      visual='<div class="visual-header"><h2>处理一个分类，再用同一规则处理它的子分类</h2><span class="pill">拓展 · 递归</span></div>'+
+        '<div class="fnv-recursion-layout"><section><h3>分类结构</h3>'+(tree?'<ul class="fnv-tree">'+treeMarkup(tree,f)+'</ul>':'<p class="flow-muted">等待分类数据。</p>')+'</section>'+
+        '<section class="fnv-call-stack"><h3>当前调用栈 <small>从父调用到子调用</small></h3>'+callStack(stack,tree,f)+'</section></div>'+
+        '<div class="fnv-recursion-counters"><span>已输出 <strong>'+(f.visited || []).length+'</strong> 个分类</span><span>已返回 <strong>'+(f.completed || []).length+'</strong> 次调用</span><span>仍在执行链中 <strong>'+stack.length+'</strong> 次调用</span></div>';
+      if(f.kind==='return' && f.returnChannel)visual+='<div class="fnv-recursion-return">本次调用返回 <code>'+esc(py(f.returnChannel.value))+'</code>；'+(stack.length?'上一层继续执行尚未完成的循环。':'当前已没有等待恢复的分类调用。')+'</div>';
+    }
+    const summary='<div class="rule-note"><strong>递归把“处理下一层”交给同一个函数的另一次调用。</strong><p>每次调用都有自己的 <code>node</code> 和 <code>level</code>。父调用进入子调用后，会等待子调用返回，再继续处理剩余子分类。</p><p>当 <code>children</code> 为空，for 循环体执行 0 次，不会继续调用自己；这一次调用自然返回。一个叶节点处理完，不代表整棵分类树已经处理完。</p><p>代码没有显式 return，结束时返回 <code>None</code>。本例通过 print 输出分类名称，前面的空格只用于显示层级。实际项目还应确保分类数据没有循环引用。</p></div>';
+    return {controls,visual:model.ok?visual:invalid(model),summary,code:model.code || '# 请先检查分类配置。',model,frame:f};
+  };
+})(window);
+</script>
+  <script>(function () {
+  'use strict';
+  const C = window.FunctionLabContent;
+  const E = window.FunctionLabEngine;
+  const V = window.FunctionLabViews;
+  const STORAGE = 'classroom-whiteboard-slide7-v1';
+  let saved = {};
+  try {saved = JSON.parse(localStorage.getItem(STORAGE) || '{}') || {};} catch (_) {}
+  const known = id => C.modules.some(m => m.id === id);
+  const route = () => location.hash.slice(1).split('?')[0];
+  let current = known(route()) ? route() : known(saved.lastLesson) ? saved.lastLesson : C.modules[0].id;
+  const answers = {};
+  C.modules.forEach(m => {
+    const v = saved.answers && saved.answers[m.id];
+    if (Number.isInteger(v) && v >= 0 && v < m.quiz.options.length) answers[m.id] = v;
+  });
+  function initial(id) {
+    return {
+      call:{mode:'call',unitPrice:'120',quantity:'3',cursor:0},
+      returns:{mode:'return',payable:'380',shipping:'20',cursor:0},
+      parameters:{mode:'binding',style:'positional',amount:'1000',rate:'0.10',payable:'380',threshold:'300',fee:'20',override:false,cursor:0},
+      scope:{mode:'local',unitPrice:'120',quantity:'3',amount:'1000',globalRate:'0.10',newRate:'0.15',argumentRate:'0.10',accessLocal:true,cursor:0},
+      testing:{operator:'gte',caseSet:'boundary',threshold:'400',fee:'20',cursor:0},
+      checkout:{mode:'single',preset:'course',unitPrice:'80',quantity:'8',discountThreshold:'500',rate:'0.10',shippingThreshold:'400',fee:'20',cursor:0},
+      recursion:{preset:'default',cursor:0}
+    }[id];
+  }
+  const states = Object.fromEntries(C.modules.map(m => [m.id, initial(m.id)]));
+  const openedQuizzes = new Set();
+  const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  let activeCode = '', activeModel = null, toastTimer, projecting = false;
+  function save() {
+    try {localStorage.setItem(STORAGE, JSON.stringify({lastLesson:current,answers}));} catch (_) {}
+  }
+  function toast(message) {
+    const node = document.getElementById('toast');
+    node.textContent = message;
+    node.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => node.classList.remove('visible'), 2400);
+  }
+  function preserveFocus(callback) {
+    const active = document.activeElement;
+    let selector = '', range;
+    if (active && active.dataset.field) selector = '[data-field="' + active.dataset.field + '"]';
+    else if (active && active.dataset.action) {
+      selector = '[data-action="' + active.dataset.action + '"]';
+      if (active.dataset.value !== undefined) selector += '[data-value="' + CSS.escape(active.dataset.value) + '"]';
+    }
+    try {if (active && active.selectionStart !== null) range = [active.selectionStart,active.selectionEnd];} catch (_) {}
+    callback();
+    const next = selector && document.querySelector(selector);
+    if (next && !next.disabled) {
+      next.focus({preventScroll:true});
+      if (range) {try {next.setSelectionRange(range[0],range[1]);} catch (_) {}}
+    }
+  }
+  function highlighted(code, activeLines) {
+    const active = activeLines || [];
+    function line(source) {
+      const pattern = /('[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"|#.*|\b(?:None|True|False|import|del|print|return|def|assert|in|if|elif|else|for|while|break|continue|and|or|not)\b|\b\d+(?:\.\d+)?\b)/g;
+      let html = '', position = 0, match;
+      while ((match = pattern.exec(source))) {
+        html += esc(source.slice(position,match.index));
+        const token = match[0], type = token[0] === '#' ? 'comment' : /^['"]/.test(token) ? 'str' : /^\d/.test(token) ? 'num' : 'kw';
+        html += '<span class="token-' + type + '">' + esc(token) + '</span>';
+        position = match.index + token.length;
+      }
+      return html + esc(source.slice(position));
+    }
+    return code.split('\n').map((text,i) => '<span class="code-line'+(active.includes(i+1)?' is-current':'')+'"><span class="line-no" aria-hidden="true">' + (i+1) + '</span><span class="line-text">' + (line(text) || ' ') + '</span></span>').join('');
+  }
+  function quiz(module) {
+    const q = module.quiz, answer = answers[module.id], answered = Number.isInteger(answer), right = answer === q.answer;
+    return '<details class="check-panel" data-quiz-panel="' + module.id + '" ' + (openedQuizzes.has(module.id) ? 'open' : '') + '><summary>检验理解' +
+      (answered ? right ? ' · 已答对' : ' · 再想一想' : '') + '</summary><div class="check-content"><p class="check-question">' + esc(q.prompt) +
+      '</p>' + (q.code ? '<pre class="quiz-code">' + esc(q.code) + '</pre>' : '') + '<div class="quiz-options" role="group" aria-label="练习选项">' +
+      q.options.map((option,i) => '<button type="button" class="quiz-option" data-action="quiz-answer" data-value="' + i + '" aria-pressed="' + (answer === i) +
+        '"><span class="quiz-letter">' + String.fromCharCode(65+i) + '</span><span>' + esc(option.label) + '</span></button>').join('') +
+      '</div>' + (answered ? '<div class="quiz-feedback ' + (right ? '' : 'incorrect') + '" role="status"><strong>' + (right ? '判断正确。' : '再想一想。') + '</strong>' + esc(q.options[answer].explanation) + '</div>' : '') + '</div></details>';
+  }
+  function renderNav() {
+    document.getElementById('lesson-nav').innerHTML = C.modules.map((m,i) => '<a href="#' + m.id + '" ' + (m.id === current ? 'aria-current="page"' : '') + '><span class="nav-index">' +
+      String(i+1).padStart(2,'0') + '</span><span>' + esc(m.title) + '</span>' + (answers[m.id] === m.quiz.answer ? '<span class="nav-done" aria-label="练习已答对">✓</span>' : '') + '</a>').join('');
+    const count = C.modules.filter(m => answers[m.id] === m.quiz.answer).length;
+    document.getElementById('quiz-progress').textContent = count ? '练习答对 ' + count + ' / ' + C.modules.length : C.modules.length + ' 个动手实验';
+  }
+  function tracePanel(model,frame,state) {
+    if (!model || !model.ok || !model.trace || !model.trace.length) return '';
+    const end=model.trace.length-1, cursor=Math.max(0,Math.min(end,Number(state.cursor)||0));
+    const last=model.trace[end];
+    const stateName=frame.error?'异常终止':frame.paused?'演示暂停':frame.done?'执行结束':cursor===0?'尚未开始':'执行中';
+    const line=Number(frame.line), currentLine=line>0?(model.lines||model.code.split('\n'))[line-1]:'';
+    return '<div class="flow-execution"><div class="flow-stepper" role="group" aria-label="逐步执行">'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-start" '+(cursor===0?'disabled':'')+'>从头演示</button>'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-back" '+(cursor===0?'disabled':'')+'>上一步</button>'+
+      '<button type="button" class="btn btn-primary" data-action="trace-next" '+(cursor===end?'disabled':'')+'>下一步 →</button>'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-end" '+(cursor===end?'disabled':'')+'>'+(last.paused?'运行至暂停':'运行到最后')+'</button>'+
+      '<span class="flow-step-count">'+cursor+' / '+end+' 步 · '+stateName+'</span></div>'+
+      '<div class="flow-step-note" role="status" aria-live="polite"><strong>'+esc(frame.note||'先预测，再点击下一步。')+'</strong>'+
+      (currentLine?'<div class="flow-current-code"><span>第 '+line+' 行</span><code>'+esc(currentLine)+'</code></div>':'')+'</div>'+
+      '<div class="flow-output"><span>程序输出</span><pre>'+(frame.output&&frame.output.length?esc(frame.output.join('\n')):'<span class="flow-muted">尚未产生输出</span>')+
+      (frame.error?'\n<span class="flow-error-text">'+esc(FunctionLabUI.errorText(frame.error))+'</span>':'')+'</pre></div></div>';
+  }
+  function renderLesson() {
+    const module=C.modules.find(m=>m.id===current), state=states[current], view=V[current](state);
+    activeCode=view.code||''; activeModel=view.model||null;
+    const frame=view.frame || (activeModel&&activeModel.ok?E.stateAt(activeModel,state.cursor):{});
+    const lines=frame.lines || (frame.line?[frame.line]:[]);
+    document.getElementById('lesson').innerHTML='<div class="lesson-heading"><div><p class="source-tag">'+esc(module.pages)+
+      '</p><h1 id="lesson-title" tabindex="-1">'+esc(module.title)+'</h1><p class="lesson-question">'+esc(module.question)+
+      '</p></div><button type="button" class="btn btn-subtle" data-action="reset-experiment">重置实验</button></div>'+
+      '<div class="workbench"><section class="control-panel" aria-label="实验操作">'+view.controls+'</section><section class="visual-panel" aria-label="可视化结果">'+view.visual+tracePanel(activeModel,frame,state)+'</section></div>'+
+      '<div class="evidence"><section class="rule-panel" aria-label="理解原理">'+view.summary+'</section><section class="code-panel" aria-label="对应的 Python 代码"><div class="code-toolbar"><span>对应的 Python · 蓝色行是当前位置</span><button type="button" class="btn btn-subtle" data-action="copy-code">复制代码</button></div><pre><code>'+highlighted(activeCode,lines)+'</code></pre></section></div>'+
+      '<div class="try-next"><strong>再试一步</strong><span>'+esc(module.try)+'</span></div>'+quiz(module);
+    const detail=document.querySelector('[data-quiz-panel]');
+    detail.addEventListener('toggle',()=>{if(detail.open)openedQuizzes.add(module.id);else openedQuizzes.delete(module.id);});
+  }
+  function setProjection(value) {
+    projecting = value;
+    document.body.classList.toggle('projecting',value);
+    const button = document.getElementById('projection-toggle');
+    button.textContent = value ? '退出投影' : '投影模式';
+    button.setAttribute('aria-pressed',String(value));
+  }
+  function navigate() {
+    if (!known(route())) return;
+    current = route();
+    renderNav(); renderLesson(); save();
+    document.getElementById('lesson-title').focus({preventScroll:true});
+    if (window.innerWidth < 901) document.getElementById('lesson').scrollIntoView({block:'start'});
+  }
+  async function copyCode() {
+    try {
+      if (!navigator.clipboard || !window.isSecureContext) throw Error('fallback');
+      await navigator.clipboard.writeText(activeCode); toast('Python 代码已复制');
+    } catch (_) {
+      const area = document.createElement('textarea');
+      area.value = activeCode; area.setAttribute('readonly',''); area.style.cssText = 'position:fixed;left:-9999px;top:0';
+      document.body.appendChild(area); area.select();
+      let success = false;
+      try {success = document.execCommand('copy');} catch (_) {}
+      area.remove();
+      toast(success ? 'Python 代码已复制' : '浏览器未允许自动复制，请选中代码后复制。');
+    }
+  }
+  function applyPreset(s,value) {
+    if(current==='call'||current==='checkout') {
+      const rows={O001:['120','3'],O002:['80','8'],O003:['260','2'],edge399:['399','1'],edge400:['400','1'],edge499:['499','1'],edge500:['500','1']};
+      if(rows[value])[s.unitPrice,s.quantity]=rows[value];
+    } else if(current==='returns')s.payable=value;
+    s.cursor=0;
+  }
+  document.addEventListener('click',event=>{
+    if(event.target.closest('#projection-toggle')){setProjection(!projecting);return;}
+    const button=event.target.closest('[data-action]');
+    if(!button||button.disabled)return;
+    const action=button.dataset.action,value=button.dataset.value;
+    if(action==='copy-code'){copyCode();return;}
+    preserveFocus(()=>{
+      const s=states[current];
+      switch(action){
+        case 'reset-experiment':states[current]=initial(current);break;
+        case 'set-mode':s.mode=value;s.cursor=0;break;
+        case 'set-option':
+          if(['override','accessLocal'].includes(button.dataset.key))s[button.dataset.key]=value==='true';
+          else s[button.dataset.key]=value;
+          s.cursor=0;break;
+        case 'preset':applyPreset(s,value);break;
+        case 'trace-start':s.cursor=0;break;
+        case 'trace-back':s.cursor=Math.max(0,s.cursor-1);break;
+        case 'trace-next':if(activeModel&&activeModel.ok)s.cursor=Math.min(activeModel.trace.length-1,s.cursor+1);break;
+        case 'trace-end':if(activeModel&&activeModel.ok)s.cursor=activeModel.trace.length-1;break;
+        case 'quiz-answer':answers[current]=Number(value);openedQuizzes.add(current);save();renderNav();break;
+        case 'reset-quizzes':Object.keys(answers).forEach(key=>delete answers[key]);save();renderNav();toast('本讲练习记录已清除');break;
+        default:return;
+      }
+      renderLesson();
+    });
+  });
+  function updateField(event) {
+    const field=event.target.dataset.field;
+    if(!field)return;
+    const parts=field.split('.'),id=parts[0],key=parts[1];
+    if(!states[id])return;
+    preserveFocus(()=>{
+      states[id][key]=event.target.value;
+      states[id].cursor=0;
+      renderLesson();
+    });
+  }
+  document.addEventListener('input',event=>{if(event.target.tagName!=='SELECT')updateField(event);});
+  document.addEventListener('change',event=>{if(event.target.tagName==='SELECT')updateField(event);});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')setProjection(false);});
+  window.addEventListener('hashchange',navigate);
+  renderNav();renderLesson();save();
+})();
+</script>
+</body>
+</html>

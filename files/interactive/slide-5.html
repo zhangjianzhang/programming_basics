@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="通过海外市场与库存促销，动手理解 Python 集合的唯一成员与集合关系、字典的按键查询、更新和动态视图。">
+  <meta name="color-scheme" content="light">
+  <title>集合与字典实验室｜Python 第五讲</title>
+  <style>:root {
+  --bg:#f2f5fa; --surface:#fff; --ink:#17283d; --muted:#536477;
+  --accent:#245fc4; --accent-ink:#fff; --selected:#e4edfc; --line:#d6dfeb;
+  --changed:#6d4c00; --changed-bg:#fff0c9; --error:#a32d32; --error-bg:#fff0f0;
+  --soft:#f6f8fc; --code-bg:#eef3fa; --code-ink:#17314d;
+  --token-str:#236242; --token-kw:#754b9a; --token-num:#9a4a0f;
+  --radius:10px; --tile-radius:12px; --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono","PingFang SC","Microsoft YaHei",monospace;
+  font-family:var(--font); color:var(--ink); font-synthesis:none; font-size:17px; color-scheme:light;
+}
+* {box-sizing:border-box}
+body {margin:0;background:var(--bg);color:var(--ink);line-height:1.7;min-width:320px}
+button,input,select {font:inherit;color:inherit}
+button,summary,a,input,select {-webkit-tap-highlight-color:transparent}
+button {cursor:pointer}
+button:disabled {cursor:default;opacity:.5}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+a {color:var(--accent);text-decoration-thickness:1px;text-underline-offset:4px}
+h1,h2,h3,p {margin:0}
+button,input,select {border-radius:var(--radius)}
+button {transition:background-color .15s,border-color .15s}
+button:hover:not(:disabled) {filter:brightness(.98)}
+code,pre,.mono {font-family:var(--mono)}
+code {font-size:.95em}
+.skip-link {position:fixed;left:16px;top:-100px;z-index:30;padding:12px 20px;background:var(--surface)}
+.skip-link:focus {top:10px}
+.topbar {display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:92px;padding:18px 36px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand {display:flex;gap:13px;align-items:center;color:var(--ink);text-decoration:none;font-size:21px;font-weight:750;line-height:1.25;white-space:nowrap}
+.brand small {display:block;font-weight:500;color:var(--muted);font-size:12px;letter-spacing:.06em;margin-top:7px}
+.brand-mark {display:flex;align-items:center;justify-content:center;gap:2px;color:var(--accent);font:700 36px/1 var(--mono);width:48px;height:48px;background:var(--selected);border-radius:12px}
+.brand-mark b {font-weight:500}
+.top-actions {display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.theme-options {display:flex;gap:5px;padding:4px;background:var(--soft);border:1px solid var(--line);border-radius:12px}
+.theme-options button {display:flex;align-items:center;gap:8px;min-height:42px;padding:7px 12px;background:transparent;border:1px solid transparent;font-size:14px;white-space:nowrap}
+.theme-options button[aria-pressed=true] {background:var(--surface);border-color:var(--line);font-weight:700}
+.theme-dot {width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.2)}
+.dot-a {background:#245fc4}.dot-b {background:#086a5b}.dot-c {background:#173a58;outline:1px solid #83d8f3}
+.btn {display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:9px 17px;border:1px solid var(--line);background:var(--surface);font-size:15px;font-weight:600;line-height:1.5;text-align:center}
+.btn-primary {background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-subtle {background:transparent;color:var(--muted)}
+.btn-small {font-size:13px;padding:7px 12px;min-height:38px}
+.shell {display:grid;grid-template-columns:218px minmax(0,1fr);max-width:1580px;margin:auto}
+.sidebar {padding:36px 22px 26px 28px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:29px}
+.course-name span {font-size:13px;color:var(--muted)}
+.course-name strong {display:block;font-size:22px;line-height:1.5;font-weight:650;margin-top:8px;letter-spacing:-.03em}
+.lesson-nav {display:flex;flex-direction:column;gap:9px}
+.lesson-nav a {position:relative;display:flex;gap:13px;align-items:center;min-height:48px;padding:10px 12px;text-decoration:none;color:var(--muted);font-size:16px;border-radius:7px}
+.lesson-nav a[aria-current=page] {background:var(--selected);color:var(--accent);font-weight:700}
+.nav-index {font:500 13px/1 var(--mono);opacity:.8}
+.nav-done {margin-left:auto;font-size:14px;color:var(--accent)}
+.sidebar-bottom {margin-top:auto;padding-top:36px;color:var(--muted);font-size:13px}
+.progress-note {display:block;margin-top:12px;font-size:12px}
+.lesson {min-width:0;padding:31px 34px 38px}
+.lesson-heading {display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}
+.source-tag {color:var(--muted);font-size:13px;margin-bottom:7px}
+h1 {font-size:32px;line-height:1.35;font-weight:750;letter-spacing:-.035em}
+.lesson-question {font-size:17px;line-height:1.7;color:var(--muted);margin-top:10px;max-width:800px}
+.lesson-heading>.btn {flex-shrink:0;margin-top:7px}
+.workbench {display:grid;grid-template-columns:minmax(225px,.72fr) minmax(0,2.4fr);gap:20px;align-items:stretch}
+.control-panel {display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);padding:22px;border-radius:var(--radius);min-width:0}
+.visual-panel {min-width:0;display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:25px 25px 22px}
+.control-label {display:block;font-size:14px;font-weight:700;line-height:1.5;margin-bottom:8px}
+.hint {font-size:13px;color:var(--muted);line-height:1.75}
+.field-row {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.field-row label {font-size:13px;display:flex;flex-direction:column;gap:5px;color:var(--muted)}
+.field-row input {width:100%;min-height:46px;border:1px solid var(--line);background:var(--soft);font-family:var(--mono);font-size:18px;padding:7px 9px;color:var(--ink)}
+.single-field input,.single-field select,.control-panel select,.control-panel>input {width:100%;min-height:46px;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.segmented {display:flex;gap:5px;flex-wrap:wrap}
+.segmented button {min-height:42px;padding:8px 12px;flex:1 0 auto;background:var(--soft);border:1px solid var(--line);font-size:14px;line-height:1.4}
+.segmented button[aria-pressed=true],.segmented .is-active,.segmented .active {color:var(--accent);border-color:var(--accent);background:var(--selected);font-weight:700}
+.action-stack {display:flex;flex-direction:column;gap:8px}
+.action-stack .btn {width:100%;justify-content:flex-start;font-size:14px}
+.action-stack .btn[aria-pressed=true] {color:var(--accent);border-color:var(--accent);background:var(--selected)}
+.preset-row {display:flex;gap:6px;flex-wrap:wrap}
+.preset-row button {border:1px solid var(--line);background:var(--surface);padding:6px 10px;min-height:38px;font-size:13px}
+.preset-row button:hover {border-color:var(--accent)}
+.control-panel hr {border:0;border-top:1px solid var(--line);margin:0}
+.visual-header {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.visual-header h2 {font-size:17px;font-weight:650;line-height:1.4}
+.visual-header code {font-size:17px;font-weight:650}
+.pill {font-size:12px;line-height:1.4;padding:5px 8px;border-radius:5px;background:var(--soft);color:var(--muted)}
+.pill.changed {background:var(--changed-bg);color:var(--changed)}
+.rail-scroll {overflow-x:auto;padding:6px 2px 7px;max-width:100%}
+.list-rail {display:flex;gap:8px;align-items:stretch;min-width:min-content;padding:8px 0}
+.list-tile {display:flex;flex:1 0 90px;min-width:0;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:var(--tile-radius);background:var(--soft);position:relative;text-align:center;overflow:hidden}
+.pos-index,.neg-index {font-family:var(--mono);font-size:13px;line-height:1.4;padding:7px 7px 6px;color:var(--muted);width:100%;background:var(--surface)}
+.pos-index {border-bottom:1px solid var(--line)}
+.neg-index {border-top:1px solid var(--line)}
+.tile-value {display:flex;align-items:center;justify-content:center;flex:1;padding:17px 9px;min-height:70px;font-size:17px;font-weight:650;white-space:nowrap}
+.list-tile.selected {border:2px solid var(--accent);background:var(--selected)}
+.list-tile.selected .pos-index,.list-tile.selected .neg-index {background:var(--selected);color:var(--accent)}
+.list-tile.changed {border-color:var(--changed);background:var(--changed-bg)}
+.list-tile.changed .pos-index {background:var(--changed-bg);color:var(--changed)}
+.list-tile.stop {border-style:dashed;border-color:var(--muted)}
+.take-order {font-size:11px;font-weight:650;color:var(--accent);padding:3px 5px 5px}
+.stop-flag {font-size:11px;padding:3px 5px 5px;color:var(--muted)}
+.list-legend {display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px}
+.list-legend span {display:flex;gap:6px;align-items:center}
+.legend-swatch {display:inline-block;width:11px;height:11px;border:1px solid var(--accent);background:var(--selected)}
+.sublist {display:flex;gap:5px;align-items:center;padding:0 5px;font-size:14px;font-family:var(--mono)}
+.sublist-item {padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:4px;white-space:nowrap;font-family:var(--font)}
+.list-tile.nested {min-width:180px;flex:1.5 0 180px}
+.empty-list {font:22px/1.5 var(--mono);padding:20px;color:var(--muted);background:var(--soft);border:1px dashed var(--line);border-radius:var(--radius);width:100%}
+.selection-result {border-top:1px solid var(--line);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.result-title {font-size:14px;color:var(--muted);font-weight:500}
+.result-value {font-size:18px;line-height:1.6;color:var(--accent);overflow-wrap:anywhere}
+.path {display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.path b {border:1px solid var(--line);border-radius:5px;min-width:28px;padding:1px 6px;text-align:center;background:var(--surface);color:var(--accent)}
+.result-pair {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.result-cell {min-width:0;padding:15px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);font-size:14px}
+.result-cell h3,.result-cell strong {font-size:14px;display:block;margin-bottom:7px}
+.result-cell code,.result-cell pre {display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin:0}
+.compare-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.comparison {min-width:0;display:flex;flex-direction:column;gap:12px}
+.comparison+ .comparison {border-left:1px solid var(--line);padding-left:20px}
+.comparison h3 {font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)}
+.comparison .list-tile {flex-basis:65px}
+.comparison .tile-value {font-size:15px;min-height:62px;padding:12px 7px}
+.comparison .list-rail {gap:5px}
+.return-line {display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;border-top:1px solid var(--line);padding-top:10px;color:var(--muted)}
+.return-line code {color:var(--ink);font-size:16px;font-weight:650;white-space:pre-wrap;overflow-wrap:anywhere}
+.evidence {display:grid;grid-template-columns:minmax(230px,.9fr) minmax(0,1.5fr);gap:20px;margin-top:20px;align-items:start}
+.rule-panel {padding:6px 2px;min-width:0;font-size:16px;line-height:1.85}
+.rule-panel p+p {margin-top:11px}
+.rule-note {line-height:1.8}
+.rule-note strong {color:var(--accent)}
+.rule-note .hint {display:block;margin-top:9px}
+.code-panel {min-width:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--code-bg)}
+.code-toolbar {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 15px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.code-toolbar .btn {min-height:31px;font-size:12px;padding:4px 9px}
+.code-panel pre {font-size:15px;line-height:1.8;color:var(--code-ink);padding:16px 18px;margin:0;overflow-x:auto}
+.code-line {display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;min-height:1.8em}
+.line-no {color:var(--muted);font-size:11px;user-select:none;line-height:2.4}
+.line-text {white-space:pre-wrap;overflow-wrap:anywhere}
+.token-str {color:var(--token-str)}.token-kw {color:var(--token-kw)}.token-num {color:var(--token-num)}.token-comment {color:var(--muted)}
+.error-message {padding:14px 17px;border-radius:var(--radius);background:var(--error-bg);color:var(--error);line-height:1.7;font-size:14px;border:1px solid currentColor}
+.status-note {font-size:14px;line-height:1.7;color:var(--muted)}
+.notice {padding:11px 14px;background:var(--changed-bg);color:var(--changed);border-radius:var(--radius);font-size:14px;line-height:1.7}
+.try-next {display:flex;gap:12px;font-size:14px;color:var(--muted);padding:20px 0 16px;border-bottom:1px solid var(--line);margin-top:2px}
+.try-next strong {flex-shrink:0;color:var(--ink);font-size:14px}
+.check-panel {margin-top:17px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.check-panel summary {cursor:pointer;padding:15px 20px;font-size:15px;font-weight:650}
+.check-content {padding:0 20px 20px}
+.check-question {font-size:17px;line-height:1.7;margin:8px 0 12px}
+.quiz-code {white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.8 var(--mono);padding:12px 15px;background:var(--soft);border-radius:7px;margin:0 0 14px;color:var(--muted)}
+.quiz-options {display:grid;gap:9px}
+.quiz-option {display:flex;gap:12px;text-align:left;align-items:flex-start;padding:12px 14px;background:var(--surface);border:1px solid var(--line);min-height:46px;font-size:14px;line-height:1.65}
+.quiz-letter {font-family:var(--mono);font-size:12px;flex-shrink:0;padding-top:2px;color:var(--muted)}
+.quiz-option[aria-pressed=true] {border-color:var(--accent);background:var(--selected)}
+.quiz-feedback {margin-top:13px;padding:12px 15px;line-height:1.8;font-size:14px;background:var(--selected);border-radius:var(--radius)}
+.quiz-feedback.incorrect {background:var(--changed-bg);color:var(--changed)}
+.chart-bars {display:flex;flex-direction:column;gap:10px;padding:8px 0}
+.bar-line {display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center}
+.bar-index {font:11px/1 var(--mono);color:var(--muted);text-align:right}
+.bar-track {position:relative;min-height:31px;display:flex;align-items:center;background:var(--soft)}
+.bar-fill {position:absolute;left:0;top:0;bottom:0;background:var(--selected);border-left:2px solid var(--accent)}
+.bar-label {position:relative;padding:2px 9px;font-size:13px;font-family:var(--mono);color:var(--ink);white-space:nowrap}
+.bar-scale {display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-left:40px;border-top:1px solid var(--line);padding-top:2px}
+.raw-value {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+.sort-trap {margin-top:8px;border-top:1px solid var(--line);padding-top:15px}
+.sort-trap summary {font-size:14px;color:var(--muted);cursor:pointer}
+.sort-trap .notice {margin-top:12px}
+.copy-graph {width:100%;height:auto;display:block}
+.copy-graph text {font-family:var(--font)}
+.memory-graph {width:100%;overflow-x:auto}
+.data-table {width:100%;border-collapse:separate;border-spacing:0;font-size:16px}
+.data-table th {font-size:12px;font-weight:500;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+.data-table td {padding:0;border-bottom:1px solid var(--line);background:var(--surface)}
+.data-table td:first-child {padding:10px 12px;color:var(--muted);font-family:var(--mono);font-size:13px;width:55px}
+.data-table button {width:100%;min-height:56px;display:block;text-align:left;padding:12px;border:2px solid transparent;background:transparent;border-radius:0;font-size:16px}
+.data-table tr.selected-row td,.data-table tr.is-row td {background:var(--soft)}
+.data-table button.selected,.data-table button[aria-pressed=true],.data-table .is-cell button {background:var(--selected);border-color:var(--accent);color:var(--accent);font-weight:700}
+.table-wrap {overflow-x:auto;width:100%}
+.table-scroll {overflow-x:auto;width:100%}
+.table-edit-row {display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}
+.table-edit-row input {min-height:46px;min-width:100px;flex:1;width:100%;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.table-edit-controls>.control-label {margin-top:12px}
+.table-lookup-results {margin-top:24px}
+.table-lookup-results .python-value {margin:12px 0 4px;overflow-wrap:anywhere;font-family:var(--mono);font-size:17px}
+.data-table .is-selected-row td {background:var(--soft)}
+.data-table tbody th {border-bottom:1px solid var(--line)}
+.data-table .is-selected-row th {background:var(--soft)}
+.practice-actions {display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.practice-step-title {font-size:17px}
+.practice-panel summary>.hint {display:block;margin-top:4px}
+.practice-data-table {min-width:265px}
+.practice-data-table td {padding:8px;font-size:12px}
+.practice-data-table th {font-size:10px;padding:7px}
+.practice-comparison h4 {font-size:14px;margin:0 0 10px}
+.practice-statistics .result-cell>strong {font-size:28px;color:var(--accent)}
+.sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.copy-diagram {overflow-x:auto;width:100%}
+.table-path {font-size:22px;font-family:var(--mono);padding:12px 0;color:var(--accent)}
+.table-reading {display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.practice-panel {margin-top:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.practice-panel summary {padding:13px 16px;cursor:pointer;font-weight:650;font-size:15px}
+.practice-body {padding:0 16px 18px;font-size:14px}
+.practice-body p {margin:8px 0}
+.practice-body pre {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;background:var(--code-bg);padding:12px;margin:12px 0;border-radius:7px}
+.practice-controls {display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.practice-panel .result-pair {grid-template-columns:repeat(2,minmax(0,1fr))}
+.site-footer {display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-top:1px solid var(--line);max-width:1580px;margin:auto;padding:20px 36px;font-size:12px;color:var(--muted)}
+.site-guide {max-width:680px;min-width:160px}
+.site-guide summary {cursor:pointer;text-align:right;color:var(--muted)}
+.site-guide>div {padding:18px 0;font-size:14px}
+.site-guide p+p {margin-top:12px}
+.site-guide .btn {margin-top:14px}
+.toast {position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:8px;font-size:14px;z-index:40;pointer-events:none;opacity:0;transition:opacity .15s}
+.toast.visible {opacity:1}
+.noscript {padding:30px;background:var(--error-bg);color:var(--error)}
+
+/* A: the list is the main blackboard; the controls sit directly below it. */
+body[data-theme=whiteboard] .workbench {grid-template-columns:1fr}
+body[data-theme=whiteboard] .visual-panel {grid-row:1}
+body[data-theme=whiteboard] .control-panel {display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;padding:18px 22px}
+body[data-theme=whiteboard] .control-panel>div {flex:1 1 160px}
+body[data-theme=whiteboard] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=whiteboard] .control-panel>.btn {flex:0 0 auto}
+body[data-theme=whiteboard] .control-panel hr {display:none}
+body[data-theme=whiteboard] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=whiteboard] .action-stack .btn {width:auto;justify-content:center;flex:1 1 auto}
+body[data-theme=whiteboard] .list-tile {flex-basis:85px}
+body[data-theme=whiteboard] .tile-value {font-size:21px;min-height:74px}
+
+/* B: a green business desk with horizontal navigation and a task column. */
+body[data-theme=workbench] {--bg:#ecf3f0;--surface:#fff;--ink:#173c36;--muted:#4d6860;--accent:#086a5b;--accent-ink:#fff;--selected:#dcefe8;--line:#ccdcd5;--soft:#f3f8f5;--changed:#745200;--changed-bg:#fcedbc;--code-bg:#edf4f0;--code-ink:#193f35;--token-str:#236242;--token-kw:#7b4283;--token-num:#91501c;--radius:4px;--tile-radius:4px}
+body[data-theme=workbench] .shell {grid-template-columns:1fr}
+body[data-theme=workbench] .sidebar {padding:14px 36px;border-right:0;border-bottom:1px solid var(--line);flex-direction:row;align-items:center;gap:30px;background:var(--surface)}
+body[data-theme=workbench] .course-name,body[data-theme=workbench] .sidebar-bottom {display:none}
+body[data-theme=workbench] .lesson-nav {flex-direction:row;flex-wrap:wrap;gap:9px;width:100%}
+body[data-theme=workbench] .lesson-nav a {flex:1;justify-content:center;font-size:15px;border-radius:3px;min-height:43px;white-space:nowrap}
+body[data-theme=workbench] .nav-done {margin-left:0}
+body[data-theme=workbench] .lesson {padding:28px 44px 40px}
+body[data-theme=workbench] .workbench {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .control-panel {border-top:3px solid var(--accent)}
+body[data-theme=workbench] .evidence {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .brand-mark {border-radius:4px}
+body[data-theme=workbench] .comparison h3 {font-size:22px}
+
+/* C: an object diagram on a deep-blue laboratory bench. */
+body[data-theme=blueprint] {--bg:#101b2d;--surface:#17253a;--ink:#f0f5fc;--muted:#b4c5db;--accent:#83d8f3;--accent-ink:#112339;--selected:#263f5a;--line:#38516c;--soft:#1d2e46;--changed:#f3c97f;--changed-bg:#3c3324;--error:#ffb4bb;--error-bg:#482b37;--code-bg:#132136;--code-ink:#dce8f8;--token-str:#a4dbc0;--token-kw:#d4b9f4;--token-num:#f3c97f;--radius:7px;--tile-radius:3px;color-scheme:dark}
+body[data-theme=blueprint] .topbar {border-bottom-color:var(--line)}
+body[data-theme=blueprint] .sidebar {background:#101b2d}
+body[data-theme=blueprint] .brand-mark {background:transparent;border:1px solid var(--accent);border-radius:3px}
+body[data-theme=blueprint] .workbench {grid-template-columns:1fr}
+body[data-theme=blueprint] .visual-panel {grid-row:1;border:1px solid var(--line);border-top:3px solid var(--accent)}
+body[data-theme=blueprint] .control-panel {flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;background:var(--soft)}
+body[data-theme=blueprint] .control-panel>div {flex:1 1 170px}
+body[data-theme=blueprint] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=blueprint] .control-panel hr {display:none}
+body[data-theme=blueprint] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=blueprint] .action-stack .btn {width:auto;flex:1 1 auto;justify-content:center}
+body[data-theme=blueprint] .list-tile {border-width:1px}
+body[data-theme=blueprint] .list-tile.selected {border-width:2px}
+body[data-theme=blueprint] .pos-index {background:var(--selected)}
+body[data-theme=blueprint] .tile-value {font-size:21px}
+body[data-theme=blueprint] .evidence {grid-template-columns:minmax(230px,1fr) minmax(0,1.6fr)}
+
+/* Projection raises teaching text sizes without scaling the whole page. */
+body.projecting {font-size:20px}
+body.projecting .theme-options,body.projecting .course-name,body.projecting .sidebar-bottom,body.projecting .check-panel,body.projecting .site-footer {display:none}
+body.projecting .shell {grid-template-columns:185px minmax(0,1fr)}
+body.projecting .sidebar {padding:25px 15px}
+body.projecting .lesson {padding:26px}
+body.projecting .lesson-nav a {font-size:16px}
+body.projecting h1 {font-size:38px}
+body.projecting .lesson-question,body.projecting .rule-panel {font-size:20px}
+body.projecting .tile-value {font-size:25px;min-height:84px}
+body.projecting .code-panel pre {font-size:20px}
+body.projecting .hint,body.projecting .control-label,body.projecting .btn,body.projecting .status-note,body.projecting .result-title {font-size:17px}
+body.projecting .result-value {font-size:22px}
+body.projecting[data-theme=workbench] .shell {grid-template-columns:1fr}
+body.projecting[data-theme=workbench] .sidebar {padding:10px 26px}
+
+@media (max-width:1150px) {
+  .topbar {padding:16px 24px;gap:18px}.top-actions {gap:10px}.theme-options button {font-size:12px;padding:7px 9px}.brand {font-size:19px}
+  .shell {grid-template-columns:185px minmax(0,1fr)}.sidebar {padding:28px 15px 25px 20px}.lesson {padding:27px 25px}.lesson-nav a {font-size:14px;padding:10px}
+  .course-name strong {font-size:20px}.workbench {grid-template-columns:220px minmax(0,1fr)}.visual-panel {padding:22px 20px}.control-panel {padding:20px}
+  body[data-theme=workbench] .lesson {padding:25px 30px}.theme-dot {width:8px;height:8px}.theme-options {gap:2px}
+}
+@media (max-width:900px) {
+  .topbar {flex-wrap:wrap;gap:14px;min-height:unset;padding:16px 22px}.top-actions {flex:1}.theme-options button {font-size:12px}.brand {font-size:18px}.projection-button {font-size:12px;padding:8px 12px}
+  .shell,.projecting .shell {grid-template-columns:1fr!important}.sidebar {padding:12px 20px;border-right:0;border-bottom:1px solid var(--line);background:var(--surface)}
+  .course-name,.sidebar-bottom {display:none}.lesson-nav {flex-direction:row;flex-wrap:wrap;gap:5px}.lesson-nav a {padding:7px 10px;min-height:38px;font-size:13px}.nav-index {font-size:11px}.nav-done {margin-left:3px}
+  .lesson {padding:24px}.workbench,body[data-theme=workbench] .workbench {grid-template-columns:1fr}.control-panel {flex-direction:row;flex-wrap:wrap}.control-panel>div {flex:1 1 180px}.control-panel>.hint {flex:1 1 180px}
+  .visual-panel {grid-row:1}.evidence,body[data-theme=workbench] .evidence,body[data-theme=blueprint] .evidence {grid-template-columns:1fr}.evidence {gap:14px}.rule-panel {padding:2px}
+  body[data-theme=workbench] .sidebar {padding:12px 20px}.site-footer {padding:20px 24px}.control-panel hr {display:none}.action-stack {flex-direction:row;flex-wrap:wrap}.action-stack .btn {width:auto;flex:1;justify-content:center}
+  h1 {font-size:29px}.lesson-question {font-size:15px}.lesson-heading>.btn {font-size:12px;padding:8px 10px}.source-tag {font-size:12px}
+}
+@media (max-width:600px) {
+  .topbar {padding:14px 16px}.brand-mark {width:38px;height:38px;font-size:29px}.brand {font-size:17px}.brand small {font-size:10px}
+  .top-actions {display:contents}.theme-options {order:3;width:100%;justify-content:space-between}.theme-options button {flex:1;justify-content:center;padding:8px 3px;font-size:11px;gap:5px;min-height:40px}.projection-button {margin-left:auto;font-size:12px}
+  .sidebar,body[data-theme=workbench] .sidebar {padding:10px 12px}.lesson-nav {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:3px}.lesson-nav a,body[data-theme=workbench] .lesson-nav a {font-size:12px;padding:8px 5px;gap:7px;justify-content:center}.nav-done {display:none}
+  .lesson,body[data-theme=workbench] .lesson,body.projecting .lesson {padding:20px 14px}.lesson-heading {gap:10px;margin-bottom:18px}.source-tag {font-size:11px}h1 {font-size:26px}.lesson-question {font-size:14px}.lesson-heading>.btn {font-size:11px;padding:7px 10px;min-height:38px}
+  .visual-panel {padding:18px 14px;gap:14px}.control-panel,body[data-theme=whiteboard] .control-panel,body[data-theme=blueprint] .control-panel {padding:16px 14px;gap:14px;flex-direction:column;align-items:stretch}
+  .control-panel>div,.control-panel>.hint,body[data-theme=whiteboard] .control-panel>div,body[data-theme=blueprint] .control-panel>div,body[data-theme=whiteboard] .control-panel>.hint,body[data-theme=blueprint] .control-panel>.hint {flex:initial}
+  .list-tile,body[data-theme=whiteboard] .list-tile {flex-basis:82px}.tile-value,body[data-theme=whiteboard] .tile-value,body[data-theme=blueprint] .tile-value {font-size:16px;min-height:62px}.pos-index,.neg-index {font-size:12px}
+  .compare-grid {grid-template-columns:1fr;gap:20px}.comparison+.comparison {border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px}.result-pair {grid-template-columns:1fr}.result-value {font-size:16px}.visual-header h2 {font-size:15px}
+  .rule-panel {font-size:15px}.code-panel pre {font-size:13px;padding:14px 12px}.code-line {gap:7px;grid-template-columns:18px minmax(0,1fr)}.try-next {font-size:13px;gap:9px;flex-direction:column}.try-next strong {font-size:13px}
+  .site-footer {padding:18px 16px;flex-direction:column;font-size:11px}.site-guide {min-width:0;max-width:100%}.site-guide summary {text-align:left}.data-table button {font-size:14px;padding:9px;min-height:52px}.data-table th {padding:8px;font-size:11px}.data-table td:first-child {width:35px;padding:8px}
+  .check-panel summary {padding:14px}.check-content {padding:0 14px 16px}.quiz-code {font-size:11px}.quiz-option {font-size:12px}.check-question {font-size:15px}.table-path {font-size:18px}.memory-graph svg,.copy-diagram svg {min-width:650px}
+  .practice-panel .result-pair {grid-template-columns:1fr}.btn,.segmented button,.theme-options button,.lesson-nav a,.preset-row button,.code-toolbar .btn {min-height:44px}
+  body.projecting h1 {font-size:30px}body.projecting .code-panel pre {font-size:16px}
+}
+@media (prefers-reduced-motion:reduce) {*,*:before,*:after {transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media print {.top-actions,.sidebar,.control-panel,.check-panel,.site-footer,.try-next,.toast {display:none!important}.shell {display:block}.lesson {padding:0}.code-panel,.visual-panel {break-inside:avoid}body {background:#fff;color:#17283d}.workbench,.evidence {display:block}.rule-panel {padding:16px 0}}
+
+/* Fifth lecture: unique members, set regions, and business lookup. */
+.control-panel textarea,.control-panel label>input,.control-panel label>select {display:block;width:100%;min-height:46px;margin-top:7px;padding:9px 12px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);color:var(--ink);font:16px/1.7 var(--mono);font-weight:400}
+.control-panel textarea {resize:vertical;min-height:83px}
+.control-panel>label {flex:1 1 170px;min-width:0;font-size:14px;font-weight:600;color:var(--muted)}
+.control-panel>label>.hint {display:block;margin-top:7px;font-weight:400}
+.control-panel .wide-control {flex-basis:100%!important;min-width:0}
+.control-panel>div {min-width:0}
+textarea:focus-visible {outline:3px solid var(--accent);outline-offset:3px}
+.type-chip {display:inline-block;font:12px/1.6 var(--mono);padding:1px 7px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--accent);white-space:nowrap}
+.set-comparison {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.collection-box {border:1px solid var(--line);border-radius:var(--radius);background:var(--soft);padding:19px;min-width:0}
+.collection-box.is-selected,.data-value-box.is-selected {border-color:var(--accent);background:var(--selected)}
+.collection-box.is-changed {border-color:var(--changed);background:var(--changed-bg)}
+.collection-box>h3 {font-size:16px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+.collection-box h3>code {font-size:14px;color:var(--muted);font-weight:400}
+.collection-box>p {font-size:15px;line-height:1.8}
+.member-chips {display:flex;align-items:flex-start;flex-wrap:wrap;gap:9px}
+.member-chip {padding:10px 13px;border:1px solid var(--line);border-radius:7px;background:var(--surface);font-size:19px;line-height:1.5;font-weight:600;max-width:100%;overflow-wrap:anywhere;white-space:pre-wrap}
+.collection-box.is-selected .member-chip,.relation-region.is-selected .member-chip {border-color:var(--accent);color:var(--accent)}
+.empty-members {color:var(--muted);font-size:14px;min-height:50px;display:flex;align-items:center}
+.source-members {display:flex;gap:8px;flex-wrap:wrap}
+.source-member {display:flex;flex-direction:column;min-width:72px;max-width:100%;text-align:center;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--surface)}
+.source-member small {font:12px/1.6 var(--mono);color:var(--muted);border-bottom:1px solid var(--line);padding:2px 8px}
+.source-member strong {font-size:19px;line-height:1.5;padding:9px 12px;overflow-wrap:anywhere}
+.source-member.is-duplicate {border-color:var(--changed);background:var(--changed-bg)}
+.source-member em {font-size:11px;line-height:1.5;font-style:normal;color:var(--changed);padding-bottom:4px}
+.collection-code {margin:16px 0 0;overflow-wrap:anywhere}
+.collection-code code {font-size:14px;white-space:pre-wrap}
+.data-result-row {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.data-value-box {padding:18px;border:1px solid var(--line);background:var(--soft);border-radius:var(--radius);min-width:0}
+.data-value-box h3 {display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;color:var(--muted);margin:0 0 12px}
+.data-value-box>code {display:block;font:600 24px/1.6 var(--mono);color:var(--accent);white-space:pre-wrap;overflow-wrap:anywhere}
+.data-value-box>p {font-size:14px;margin-top:13px;line-height:1.8}
+.membership-controls {display:flex;flex-direction:column;gap:13px}
+.membership-row {display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;align-items:center}
+.membership-row>strong {font-size:15px}
+.membership-row .preset-row {margin:0}
+.preset-row button[aria-pressed=true] {border-color:var(--accent);background:var(--selected);color:var(--accent);font-weight:600}
+.set-scope-row {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;text-align:center;margin-bottom:-6px}
+.set-scope-row>span {padding:8px 0;border-top:3px solid var(--accent);color:var(--accent);font-size:14px}
+.set-scope-row>span:first-child {grid-column:1/3;grid-row:1;border-radius:12px 0 0 0;text-align:left;padding-left:14px}
+.set-scope-row>span:last-child {grid-column:2/4;grid-row:1;border-radius:0 12px 0 0;text-align:right;padding-right:14px;border-color:#6d8bb9;color:var(--ink)}
+.relation-regions {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.relation-region {min-width:0;border:1px solid var(--line);border-radius:var(--radius);padding:19px;background:var(--soft);min-height:160px}
+.relation-region.is-selected {border:2px solid var(--accent);padding:18px;background:var(--selected)}
+.relation-region>h3 {font-size:16px;display:flex;justify-content:space-between;gap:7px;margin-bottom:17px}
+.relation-region>h3>span {font:14px var(--mono);color:var(--muted)}
+.relation-result {display:grid;grid-template-columns:auto 30px minmax(0,1fr);gap:16px;align-items:center;margin-top:5px}
+.relation-result>code {font-size:20px;white-space:pre-wrap;overflow-wrap:anywhere}
+.relation-result>div {min-width:0}
+.result-arrow {font-size:24px;text-align:center;color:var(--muted)}
+.relation-result .data-value-box>code {font-size:21px}
+.practice-steps {list-style:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0;padding:0}
+.practice-steps li {display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--line);background:var(--soft);border-radius:7px;font-size:13px;color:var(--muted);min-width:0}
+.practice-steps li>span {font-family:var(--mono)}
+.practice-steps .is-current {border-color:var(--accent);background:var(--selected);color:var(--accent);font-weight:600}
+.practice-steps .is-done {color:var(--accent);background:var(--surface)}
+.compact-data-table {width:100%;border-collapse:collapse;font-size:16px}
+.compact-data-table th {font-size:13px;color:var(--muted);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+.compact-data-table td {padding:13px 10px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.compact-data-table tbody tr:last-child td {border-bottom:0}
+.compact-data-table td:last-child {font-family:var(--mono)}
+.market-result-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.sales-bars {display:flex;flex-direction:column;gap:22px;padding:16px 0}
+.sales-bar-row {display:grid;grid-template-columns:75px minmax(0,1fr) 125px;gap:15px;align-items:center}
+.sales-bar-row>code {text-align:right;font-size:19px}
+.sales-bar-track {height:36px;background:var(--soft);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.sales-bar-track>span {height:100%;display:block;background:var(--accent)}
+.sales-bar-row:nth-child(2) .sales-bar-track>span {background:#7998c8}
+.business-summary {padding:22px;background:var(--soft);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);min-width:0}
+.business-summary h3 {font-size:15px;display:flex;justify-content:space-between;gap:15px}
+.business-summary pre {font:21px/2 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;margin:16px 0 0}
+.promotion-sets {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.promotion-sets .member-chip {font:16px/1.5 var(--mono);padding:8px 10px}
+.promotion-prices {display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;align-items:stretch}
+.promotion-prices .data-value-box {display:flex;flex-direction:column;justify-content:center}
+.promotion-prices .data-value-box>code {font-size:34px}
+body.projecting .member-chip,body.projecting .source-member strong {font-size:23px}
+body.projecting .data-value-box>code {font-size:28px}
+body.projecting .compact-data-table {font-size:20px}
+body.projecting .promotion-sets .member-chip {font-size:19px}
+body.projecting .business-summary pre {font-size:25px}
+@media(max-width:900px) {.relation-result {grid-template-columns:1fr}.result-arrow {display:none}.practice-steps {grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px) {
+  .set-comparison,.data-result-row,.promotion-prices {grid-template-columns:1fr}
+  .promotion-sets {grid-template-columns:1fr}
+  .collection-box {padding:16px}
+  .member-chip {font-size:18px;padding:8px 11px}
+  .relation-region {padding:12px;min-height:155px}
+  .relation-region.is-selected {padding:11px}
+  .relation-region>h3 {font-size:13px;flex-wrap:wrap;gap:6px}
+  .relation-region .member-chip {font-size:16px;padding:6px 8px}
+  .relation-region .empty-members {font-size:12px}
+  .business-summary pre {font-size:17px}
+  .sales-bar-row {grid-template-columns:57px minmax(0,1fr) 92px;gap:10px}
+  .sales-bar-row>code {font-size:16px}
+  .market-result-grid {grid-template-columns:1fr}
+}
+@media(max-width:600px) {
+  body[data-theme=whiteboard] .control-panel {flex-wrap:nowrap}
+  body[data-theme=whiteboard] .control-panel>* {flex:initial!important;min-width:0;max-width:100%}
+  .membership-row {grid-template-columns:1fr;gap:8px}
+  .practice-steps {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .brand {font-size:17px}
+  .data-value-box>code {font-size:21px}
+  .relation-regions {gap:7px}
+  .set-scope-row {gap:7px}
+}
+
+/* Dictionary experiments, appended to the fixed classroom-whiteboard A stylesheet. */
+.dict-wide-control {flex-basis:100%!important;min-width:0}
+.dict-presets {margin-top:9px}
+.dict-table-wrap {min-width:0;max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.dict-table {width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}
+.dict-table thead th {padding:9px 12px;background:var(--soft);font-size:12px;text-align:left;color:var(--muted);font-weight:600}
+.dict-table thead th:first-child {width:34%}
+.dict-table tbody th,.dict-table td {padding:11px 12px;border-top:1px solid var(--line);text-align:left;vertical-align:top;font-weight:400;overflow-wrap:anywhere}
+.dict-table tbody th {color:var(--accent)}
+.dict-table code {white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+.dict-table td>code {display:block}
+.dict-type {display:inline-block;font:10px/1.5 var(--mono);color:var(--muted);margin-top:5px}
+.dict-row-selected th,.dict-row-selected td {background:var(--selected)}
+.dict-row-selected th {box-shadow:inset 3px 0 var(--accent)}
+.dict-table .dict-value-hit {background:var(--changed-bg)}
+.dict-empty {color:var(--muted);font-family:var(--mono)}
+.dict-lookup-layout {display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;align-items:start}
+.dict-lookup-layout>div {min-width:0}
+.dict-lookup-result {display:flex;flex-direction:column;gap:16px}
+.dict-expression {min-width:0;background:var(--soft);border-radius:7px;padding:12px 15px;color:var(--ink);font-size:17px;overflow-wrap:anywhere}
+.dict-expression code {white-space:pre-wrap;overflow-wrap:anywhere}
+.dict-result-box {display:flex;flex-direction:column;gap:11px;border:1px solid var(--line);border-radius:var(--radius);padding:17px;min-width:0;background:var(--soft)}
+.dict-result-box.is-highlighted {border-color:var(--accent);background:var(--selected)}
+.dict-result-box>span {font-size:13px;font-weight:600;color:var(--muted)}
+.dict-result-box>code {font-size:24px;line-height:1.5;color:var(--accent);overflow-wrap:anywhere;white-space:pre-wrap}
+.dict-result-box>small {font:12px/1.5 var(--mono);color:var(--muted)}
+.dict-outcome-note {font-size:15px;line-height:1.8;overflow-wrap:anywhere}
+.dict-before-after {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.dict-before-after>section {min-width:0}
+.dict-before-after h3 {font-size:15px;margin:0 0 10px}
+.dict-pending {display:flex;align-items:center;justify-content:center;min-height:180px;padding:24px;border:1px dashed var(--line);border-radius:8px;background:var(--soft);color:var(--muted);font-size:14px;text-align:center}
+.dict-operation-result {display:flex;flex-direction:column;gap:12px;min-width:0}
+.dict-operation-result .dict-result-box {padding:14px 17px;display:grid;grid-template-columns:110px minmax(0,1fr) auto;align-items:center}
+.dict-operation-result .dict-result-box>code {font-size:22px}
+.dict-statement-result {padding:14px 17px;border-left:3px solid var(--accent);background:var(--selected);font-size:14px}
+.dict-statement-result strong {display:block;margin-bottom:5px}
+.dict-fixed-input>code {display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+.dict-view-steps {list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.dict-view-steps li {display:flex;gap:8px;align-items:center;min-width:0;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:9px 10px;color:var(--muted);background:var(--soft)}
+.dict-view-steps li>span {font-family:var(--mono)}
+.dict-view-steps li.is-current {background:var(--selected);border-color:var(--accent);color:var(--accent);font-weight:650}
+.dict-view-steps li.is-done {color:var(--accent);background:var(--surface)}
+.dict-view-grid {display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px;align-items:stretch;min-width:0}
+.dict-view-card {min-width:0;padding:16px;border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;gap:12px;background:var(--surface)}
+.dict-view-card.is-live-changed {border-color:var(--accent);background:var(--selected)}
+.dict-view-card h3 {font-size:15px;line-height:1.6;font-weight:650;margin:0}
+.dict-view-card h3>code {display:block;font-size:14px;color:var(--muted)}
+.dict-view-card .dict-table-wrap {border-color:transparent}
+.dict-view-card .dict-table {font-size:12px}
+.dict-view-card .dict-table thead th {padding:6px 8px}
+.dict-view-card .dict-table tbody th,.dict-view-card .dict-table td {padding:8px}
+.dict-view-card .dict-table code {font-size:13px}
+.dict-view-card .dict-table thead th:first-child {width:53%}
+.dict-view-type {font:12px/1.6 var(--mono);color:var(--muted)}
+.dict-view-values {display:flex;flex-direction:column;gap:7px}
+.dict-view-values>code {display:block;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--soft);font-size:17px;overflow-wrap:anywhere;white-space:pre-wrap;min-width:0}
+.dict-view-card>p {font-size:13px;color:var(--muted);margin-top:auto}
+.dict-view-observation {font-size:14px;line-height:1.8;border-left:3px solid var(--accent);padding:9px 14px;background:var(--soft);overflow-wrap:anywhere}
+.dict-view-actions>.btn {width:100%}
+.projecting .dict-table code {font-size:18px}
+.projecting .dict-result-box>code {font-size:28px}
+.projecting .dict-outcome-note,.projecting .dict-view-observation {font-size:18px}
+.projecting .dict-view-values>code {font-size:20px}
+@media (max-width:1100px) {
+  .dict-view-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dict-view-grid>.dict-view-card:first-child {grid-column:1 / -1}
+}
+@media (max-width:700px) {
+  .dict-lookup-layout,.dict-before-after {grid-template-columns:1fr}
+  .dict-view-steps {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dict-table code {font-size:14px}
+}
+@media (max-width:480px) {
+  .dict-view-grid {grid-template-columns:1fr}
+  .dict-operation-result .dict-result-box {grid-template-columns:1fr;gap:7px}
+  .dict-table tbody th,.dict-table td {padding:10px}
+  .dict-result-box>code {font-size:22px}
+}
+
+@media(max-width:600px){body[data-theme=whiteboard] .control-panel{flex-wrap:nowrap}body[data-theme=whiteboard] .control-panel>*{flex:initial!important;min-width:0;max-width:100%}}
+</style>
+</head>
+<body data-theme="whiteboard">
+  <a class="skip-link" href="#lesson-title">跳到当前实验</a>
+  <header class="topbar">
+    <a class="brand" href="#unique" aria-label="集合与字典实验室首页"><span class="brand-mark" aria-hidden="true">{<b>·</b>}</span><span>集合与字典实验室<small>Python 第五讲</small></span></a>
+    <div class="top-actions"><button type="button" class="btn btn-subtle projection-button" id="projection-toggle" aria-pressed="false">投影模式</button></div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="course-name"><span>这一讲</span><strong>筛选市场，<br>按名称查数据。</strong></div>
+      <nav class="lesson-nav" id="lesson-nav" aria-label="知识点目录"></nav>
+      <div class="sidebar-bottom"><p>先预测，<br>再动手验证。</p><span id="quiz-progress" class="progress-note">6 个动手实验</span></div>
+    </aside>
+    <main id="lesson" class="lesson"></main>
+  </div>
+  <footer class="site-footer">
+    <span>课件案例：海外市场与库存促销</span>
+    <details class="site-guide"><summary>使用说明与来源</summary><div>
+      <p>使用目录切换实验。部分操作即时更新，部分需要点击执行；每个实验可单独重置。投影模式增大字号，按 Esc 退出。</p>
+      <p>采用课堂白板 A 统一模板，依据 slide-5.pdf 第五讲“集合与字典”。将一份课件中的精选知识点集中在一个 HTML 中。</p>
+      <p>页面模拟指定的 Python 操作，不执行任意代码。必要资源已内嵌，课堂操作无需联网。代码可复制到 Python 环境运行；浏览器限制自动复制时，可选中代码手动复制。</p>
+      <p>集合卡片只按便于比较的次序排列，不代表 Python 输出顺序。集合主实验用字符串成员，字典主实验用字符串键；“哪些成员能加入”另用固定候选说明可哈希条件。数值输入范围在相关控件中标明。</p>
+      <p>本页只在当前浏览器保存最近打开的实验与练习选择，不上传学生数据；实验参数在刷新后回到初始状态。</p>
+      <p><a href="https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset" target="_blank" rel="noopener noreferrer">Python 官方：集合</a> · <a href="https://docs.python.org/3/library/stdtypes.html#mapping-types-dict" target="_blank" rel="noopener noreferrer">字典与字典视图</a></p>
+      <button type="button" class="btn btn-subtle" data-action="reset-quizzes">清除本讲练习记录</button>
+    </div></details>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">请在浏览器中启用 JavaScript 后使用交互实验。页面不需要联网。</p></noscript>
+  <script>/* 第五讲：集合与字典。教学内容依据 slide-5.pdf。 */
+window.DataLabContent = {
+  modules: [
+    {
+      id: 'unique',
+      title: '唯一成员',
+      pages: '课件 5–7 页',
+      question: '店铺记录了多笔订单，怎样看出这些订单实际覆盖了几个不同的市场？',
+      try: '重复添加已有市场，再删除一个不存在的市场，观察成员数量和方法返回的结果。',
+      quiz: {
+        prompt: '下面代码执行后，原列表和集合的长度分别是多少？',
+        code: "markets = ['泰国', '越南', '泰国', '印尼']\nunique_markets = set(markets)\nunique_markets.add('越南')\nunique_markets.discard('菲律宾')\nprint(len(markets), len(unique_markets))",
+        options: [
+          {
+            label: '4 和 4',
+            explanation: '集合里已经有“越南”，再次 add 不会增加成员。discard 删除不存在的“菲律宾”也不会改变集合。'
+          },
+          {
+            label: '3 和 3',
+            explanation: 'set(markets) 创建集合，没有把原列表里的重复记录删除。原列表仍保留 4 条记录。'
+          },
+          {
+            label: '4 和 3',
+            explanation: '原列表仍有 4 条记录；集合只保留泰国、越南和印尼三个不同成员。重复添加与删除不存在成员都没有改变这三个成员。'
+          }
+        ],
+        answer: 2
+      }
+    },
+    {
+      id: 'relations',
+      title: '集合关系',
+      pages: '课件 8–9、21 页',
+      question: '两家店铺共同覆盖哪些市场，各自独有的市场又有哪些？',
+      try: '交换差集的方向，再让两家店铺覆盖完全相同的市场，观察两个方向的结果。',
+      quiz: {
+        prompt: '如果要找“店铺 B 有、店铺 A 没有”的市场，下面代码得到什么？',
+        code: "store_a = {'泰国', '越南', '印尼'}\nstore_b = {'越南', '印尼', '马来西亚'}\nprint(store_b - store_a)",
+        options: [
+          {
+            label: "{'泰国'}",
+            explanation: '泰国属于 A，但不属于 B，这是 store_a - store_b 的结果。题目中的减号左侧是 B，要从 B 的成员中筛选。'
+          },
+          {
+            label: "{'马来西亚'}",
+            explanation: '先保留 B 的成员，再去掉 A 也有的越南和印尼，剩下马来西亚。差集的方向对应不同的业务问题。'
+          },
+          {
+            label: "{'泰国', '马来西亚'}",
+            explanation: '这包含了两边各自独有的市场。B - A 只保留 B 独有的成员，不会把 A 独有的泰国也放进来。'
+          }
+        ],
+        answer: 1
+      }
+    },
+    {
+      id: 'lookup',
+      title: '按键读取信息',
+      pages: '课件 10–13 页',
+      question: '知道订单字段的名称后，怎样取得对应信息；字段不存在时又会发生什么？',
+      try: '读取缺失的 coupon 字段，对比方括号、get() 和带默认值的 get()，再检查原字典。',
+      quiz: {
+        prompt: '订单没有 coupon 字段。下面两次 print 分别输出什么？',
+        code: "order = {'market': '泰国', 'price': 299.90}\ncoupon = order.get('coupon', '未使用优惠券')\nprint(coupon)\nprint('coupon' in order)",
+        options: [
+          {
+            label: '未使用优惠券；False',
+            explanation: 'get 在键缺失时交回指定默认值，但没有向字典插入 coupon。成员判断检查键是否存在，所以仍为 False。'
+          },
+          {
+            label: '未使用优惠券；True',
+            explanation: 'get 的默认值是本次读取的结果，不会自动保存进字典。要新增字段，需要进行赋值或使用其他明确的更新操作。'
+          },
+          {
+            label: '产生 KeyError，后面都不执行',
+            explanation: '直接写 order["coupon"] 会因键缺失而报错。这里使用了 get，并指定默认值，因此可以继续执行。'
+          }
+        ],
+        answer: 0
+      }
+    },
+    {
+      id: 'mutations',
+      title: '字典的增改删',
+      pages: '课件 14–15、21 页',
+      question: '订单状态或价格变化时，怎样更新记录，并看清哪些信息被新增、替换或删除？',
+      try: '分别给已有的 price 改值、给缺失的 status 赋值，再比较 pop() 删除存在与缺失键时的结果。',
+      quiz: {
+        prompt: '下面的 pop 操作既影响订单记录，也产生一个结果。执行后会怎样？',
+        code: "order = {'status': 'PAID', 'price': 299.90}\nremoved = order.pop('status')",
+        options: [
+          {
+            label: "removed 得到 'PAID'，order 中仍保留 status",
+            explanation: 'pop 不只是读取。它会删除指定键值对，并把删除前的值交回；如果只想读取，可以使用方括号或 get。'
+          },
+          {
+            label: "removed 得到 'PAID'，order 中不再有 status",
+            explanation: '键 status 存在，因此 pop 成功删除这一项，并返回它原先对应的字符串 PAID。price 这一项不受影响。'
+          },
+          {
+            label: 'removed 得到 None，order 中不再有 status',
+            explanation: '一些更新方法会返回 None，但 pop 会返回被删除的值。本例原值是 PAID，所以 removed 接收 PAID。'
+          }
+        ],
+        answer: 1
+      }
+    },
+    {
+      id: 'views',
+      title: '会变化的视图',
+      pages: '课件 16 页',
+      question: '先保存字典的查看结果，再给字典增加键值对，已经保存的视图和列表会一起变化吗？',
+      try: '切换 keys、values、items，再分别修改已有销售额与新增市场，比较视图和列表快照的变化。',
+      quiz: {
+        prompt: '下面先保存键视图和列表，再新增字段。两个成员判断的结果分别是什么？',
+        code: "order = {'market': '泰国', 'price': 299.90}\nview = order.keys()\nsnapshot = list(order.keys())\norder['status'] = 'PAID'\nprint('status' in view)\nprint('status' in snapshot)",
+        options: [
+          {
+            label: 'True；True',
+            explanation: 'view 会反映字典新增的键，但 snapshot 是创建时得到的列表。后面修改字典不会自动给这份列表补上 status。'
+          },
+          {
+            label: 'False；False',
+            explanation: 'snapshot 没有 status，但 keys() 返回的视图会跟随原字典变化。它没有把键永久固定在创建时的状态。'
+          },
+          {
+            label: 'True；False',
+            explanation: '视图反映当前字典的键，因此能看到 status。列表保存的是转换当时的键，当时还没有 status。'
+          }
+        ],
+        answer: 2
+      }
+    },
+    {
+      id: 'practice',
+      title: '市场分析工坊',
+      pages: '课件 17–19、21 页',
+      question: '怎样把市场范围的比较与销售额查询连起来，得到可以核对的业务结果？',
+      try: '先比较共同市场的销售额，再换到促销商品案例，观察库存成员与价格更新分别改变什么。',
+      quiz: {
+        prompt: '泰国只出现在店铺 A 的记录中。直接执行下面的比较，会发生什么？',
+        code: "sales_a = {'泰国': 128, '越南': 98}\nsales_b = {'越南': 105, '印尼': 69}\ngap = sales_a['泰国'] - sales_b['泰国']",
+        options: [
+          {
+            label: '产生 KeyError；应先确认这个市场在两边都存在',
+            explanation: 'B 没有“泰国”这个键，方括号读取会报错。先用共同市场或成员判断确认两边都有数据，才能按本题要求比较；缺失记录不自动表示销售额为 0。'
+          },
+          {
+            label: 'gap 等于 128，因为缺失的销售额会自动按 0 处理',
+            explanation: '字典方括号读取不会把缺失键当成 0。若业务确实允许补零，需要明确规定并写出相应处理，不能默默代替缺失数据。'
+          },
+          {
+            label: 'gap 等于 23，因为两家店铺各自的第一项会自动配对',
+            explanation: '字典按指定的键读取，不能把两条不同市场的记录按显示位置配对。sales_b 的第一项是越南，不是泰国。'
+          }
+        ],
+        answer: 0
+      }
+    }
+  ]
+};
+</script>
+  <script>/* Controlled Python set/dict teaching model. No eval, network, or hidden runtime.
+ * UI set members and dictionary keys are strings. Dictionary entry arrays retain
+ * insertion order; set arrays use a stable display order, not Python set order.
+ * null represents Python None. hasReturn=false distinguishes assignment statements.
+ */
+(function (root, factory) {
+  'use strict';
+  var api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.DataLabEngine = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  function inferType(value) {
+    if (value === null || value === undefined) return 'NoneType';
+    if (typeof value === 'string') return 'str';
+    if (typeof value === 'boolean') return 'bool';
+    if (typeof value === 'number') return Number.isInteger(value) ? 'int' : 'float';
+    if (Array.isArray(value)) return 'list';
+    return 'dict';
+  }
+
+  function stringRepr(text) {
+    var quote = text.indexOf("'") !== -1 && text.indexOf('"') === -1 ? '"' : "'";
+    return quote + Array.from(text).map(function (ch) {
+      if (ch === '\\') return '\\\\';
+      if (ch === quote) return '\\' + quote;
+      if (ch === '\n') return '\\n';
+      if (ch === '\r') return '\\r';
+      if (ch === '\t') return '\\t';
+      var point = ch.codePointAt(0);
+      if (ch !== ' ' && /[\p{C}\p{Z}]/u.test(ch)) {
+        if (point <= 255) return '\\x' + point.toString(16).padStart(2, '0');
+        if (point <= 65535) return '\\u' + point.toString(16).padStart(4, '0');
+        return '\\U' + point.toString(16).padStart(8, '0');
+      }
+      return ch;
+    }).join('') + quote;
+  }
+
+  function floatRepr(value) {
+    if (Object.is(value, -0)) return '-0.0';
+    if (!Number.isFinite(value)) return Number.isNaN(value) ? 'nan' : value < 0 ? '-inf' : 'inf';
+    var magnitude = Math.abs(value), text;
+    if (magnitude !== 0 && (magnitude < 0.0001 || magnitude >= 1e16)) {
+      text = value.toExponential();
+      return text.replace(/e([+-]?)(\d+)$/, function (_, sign, digits) {
+        return 'e' + (sign === '-' ? '-' : '+') + digits.padStart(2, '0');
+      });
+    }
+    text = String(value);
+    return text.indexOf('.') === -1 ? text + '.0' : text;
+  }
+
+  function repr(value, type) {
+    if (value === null || value === undefined) return 'None';
+    if (typeof value === 'boolean') return value ? 'True' : 'False';
+    if (typeof value === 'string') return stringRepr(value);
+    if (typeof value === 'number') return type === 'float' || !Number.isInteger(value) || Object.is(value, -0) ? floatRepr(value) : String(value);
+    if (Array.isArray(value)) {
+      if (type === 'dict') return dictRepr(value);
+      var inner = value.map(function (item) { return repr(item); }).join(', ');
+      return type === 'tuple' ? '(' + inner + (value.length === 1 ? ',' : '') + ')' : '[' + inner + ']';
+    }
+    if (typeof value === 'object') return '{' + Object.keys(value).map(function (key) {
+      return stringRepr(key) + ': ' + repr(value[key]);
+    }).join(', ') + '}';
+    throw new TypeError('本实验不支持这个值类型。');
+  }
+
+  function normalizeEntries(entries) {
+    var result = [], positions = new Map();
+    entries.forEach(function (entry) {
+      if (!entry || typeof entry.key !== 'string') throw new TypeError('本实验的字典键限定为字符串。');
+      var item = { key: entry.key, value: entry.value === undefined ? null : entry.value, type: entry.type || inferType(entry.value) };
+      if (positions.has(item.key)) result[positions.get(item.key)] = item;
+      else { positions.set(item.key, result.length); result.push(item); }
+    });
+    return result;
+  }
+
+  function dictRepr(entries) {
+    return '{' + normalizeEntries(entries).map(function (entry) {
+      return repr(entry.key) + ': ' + repr(entry.value, entry.type);
+    }).join(', ') + '}';
+  }
+
+  function unique(members) {
+    if (members.some(function (value) { return typeof value !== 'string'; })) throw new TypeError('本实验的集合数据限定为字符串。');
+    return Array.from(new Set(members));
+  }
+
+  function setRepr(members) {
+    var items = unique(members);
+    return items.length ? '{' + items.map(function (value) { return repr(value); }).join(', ') + '}' : 'set()';
+  }
+
+  function setOperation(a, b, op) {
+    a = unique(a); b = unique(b);
+    var aa = new Set(a), bb = new Set(b);
+    if (op === 'union') return unique(a.concat(b));
+    if (op === 'intersection') return a.filter(function (value) { return bb.has(value); });
+    if (op === 'a-b') return a.filter(function (value) { return !bb.has(value); });
+    if (op === 'b-a') return b.filter(function (value) { return !aa.has(value); });
+    if (op === 'xor') return a.filter(function (value) { return !bb.has(value); }).concat(b.filter(function (value) { return !aa.has(value); }));
+    if (op === 'subset') return a.every(function (value) { return bb.has(value); });
+    throw new TypeError('未知的集合运算。');
+  }
+
+  function setAction(members, op, value) {
+    var next = unique(members), present = next.indexOf(value) !== -1, result = null, changed = false;
+    if (typeof value !== 'string') return { ok: false, members: next, result: null, resultType: null, hasReturn: false, changed: false, error: '本实验的市场名称限定为字符串。' };
+    if (op === 'contains') result = present;
+    else if (op === 'add') { if (!present) { next.push(value); changed = true; } }
+    else if (op === 'discard') { if (present) { next.splice(next.indexOf(value), 1); changed = true; } }
+    else return { ok: false, members: next, result: null, resultType: null, hasReturn: false, changed: false, error: '未知的集合操作。' };
+    return { ok: true, members: next, result: result, resultType: op === 'contains' ? 'bool' : 'NoneType', hasReturn: true, changed: changed, error: null };
+  }
+
+  function dictAction(source, config) {
+    var entries = normalizeEntries(source), before = dictRepr(entries), op = config.op, key = config.key;
+    var index = entries.findIndex(function (entry) { return entry.key === key; });
+    var existing = index >= 0 ? entries[index] : null;
+    var hasDefault = config.defaultProvided === true;
+    var fallback = hasDefault && config.defaultValue !== undefined ? config.defaultValue : null;
+    var fallbackType = hasDefault ? config.defaultType || inferType(fallback) : 'NoneType';
+    var result = null, resultType = null, hasReturn = true, changeKind = 'query';
+    function failure(error) {
+      return { ok: false, entries: normalizeEntries(source), result: null, resultType: null, hasReturn: false, changed: false, changeKind: 'error', error: error };
+    }
+    function assign(entryKey, value, type) {
+      var at = entries.findIndex(function (entry) { return entry.key === entryKey; });
+      var updated = { key: entryKey, value: value === undefined ? null : value, type: type || inferType(value) };
+      if (at >= 0) entries[at] = updated;
+      else entries.push(updated);
+      return at < 0 ? 'insert' : 'replace';
+    }
+    if (op !== 'update' && typeof key !== 'string') return failure('本实验的字典键限定为字符串。');
+    if (op === 'contains') { result = !!existing; resultType = 'bool'; }
+    else if (op === 'bracket') {
+      if (!existing) return failure('KeyError: ' + repr(key));
+      result = existing.value; resultType = existing.type;
+    } else if (op === 'get') {
+      result = existing ? existing.value : fallback;
+      resultType = existing ? existing.type : fallbackType;
+    } else if (op === 'set') {
+      changeKind = assign(key, config.value, config.type);
+      hasReturn = false;
+    } else if (op === 'update') {
+      var additions;
+      try { additions = normalizeEntries(config.entries || []); } catch (error) { return failure(error.message); }
+      additions.forEach(function (entry) { assign(entry.key, entry.value, entry.type); });
+      resultType = 'NoneType'; changeKind = 'update';
+    } else if (op === 'pop') {
+      if (!existing && !hasDefault) return failure('KeyError: ' + repr(key));
+      result = existing ? existing.value : fallback;
+      resultType = existing ? existing.type : fallbackType;
+      if (existing) { entries.splice(index, 1); changeKind = 'remove'; }
+      else changeKind = 'unchanged';
+    } else if (op === 'setdefault') {
+      if (existing) { result = existing.value; resultType = existing.type; changeKind = 'unchanged'; }
+      else {
+        assign(key, fallback, fallbackType);
+        result = fallback; resultType = fallbackType; changeKind = 'insert';
+      }
+    } else return failure('未知的字典操作。');
+    var changed = dictRepr(entries) !== before;
+    if (!changed && ['set', 'update'].indexOf(op) >= 0) changeKind = 'unchanged';
+    return { ok: true, entries: entries, result: result, resultType: resultType, hasReturn: hasReturn, changed: changed, changeKind: changeKind, error: null };
+  }
+
+  function dictView(entries, kind) {
+    var source = normalizeEntries(entries);
+    if (kind === 'keys') return source.map(function (entry) { return entry.key; });
+    if (kind === 'values') return source.map(function (entry) { return entry.value; });
+    if (kind === 'items') return source.map(function (entry) { return [entry.key, entry.value]; });
+    throw new TypeError('未知的字典视图。');
+  }
+
+  function parseValue(text, kind) {
+    var raw = String(text === undefined || text === null ? '' : text), cleaned = raw.trim();
+    var fail = function (message, limit) { return { ok: false, value: null, type: kind, error: message, limit: !!limit }; };
+    var value, type = kind;
+    if (kind === 'str') value = raw;
+    else if (kind === 'none' || kind === 'NoneType') { value = null; type = 'NoneType'; }
+    else if (kind === 'bool') {
+      if (!/^(?:true|false)$/i.test(cleaned)) return fail('请选择 True 或 False。');
+      value = cleaned.toLowerCase() === 'true';
+    } else if (kind === 'int') {
+      if (!/^[+-]?\d+$/.test(cleaned)) return fail('请填写十进制整数，例如 128；本实验不接受小数或其他写法。');
+      value = Number(cleaned);
+      if (value === 0) value = 0; // int('-0') is 0, not a negative floating zero.
+      if (!Number.isSafeInteger(value)) return fail('本实验只处理 JavaScript 安全整数范围内的值；这是教学界面的范围限制。', true);
+    } else if (kind === 'float') {
+      if (!/^[+-]?(?:(?:\d+(?:\.\d*)?)|(?:\.\d+))(?:[eE][+-]?\d+)?$/.test(cleaned)) return fail('请填写有限十进制数，例如 289.90；本实验不接受其他数值写法。');
+      value = Number(cleaned);
+      if (!Number.isFinite(value)) return fail('本实验只处理有限浮点数；这是教学界面的范围限制。', true);
+    } else return fail('请选择本实验支持的值类型。');
+    return { ok: true, value: value, type: type, error: null, limit: false };
+  }
+
+  function hashability(kind) {
+    var examples = {
+      str: { label: '字符串', code: "'泰国'", type: 'str', ok: true },
+      int: { label: '整数', code: '128', type: 'int', ok: true },
+      tuple: { label: '只含字符串的元组', code: "('泰国', '越南')", type: 'tuple', ok: true },
+      'nested-tuple': { label: '含列表的元组', code: "('泰国', ['越南'])", type: 'tuple', ok: false, error: "TypeError: unhashable type: 'list'" },
+      list: { label: '列表', code: "['泰国', '越南']", type: 'list', ok: false, error: "TypeError: unhashable type: 'list'" },
+      dict: { label: '字典', code: "{'market': '泰国'}", type: 'dict', ok: false, error: "TypeError: unhashable type: 'dict'" }
+    };
+    if (!examples[kind]) throw new TypeError('未知的候选值。');
+    return Object.assign({ kind: kind, error: null }, examples[kind]);
+  }
+
+  function formatFixed(value, precision) {
+    if (precision === undefined) precision = 2;
+    if (typeof value !== 'number' || !Number.isFinite(value) || !Number.isInteger(precision) || precision < 0 || precision > 6) throw new RangeError('本实验只格式化有限数值，保留 0～6 位小数。');
+    var negative = value < 0 || Object.is(value, -0), magnitude = Math.abs(value);
+    var buffer = new ArrayBuffer(8), view = new DataView(buffer);
+    view.setFloat64(0, magnitude, false);
+    var high = view.getUint32(0, false), low = view.getUint32(4, false), exponent = (high >>> 20) & 2047;
+    var mantissa = (BigInt(high & 1048575) << 32n) + BigInt(low);
+    var shift;
+    if (exponent === 0) shift = -1074;
+    else { mantissa += 1n << 52n; shift = exponent - 1023 - 52; }
+    var numerator = mantissa * (10n ** BigInt(precision)), denominator = 1n;
+    if (shift >= 0) numerator <<= BigInt(shift); else denominator <<= BigInt(-shift);
+    var quotient = numerator / denominator, remainder = numerator % denominator;
+    if (remainder * 2n > denominator || (remainder * 2n === denominator && quotient % 2n === 1n)) quotient += 1n;
+    var digits = quotient.toString().padStart(precision + 1, '0');
+    if (precision) digits = digits.slice(0, -precision) + '.' + digits.slice(-precision);
+    return (negative ? '-' : '') + digits;
+  }
+
+  return { inferType: inferType, repr: repr, dictRepr: dictRepr, normalizeEntries: normalizeEntries, setRepr: setRepr,
+    unique: unique, setOperation: setOperation, setAction: setAction, dictAction: dictAction, dictView: dictView,
+    parseValue: parseValue, hashability: hashability, formatFixed: formatFixed };
+});
+</script>
+  <script>(function (root) {
+  'use strict';
+  const V = root.DataLabViews = root.DataLabViews || {};
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function button(action, value, label, active, extra) {
+    return '<button type="button" class="btn btn-subtle" data-action="'+esc(action)+'" data-value="'+esc(value)+'" aria-pressed="'+!!active+'" '+(extra || '')+'>'+esc(label)+'</button>';
+  }
+  function chips(values, empty) {
+    return values.length ? '<div class="member-chips">'+values.map(v=>'<span class="member-chip">'+esc(v==='' || /^\s|\s$/.test(v) ? root.DataLabEngine.repr(v) : v)+'</span>').join('')+'</div>' : '<p class="empty-members">'+esc(empty || '没有成员')+'</p>';
+  }
+  function markets(raw) {
+    return String(raw).split(/[,，\n]/).map(s=>s.trim()).filter(Boolean);
+  }
+  function box(title, value, type, extra) {
+    return '<div class="data-value-box '+(extra || '')+'"><h3>'+esc(title)+(type ? '<span class="type-chip">'+esc(type)+'</span>' : '')+'</h3><code>'+esc(value)+'</code></div>';
+  }
+  root.DataLabUI = {esc,button,chips,markets,box};
+
+  V.unique = function (s) {
+    const E = root.DataLabEngine;
+    const base = ['泰国','越南','印尼'];
+    const mode = s.mode || 'dedup';
+    let controls = '<div class="wide-control"><span class="control-label">选择实验</span><div class="segmented">'+
+      button('unique-mode','dedup','从列表去重',mode==='dedup')+
+      button('unique-mode','operate','查询与更新',mode==='operate')+
+      button('unique-mode','empty','创建空对象',mode==='empty')+
+      button('unique-mode','hash','哪些成员能加入',mode==='hash')+'</div></div>';
+    let visual, code, summary;
+    if (mode === 'dedup') {
+      const list = markets(s.raw), unique = E.unique(list), seen = [];
+      controls += '<label class="wide-control">输入市场名单<textarea rows="2" maxlength="180" data-field="unique.raw">'+esc(s.raw)+'</textarea><span class="hint">用逗号或换行分隔；输入框会清理名称首尾空白，忽略空项。</span></label>'+
+        '<div><span class="control-label">换组数据</span><div class="preset-row">'+button('unique-preset','original','课件名单',false)+button('unique-preset','repeat','全部相同',false)+button('unique-preset','empty','空名单',false)+'</div></div>';
+      visual = '<div class="visual-header"><h2>订单记录重复，市场只计一次</h2><span class="pill">'+list.length+' 条记录 → '+unique.length+' 个市场</span></div>'+
+        '<div class="set-comparison"><section class="collection-box"><h3>输入列表 <code>markets</code><span class="type-chip">list</span></h3><div class="source-members">'+
+        (list.length ? list.map((value,i)=>{const duplicate=seen.includes(value);seen.push(value);return '<span class="source-member '+(duplicate?'is-duplicate':'')+'"><small>'+i+'</small><strong>'+esc(value)+'</strong>'+(duplicate?'<em>重复</em>':'')+'</span>';}).join(''):'<code>[]</code>')+
+        '</div><p class="collection-code"><code>'+esc(E.repr(list))+'</code></p></section>'+
+        '<section class="collection-box is-selected"><h3>唯一市场 <code>unique_markets</code><span class="type-chip">set</span></h3>'+chips(unique,'空集合：没有市场')+
+        '<p class="collection-code"><code>'+esc(E.setRepr(unique))+'</code></p></section></div><p class="hint">集合卡片的排列仅为便于观察，不表示索引、排序或 Python 的实际输出顺序。</p>';
+      code = 'markets = '+E.repr(list)+'\nunique_markets = set(markets)\nprint(unique_markets)\nprint(len(markets))\nprint(len(unique_markets))';
+      summary = '<div class="rule-note"><strong>集合保留唯一成员，不记录重复次数。</strong><p>名单里再次出现同一个市场，不会让集合多出一个成员。列表仍保留原来的记录，<code>set(markets)</code> 不会改写它。</p><p>集合不提供位置索引和切片，不能写 <code>unique_markets[0]</code> 来取“第一个市场”。</p></div>';
+    } else if (mode === 'operate') {
+      const op = s.op || 'add';
+      const result = E.setAction(base,op,s.member);
+      controls += '<div><span class="control-label">操作</span><div class="segmented">'+button('unique-operation','add','add：添加',op==='add')+button('unique-operation','discard','discard：删除',op==='discard')+button('unique-operation','contains','in：查询',op==='contains')+'</div></div>'+
+        '<label>市场名称<input type="text" maxlength="24" data-field="unique.member" value="'+esc(s.member)+'"></label>'+
+        '<div><span class="control-label">试试这些成员</span><div class="preset-row">'+button('unique-member','越南','已有：越南',false)+button('unique-member','马来西亚','未有：马来西亚',false)+'</div></div>'+
+        '<button class="btn btn-primary" type="button" data-action="unique-run">执行操作</button><p class="hint">每次从同一组初始市场独立比较，不累计操作。</p>';
+      const expression = op==='contains' ? E.repr(s.member)+' in markets' : 'markets.'+op+'('+E.repr(s.member)+')';
+      visual = '<div class="visual-header"><h2>成员是否变化？操作得到什么？</h2><span class="pill">'+(s.ran?'已执行':'等待执行')+'</span></div>'+
+        '<div class="set-comparison"><section class="collection-box"><h3>执行前</h3>'+chips(base)+'</section><section class="collection-box '+(s.ran&&result.changed?'is-changed':'')+'"><h3>'+(s.ran?'执行后':'预测执行后的成员')+'</h3>'+
+        (s.ran?chips(result.members):'<p class="empty-members">选择一个操作，再执行。</p>')+'</section></div>'+
+        (s.ran?'<div class="data-result-row">'+box(op==='contains'?'判断结果':'方法返回值',E.repr(result.result),result.resultType)+(box('成员数量',String(result.members.length),'int'))+'</div><div class="notice">'+(op==='contains'?'成员判断只查询，不改变集合。':result.changed?'成员已更新。方法本身返回 None。':'集合成员没有变化；操作正常完成，方法返回 None。')+'</div>':'')+
+        '<p class="hint">集合展示顺序只服务观察，不提供位置含义。</p>';
+      code = 'markets = '+E.setRepr(base)+'\nresult = '+expression+'\nprint(markets)\nprint(result)\nprint(len(markets))';
+      summary = '<div class="rule-note"><strong>重复添加不会增加成员，删除不存在的成员也不会报错。</strong><p><code>add()</code> 和 <code>discard()</code> 修改原集合，方法返回 <code>None</code>；<code>in</code> 返回 <code>True</code> 或 <code>False</code>。</p><p>观察“集合现在有什么”和“操作返回了什么”时，要看两个不同的结果。</p></div>';
+    } else if (mode === 'empty') {
+      const emptySet = s.creation !== 'dict';
+      controls += '<div><span class="control-label">用哪种写法？</span><div class="segmented">'+button('unique-creation','set','set()',emptySet)+button('unique-creation','dict','{}',!emptySet)+'</div></div>';
+      visual = '<div class="visual-header"><h2>同样没有成员，类型可能不同</h2></div><div class="set-comparison">'+
+        '<section class="collection-box '+(emptySet?'is-selected':'')+'"><h3><code>set()</code></h3>'+box('创建结果','set()','set')+'<p>空集合：可以加入唯一成员。</p></section>'+
+        '<section class="collection-box '+(!emptySet?'is-selected':'')+'"><h3><code>{}</code></h3>'+box('创建结果','{}','dict')+'<p>空字典：通过键保存对应的值。</p></section></div>'+
+        '<div class="notice">当前选择的 <code>'+(emptySet?'set()':'{}')+'</code> 创建的是'+(emptySet?'集合':'字典')+'，长度都是 0。</div>';
+      code = 'data = '+(emptySet?'set()':'{}')+'\nprint(type(data))\nprint(len(data))';
+      summary = '<div class="rule-note"><strong>空集合写成 set()，空花括号创建字典。</strong><p>非空集合可以写成 <code>{"泰国", "越南"}</code>；字典则写出键值对应，例如 <code>{"泰国": 128}</code>。</p></div>';
+    } else {
+      const candidate = E.hashability(s.hashKind || 'str');
+      const names = [['str','市场名称'],['int','客户编号'],['tuple','两个名称的元组'],['nested-tuple','含列表的元组'],['list','市场列表'],['dict','市场字典']];
+      controls += '<div class="wide-control"><span class="control-label">尝试把整个对象作为一个集合成员</span><div class="preset-row">'+names.map(([id,name])=>button('unique-hash',id,name,s.hashKind===id)).join('')+'</div></div>';
+      visual = '<div class="visual-header"><h2>这个对象能成为一个集合成员吗？</h2><span class="pill">'+esc(candidate.type)+'</span></div>'+
+        box('候选对象',candidate.code,candidate.type)+
+        (candidate.ok ? '<div class="data-value-box is-selected"><h3>成功加入为一个成员<span class="type-chip">set</span></h3><code>{'+esc(candidate.code)+'}</code><p>集合长度为 1。元组作为整体加入时，也只算一个成员。</p></div>' : '<div class="error-message" role="status"><strong>'+esc(candidate.error)+'</strong><p>创建集合失败，没有得到集合结果。</p></div>');
+      code = 'candidate = '+candidate.code+'\nmarkets = {candidate}\nprint(markets)\nprint(len(markets))';
+      summary = '<div class="rule-note"><strong>集合成员需要“可哈希”：能计算稳定的哈希值，帮助查找和判断成员。</strong><p>哈希值不要求彼此不同，Python 还会结合相等性判断。本课常用的字符串和整数可以；列表和字典不可以。</p><p>元组也要检查内部：只要包含列表等不可哈希对象，就不能作为集合成员。字典的键同样有这个要求。</p></div>';
+    }
+    return {controls,visual,code,summary};
+  };
+
+  V.relations = function (s) {
+    const E = root.DataLabEngine;
+    const pool = ['泰国','越南','印尼','马来西亚','菲律宾'];
+    const a = s.a, b = s.b, op = s.op;
+    const onlyA=E.setOperation(a,b,'a-b'), both=E.setOperation(a,b,'intersection'), onlyB=E.setOperation(a,b,'b-a');
+    const operators={union:['A | B','全部市场','|'],intersection:['A & B','共同市场','&'],'a-b':['A - B','A 独有','-'],'b-a':['B - A','B 独有','-'],xor:['A ^ B','只在一家','^'],subset:['A.issubset(B)','A 是否包含在 B 中','']};
+    const selected = op==='union'?[0,1,2]:op==='intersection'?[1]:op==='a-b'?[0]:op==='b-a'?[2]:op==='xor'?[0,2]:[0,1];
+    const result = E.setOperation(a,b,op);
+    const expr = op==='subset' ? 'store_a.issubset(store_b)' : op==='b-a' ? 'store_b - store_a' : 'store_a '+operators[op][2]+' store_b';
+    const controls = '<div class="wide-control"><span class="control-label">改变两家店铺覆盖的市场</span><div class="membership-controls">'+
+      [['a','店铺 A',a],['b','店铺 B',b]].map(([id,label,values])=>'<div class="membership-row"><strong>'+label+'</strong><div class="preset-row">'+pool.map(m=>button('relations-toggle',id+'|'+m,m,values.includes(m))).join('')+'</div></div>').join('')+'</div></div>'+
+      '<div class="wide-control"><span class="control-label">你要回答哪个问题？</span><div class="segmented">'+['union','intersection','a-b','b-a'].map(id=>button('relations-operation',id,operators[id][0]+' · '+operators[id][1],op===id)).join('')+'</div></div>'+
+      '<div><span class="control-label">可选拓展</span><div class="preset-row">'+button('relations-operation','xor','对称差集 ^',op==='xor')+button('relations-operation','subset','子集判断',op==='subset')+'</div></div>'+
+      '<div><span class="control-label">特殊情境</span><div class="preset-row">'+button('relations-preset','same','两家完全相同',false)+button('relations-preset','disjoint','没有共同市场',false)+button('relations-preset','empty','A 为空集',false)+'</div></div>';
+    const visual='<div class="visual-header"><h2>每个市场属于哪一个区域？</h2><span class="pill">A：'+a.length+' 个 · B：'+b.length+' 个</span></div>'+
+      '<div class="relation-regions">'+[['仅 A',onlyA],['A 与 B 共有',both],['仅 B',onlyB]].map(([label,values],i)=>'<section class="relation-region '+(selected.includes(i)?'is-selected':'')+'"><h3>'+label+'<span>'+values.length+'</span></h3>'+chips(values,'此区域为空')+'</section>').join('')+'</div>'+
+      '<div class="relation-result"><code>'+esc(expr)+'</code><span class="result-arrow" aria-hidden="true">→</span><div>'+box(op==='subset'?'判断结果':'选中的市场',typeof result==='boolean'?E.repr(result):E.setRepr(result),typeof result==='boolean'?'bool':'set','is-selected')+'</div></div>'+
+      (op==='subset'?'<div class="notice">'+(result?'A 的每个成员都在 B 中。空集也是任意集合的子集。':'A 还有 '+esc(onlyA.join('、'))+' 不在 B 中，因此不是 B 的子集。')+'</div>':'')+
+      '<p class="hint">三个区域按成员关系分组，面积不表示市场数量；集合卡片顺序不代表 Python 输出顺序。</p>';
+    const code='store_a = '+E.setRepr(a)+'\nstore_b = '+E.setRepr(b)+'\nresult = '+expr+'\nprint(result)\nprint(store_a)\nprint(store_b)';
+    const summary='<div class="rule-note"><strong>'+esc(operators[op][1])+'，取决于你要保留哪些区域。</strong><p>'+(
+      op==='union'?'并集保留两家店铺涉及的全部不同市场；共有市场只保留一次。':
+      op==='intersection'?'交集只保留共同区域，可用于找出两家都有销售记录的市场。':
+      op==='a-b'||op==='b-a'?'差集保留左边集合中不属于右边集合的成员。交换方向可能改变结果；两家集合相同时，两个方向都得到空集。':
+      op==='xor'?'对称差集保留两侧独有的成员，排除共同区域。':
+      '子集判断检查 A 是否存在任何不属于 B 的成员，返回布尔值，不返回一个新集合。')+'</p><p>这里的运算生成结果，不会改写原来的 <code>store_a</code> 和 <code>store_b</code>。</p></div>';
+    return {controls,visual,summary,code};
+  };
+})(window);
+</script>
+  <script>/* Dictionary experiments: lookup, independent mutations, and live views. */
+(function (root) {
+  'use strict';
+  const V = root.DataLabViews = root.DataLabViews || {};
+  const esc = value => String(value === undefined ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const engine = () => root.DataLabEngine;
+  const clone = entries => entries.map(entry => Object.assign({}, entry));
+  const infer = value => value === null ? 'NoneType' : typeof value === 'boolean' ? 'bool' : typeof value === 'string' ? 'str' : typeof value === 'number' ? Number.isInteger(value) ? 'int' : 'float' : Array.isArray(value) ? 'list' : 'dict';
+  const typeOf = entry => entry.type || infer(entry.value);
+  const repr = (value, type) => engine().repr(value, type);
+  const button = (action, value, label, active) => '<button type="button" data-action="' + esc(action) + '" data-value="' + esc(value) + '" aria-pressed="' + (active ? 'true' : 'false') + '">' + esc(label) + '</button>';
+  function initialOrder(full) {
+    const entries = [
+      {key:'order_id',value:'ORD-20261013-001',type:'str'},
+      {key:'market',value:'泰国',type:'str'}
+    ];
+    if (full) entries.push({key:'product',value:'无线耳机',type:'str'});
+    entries.push({key:'price',value:299.9,type:'float'});
+    if (full) entries.push({key:'paid',value:true,type:'bool'});
+    return entries;
+  }
+  function dictionaryCode(name, entries) {
+    return name + ' = {\n' + entries.map(entry => '  ' + repr(entry.key, 'str') + ': ' + repr(entry.value, typeOf(entry))).join(',\n') + '\n}';
+  }
+  function dictionaryTable(entries, options) {
+    const o = options || {}, keys = o.highlight || [];
+    return '<div class="dict-table-wrap"><table class="dict-table"><thead><tr><th scope="col">键 key</th><th scope="col">值 value</th></tr></thead><tbody>' + entries.map(entry => {
+      const isKey = keys.indexOf(entry.key) >= 0;
+      const valueHit = o.valueNeedle !== undefined && typeof entry.value === 'string' && entry.value === o.valueNeedle;
+      return '<tr class="' + (isKey ? 'dict-row-selected' : '') + '"><th scope="row"><code>' + esc(repr(entry.key, 'str')) + '</code></th><td class="' + (valueHit ? 'dict-value-hit' : '') + '"><code>' + esc(repr(entry.value, typeOf(entry))) + '</code><span class="dict-type">' + esc(typeOf(entry)) + '</span></td></tr>';
+    }).join('') + (entries.length ? '' : '<tr><td colspan="2" class="dict-empty">空字典 {}</td></tr>') + '</tbody></table></div>';
+  }
+  function resultBox(label, value, type, changed) {
+    return '<div class="dict-result-box' + (changed ? ' is-highlighted' : '') + '"><span>' + esc(label) + '</span><code>' + esc(repr(value, type)) + '</code><small>' + esc(type || infer(value)) + '</small></div>';
+  }
+  function errorBox(error, inputError) {
+    return '<div class="error-message" role="status"><strong>' + esc(error) + '</strong><p>' + (inputError ? '这是界面参数检查提示，尚未执行 Python 操作。' : '本次没有得到结果。下面的 Python 代码抛出异常后，后续语句不会执行。') + '</p></div>';
+  }
+
+  V.lookup = function (state) {
+    const s = Object.assign({key:'price',method:'bracket',couponPresent:false,defaultText:'未使用优惠券'}, state);
+    const method = ['bracket','get','default','contains'].includes(s.method) ? s.method : 'bracket';
+    const key = String(s.key), entries = initialOrder(true);
+    if (s.couponPresent) entries.push({key:'coupon',value:null,type:'NoneType'});
+    const found = entries.find(entry => entry.key === key);
+    const defaultText = String(s.defaultText);
+    const config = {op:method === 'default' ? 'get' : method,key:key,defaultProvided:method === 'default',defaultValue:defaultText,defaultType:'str'};
+    const result = engine().dictAction(entries, config);
+    const expr = method === 'bracket' ? 'order[' + repr(key, 'str') + ']' : method === 'contains' ? repr(key, 'str') + ' in order' : 'order.get(' + repr(key, 'str') + (method === 'default' ? ', ' + repr(defaultText, 'str') : '') + ')';
+    let controls = '<div class="single-field"><label class="control-label" for="lookup-key">查找的键</label><input id="lookup-key" type="text" data-field="lookup.key" value="' + esc(key) + '"><div class="preset-row dict-presets">' +
+      [['market','market'],['price','price'],['coupon','coupon'],['泰国','泰国（是值）']].map(pair => button('lookup-key',pair[0],pair[1],key === pair[0])).join('') + '</div></div>' +
+      '<div><span class="control-label">怎样读取？</span><div class="segmented">' +
+      [['bracket','方括号 [ ]'],['get','get()'],['default','get() + 默认值'],['contains','in 判断键']].map(pair => button('lookup-method',pair[0],pair[1],method === pair[0])).join('') + '</div></div>';
+    if (method === 'default') controls += '<div class="single-field"><label class="control-label" for="lookup-default">键不存在时的默认文本</label><input id="lookup-default" type="text" data-field="lookup.defaultText" value="' + esc(defaultText) + '"></div>';
+    controls += '<div class="dict-wide-control"><span class="control-label">可选字段 coupon</span><div class="segmented">' + button('lookup-coupon','false','缺少这个键',!s.couponPresent) + button('lookup-coupon','true','已有这个键，值为 None',!!s.couponPresent) + '</div></div>';
+    let outcome = result.ok ? resultBox(method === 'contains' ? '键是否存在' : '读取结果',result.result,result.resultType,true) : errorBox(result.error,false);
+    let detail;
+    if (method === 'contains') detail = 'in 只检查键，不读取对应的值。';
+    else if (found) detail = found.value === null ? '这个键已经存在，保存的值就是 None；即使提供默认值，也仍然返回 None。' : '找到键后，取出它对应的值，保留值原本的数据类型。';
+    else if (method === 'bracket') detail = '当前字典没有这个键，方括号读取产生 KeyError。';
+    else detail = method === 'default' ? '当前字典没有这个键，返回指定默认值；默认值不会被写入字典。' : '当前字典没有这个键，get() 返回 None；不会新增键值对。';
+    if (!found && entries.some(entry => typeof entry.value === 'string' && entry.value === key)) detail += ' “' + key + '”位于值栏，当前没有这个名称的键。';
+    const visual = '<div class="visual-header"><h2>通过键找到业务字段</h2><span class="pill">len(order) = ' + entries.length + '</span></div>' +
+      '<div class="dict-lookup-layout"><div>' + dictionaryTable(entries,{highlight:found ? [key] : [],valueNeedle:key}) + '</div><div class="dict-lookup-result"><div class="dict-expression"><code>' + esc(expr) + '</code></div>' + outcome + '<p class="dict-outcome-note">' + esc(detail) + '</p><p class="hint">这次读取不改变 order。</p></div></div>';
+    const summary = '<div class="rule-note"><strong>键负责定位，值保存业务信息。</strong><p>同一个字典可以保存字符串、数值和布尔值。键必须可哈希；本例使用字段名称作为字符串键。值没有这样的限制，也可以是列表或另一个字典。</p><p><code>[key]</code> 在缺键时产生异常；<code>get(key, default)</code> 只在缺键时返回默认值。已有键的值为 <code>None</code>，与没有这个键，是两种不同状态。</p></div>';
+    const code = dictionaryCode('order',entries) + '\n\nresult = ' + expr + '\nprint(result)\nprint(len(order))';
+    return {controls,visual,summary,code};
+  };
+
+  V.mutations = function (state) {
+    const s = Object.assign({op:'set',key:'status',value:'PAID',valueKind:'str',defaultProvided:true,defaultText:'未使用优惠券',ran:false},state);
+    const op = ['set','update','pop','setdefault'].includes(s.op) ? s.op : 'set';
+    const key = String(s.key), before = initialOrder(false), needsValue = op === 'set' || op === 'setdefault';
+    const kind = ['str','int','float','bool','none','NoneType'].includes(s.valueKind) ? s.valueKind : 'str';
+    const parsed = needsValue ? engine().parseValue(String(s.value),kind) : {ok:true,value:null,type:'NoneType'};
+    const updates = [{key:'currency',value:'CNY',type:'str'},{key:'channel',value:'独立站',type:'str'}];
+    const config = {op,key,value:parsed.value,type:parsed.type,entries:updates,defaultProvided:op === 'setdefault' || !!s.defaultProvided,defaultValue:op === 'setdefault' ? parsed.value : String(s.defaultText),defaultType:op === 'setdefault' ? parsed.type : 'str'};
+    const result = s.ran && parsed.ok ? engine().dictAction(before,config) : null;
+    const after = result && result.ok ? result.entries : before;
+    let expr = '';
+    if (parsed.ok) {
+      expr = op === 'set' ? 'order[' + repr(key,'str') + '] = ' + repr(parsed.value,parsed.type) :
+        op === 'update' ? 'order.update(' + engine().dictRepr(updates) + ')' :
+        op === 'pop' ? 'order.pop(' + repr(key,'str') + (s.defaultProvided ? ', ' + repr(String(s.defaultText),'str') : '') + ')' :
+        'order.setdefault(' + repr(key,'str') + ', ' + repr(parsed.value,parsed.type) + ')';
+    }
+    let controls = '<div class="dict-wide-control"><span class="control-label">选择操作</span><div class="segmented">' +
+      [['set','新增 / 修改'],['update','批量 update'],['pop','删除并取回 pop'],['setdefault','拓展 setdefault']].map(pair => button('mutation-op',pair[0],pair[1],op === pair[0])).join('') + '</div></div>';
+    if (op !== 'update') controls += '<div class="single-field"><label class="control-label" for="mutation-key">键</label><input id="mutation-key" type="text" data-field="mutations.key" value="' + esc(key) + '"></div>';
+    if (needsValue) {
+      controls += '<div class="single-field"><label class="control-label" for="mutation-kind">值的类型</label><select id="mutation-kind" data-field="mutations.valueKind">' +
+        [['str','字符串 str'],['int','整数 int'],['float','小数 float'],['bool','布尔值 bool'],['none','None']].map(pair => '<option value="' + pair[0] + '"' + ((kind === 'NoneType' ? 'none' : kind) === pair[0] ? ' selected' : '') + '>' + pair[1] + '</option>').join('') + '</select></div>';
+      if (kind === 'bool') controls += '<div class="single-field"><label class="control-label" for="mutation-value">' + (op === 'setdefault' ? '缺键时补入的值' : '新的值') + '</label><select id="mutation-value" data-field="mutations.value"><option value="True"' + (String(s.value).toLowerCase() !== 'false' ? ' selected' : '') + '>True</option><option value="False"' + (String(s.value).toLowerCase() === 'false' ? ' selected' : '') + '>False</option></select></div>';
+      else if (kind !== 'none' && kind !== 'NoneType') controls += '<div class="single-field"><label class="control-label" for="mutation-value">' + (op === 'setdefault' ? '缺键时补入的值' : '新的值') + '</label><input id="mutation-value" type="text"' + (kind === 'str' ? '' : ' inputmode="decimal"') + ' data-field="mutations.value" value="' + esc(s.value) + '"></div>';
+    }
+    if (op === 'pop') {
+      controls += '<div><span class="control-label">缺键时怎样处理？</span><div class="segmented">' + button('mutation-default','false','不提供默认值',!s.defaultProvided) + button('mutation-default','true','提供默认值',!!s.defaultProvided) + '</div></div>';
+      if (s.defaultProvided) controls += '<div class="single-field"><label class="control-label" for="mutation-default-text">默认文本</label><input id="mutation-default-text" type="text" data-field="mutations.defaultText" value="' + esc(s.defaultText) + '"></div>';
+    }
+    if (op === 'update') controls += '<div class="dict-fixed-input"><span class="control-label">本次批量写入</span><code>' + esc(engine().dictRepr(updates)) + '</code></div>';
+    controls += '<div class="dict-wide-control"><span class="control-label">业务例子</span><div class="preset-row">' + [['add','增加 status'],['price','修改 price'],['pop','删除并取回 price'],['missing','删除缺失的 coupon']].map(pair => button('mutation-preset',pair[0],pair[1],false)).join('') + '</div></div>' +
+      '<button type="button" class="btn btn-primary" data-action="mutation-run">' + (s.ran ? '重新执行' : '执行操作') + '</button><p class="hint">每次都从同一条原订单独立比较，操作不累计。</p>';
+    let resultHtml = '<div class="notice">先预测键的数量和值，再执行操作。</div>';
+    if (s.ran && !parsed.ok) resultHtml = errorBox(parsed.error,true);
+    else if (result && !result.ok) resultHtml = errorBox(result.error,false);
+    else if (result) {
+      let note;
+      const existed = before.some(entry => entry.key === key);
+      if (op === 'set') note = existed ? '键已经存在，替换对应的值；字典不会多出一个同名键。' : '键原来不存在，新增一组键值对。';
+      else if (op === 'update') note = '把两组键值对写入原字典。update() 的返回值是 None，不能把它当作更新后的字典。';
+      else if (op === 'pop') note = existed ? '键值对已删除，返回的是被删除的值。' : '键不存在，返回默认文本，字典没有改变。';
+      else note = existed ? '键已经存在，返回原来的值，不覆盖它。' : '键不存在，先写入默认值，再返回这个值。';
+      resultHtml = (result.hasReturn ? resultBox('操作返回',result.result,result.resultType,true) : '<div class="dict-statement-result"><strong>赋值语句</strong><p>这条语句直接更新字典，不产生一个可接收的返回值。</p></div>') + '<p class="dict-outcome-note">' + esc(note) + '</p>';
+    }
+    const highlights = op === 'update' ? updates.map(entry => entry.key) : [key];
+    const afterHtml = s.ran ? dictionaryTable(after,{highlight:result && result.ok ? highlights : []}) : '<div class="dict-pending">执行后，在这里观察字典的变化。</div>';
+    const visual = '<div class="visual-header"><h2>同一条订单，比较操作前后</h2><span class="pill">' + (s.ran ? before.length + ' → ' + after.length + ' 个键' : before.length + ' 个键') + '</span></div>' +
+      (expr ? '<div class="dict-expression"><code>' + esc(expr) + '</code></div>' : '') +
+      '<div class="dict-before-after"><section><h3>原订单 order</h3>' + dictionaryTable(before,{highlight:highlights}) + '</section><section><h3>' + (s.ran ? '本次操作后的 order' : '等待执行') + '</h3>' + afterHtml + '</section></div><div class="dict-operation-result">' + resultHtml + '</div>';
+    const summary = '<div class="rule-note"><strong>先看字典是否改变，再看操作交回什么。</strong><p>方括号赋值负责新增或修改；<code>update()</code> 批量写入并返回 <code>None</code>；<code>pop()</code> 删除键值对并返回被删除的值。缺键且没有默认值时，<code>pop()</code> 产生 <code>KeyError</code>。</p><p>' + (op === 'setdefault' ? '<code>setdefault()</code> 只有在键不存在时才补入默认值。与 <code>get()</code> 不同，它可能修改字典。已有键的值为 <code>None</code> 时，也不会覆盖。' : '字典按插入顺序保留键。更新已有键的值不会移动它；删除后再次加入该键，会把它放在末尾。') + '</p></div>';
+    let code = dictionaryCode('order',before) + '\n\n';
+    if (!parsed.ok) code += '# 参数尚未通过界面检查，请先修改输入。\n';
+    else if (op === 'set') code += expr + '\nprint(order)';
+    else code += 'result = ' + expr + '\nprint(result)\nprint(order)';
+    return {controls,visual,summary,code};
+  };
+
+  function marketStages() {
+    const start = [{key:'泰国',value:128,type:'int'},{key:'越南',value:98,type:'int'},{key:'印尼',value:76,type:'int'}];
+    const changed = clone(start); changed[1].value = 105;
+    const added = clone(changed); added.push({key:'马来西亚',value:63,type:'int'});
+    const removed = added.filter(entry => entry.key !== '泰国');
+    return [start,changed,added,removed];
+  }
+  function listFor(kind, entries) {
+    if (kind === 'keys') return '[' + entries.map(entry => repr(entry.key,'str')).join(', ') + ']';
+    if (kind === 'values') return '[' + entries.map(entry => repr(entry.value,typeOf(entry))).join(', ') + ']';
+    return '[' + entries.map(entry => '(' + repr(entry.key,'str') + ', ' + repr(entry.value,typeOf(entry)) + ')').join(', ') + ']';
+  }
+  function viewLines(kind, entries) {
+    if (kind === 'keys') return entries.map(entry => repr(entry.key,'str'));
+    if (kind === 'values') return entries.map(entry => repr(entry.value,typeOf(entry)));
+    return entries.map(entry => '(' + repr(entry.key,'str') + ', ' + repr(entry.value,typeOf(entry)) + ')');
+  }
+  V.views = function (state) {
+    const s = Object.assign({kind:'values',stage:0,snapshotStage:0},state);
+    const kind = ['keys','values','items'].includes(s.kind) ? s.kind : 'values';
+    const stage = Math.max(0,Math.min(3,Math.floor(Number(s.stage)||0)));
+    const snapshotStage = Math.max(0,Math.min(stage,Math.floor(Number(s.snapshotStage)||0)));
+    const stages = marketStages(), current = stages[stage], snapshot = stages[snapshotStage];
+    const stepTitles = ['创建视图与列表','修改越南销售额','新增马来西亚','删除泰国'];
+    const commands = ['',"market_sales['越南'] = 105","market_sales['马来西亚'] = 63","market_sales.pop('泰国')"];
+    const changed = listFor(kind,current) !== listFor(kind,snapshot);
+    const controls = '<div><span class="control-label">观察哪种视图？</span><div class="segmented">' + [['keys','keys()'],['values','values()'],['items','items()']].map(pair => button('views-kind',pair[0],pair[1],kind === pair[0])).join('') + '</div></div>' +
+      '<div class="dict-view-actions"><span class="control-label">修改原字典</span><button type="button" class="btn btn-primary" data-action="views-step"' + (stage >= 3 ? ' disabled' : '') + '>' + (stage >= 3 ? '三步已完成' : '下一步：' + stepTitles[stage+1]) + '</button></div>' +
+      '<div><span class="control-label">重新生成列表</span><button type="button" class="btn" data-action="views-snapshot">snapshot = list(view)</button></div>' +
+      '<p class="hint">修改按顺序累计；切换视图种类会重放相同的步骤。重置实验可从头开始。</p>';
+    const listMarkup = (lines, className) => '<div class="dict-view-values ' + className + '">' + (lines.length ? lines.map(line => '<code>' + esc(line) + '</code>').join('') : '<code>[]</code>') + '</div>';
+    const visual = '<div class="visual-header"><h2>字典在变，谁会跟着变？</h2><span class="pill">第 ' + stage + ' 步</span></div><ol class="dict-view-steps">' + stepTitles.map((title,i) => '<li class="' + (i === stage ? 'is-current' : i < stage ? 'is-done' : '') + '"><span>' + i + '</span>' + title + '</li>').join('') + '</ol>' +
+      '<div class="dict-view-grid"><section class="dict-view-card"><h3>原字典 <code>market_sales</code></h3>' + dictionaryTable(current,{highlight:stage === 1 ? ['越南'] : stage === 2 ? ['马来西亚'] : []}) + '</section>' +
+      '<section class="dict-view-card' + (changed ? ' is-live-changed' : '') + '"><h3>动态视图 <code>view</code></h3><span class="dict-view-type">dict_' + kind + '</span>' + listMarkup(viewLines(kind,current),'') + '<p>现在查看，反映当前字典。</p></section>' +
+      '<section class="dict-view-card"><h3>已生成的列表 <code>snapshot</code></h3><span class="dict-view-type">list · 第 ' + snapshotStage + ' 步生成</span>' + listMarkup(viewLines(kind,snapshot),'') + '<p>保留生成列表时的内容。</p></section></div>' +
+      '<div class="dict-view-observation">' + (changed ? '<strong>两边已经不同。</strong>动态视图反映了后续修改，先前生成的列表没有自动重新读取字典。' : '<strong>两边当前相同。</strong>' + (kind === 'keys' && stage === 1 && snapshotStage === 0 ? '只改了销售额，没有改变键，所以 keys() 的内容保持相同。' : '继续修改原字典，观察什么时候会出现差异。')) + '</div>';
+    const summary = '<div class="rule-note"><strong>视图跟随原字典；list(view) 在调用时生成一个列表。</strong><p><code>keys()</code> 观察键，<code>values()</code> 观察值，<code>items()</code> 观察键值对，每一对表现为元组。这里把内容分行排开，便于逐项比较。</p><p>本例的值都是整数，所以先前列表中的数字不会随字典赋值而改变。不能由此把 <code>list(view)</code> 理解为对任意嵌套数据的深复制。</p></div>';
+    let code = dictionaryCode('market_sales',stages[0]) + '\n\nview = market_sales.' + kind + '()\n';
+    if (snapshotStage === 0) code += 'snapshot = list(view)\n';
+    for (let i=1;i<=stage;i++) {
+      code += '\n' + commands[i] + '\n';
+      if (i === snapshotStage) code += 'snapshot = list(view)\n';
+    }
+    code += '\nprint(list(view))\nprint(snapshot)';
+    return {controls,visual,summary,code};
+  };
+})(window);
+</script>
+  <script>(function (root) {
+  'use strict';
+  const V = root.DataLabViews = root.DataLabViews || {};
+  function marketData(s) {
+    const E=root.DataLabEngine;
+    const configs=[['aVietnam','98'],['bVietnam','105'],['aIndonesia','76'],['bIndonesia','69']];
+    const parsed={};
+    for (const [key,fallback] of configs) {
+      const raw=String(s[key] == null ? fallback : s[key]);
+      if (!/^\d+$/.test(raw.trim()) || Number(raw)>1000000) {
+        const market=key.endsWith('Vietnam')?'越南':'印尼',store=key.startsWith('a')?'A':'B';
+        return {ok:false,error:'店铺 '+store+' 的'+market+'销售额需要填写 0～1000000 的整数，单位为万元。请选中“'+market+'”修正输入，再继续执行。'};
+      }
+      parsed[key]=Number(raw);
+    }
+    const a=[{key:'泰国',value:128,type:'int'},{key:'越南',value:parsed.aVietnam,type:'int'},{key:'印尼',value:parsed.aIndonesia,type:'int'}];
+    const b=[{key:'越南',value:parsed.bVietnam,type:'int'},{key:'印尼',value:parsed.bIndonesia,type:'int'},{key:'马来西亚',value:63,type:'int'}];
+    const aKeys=a.map(e=>e.key),bKeys=b.map(e=>e.key),focus=s.focus || '越南';
+    const ar=E.dictAction(a,{op:'bracket',key:focus}), br=E.dictAction(b,{op:'bracket',key:focus});
+    return {ok:true,a,b,aKeys,bKeys,focus,ar,br,shared:E.setOperation(aKeys,bKeys,'intersection'),all:E.setOperation(aKeys,bKeys,'union'),onlyA:E.setOperation(aKeys,bKeys,'a-b'),onlyB:E.setOperation(aKeys,bKeys,'b-a')};
+  }
+  root.DataLabPractice = {marketData};
+  V.practice=function(s) {
+    const E=root.DataLabEngine,U=root.DataLabUI,{esc,button,chips,box}=U;
+    const mode=s.mode || 'markets';
+    let controls='<div class="wide-control"><span class="control-label">选择业务任务</span><div class="segmented">'+button('practice-mode','markets','两家店铺的市场',mode==='markets')+button('practice-mode','promotion','迁移：库存与促销',mode==='promotion')+'</div></div>';
+    let visual,code,summary;
+    function dataTable(entries,label) {
+      return '<section class="collection-box"><h3>'+esc(label)+'<span class="type-chip">dict</span></h3><table class="compact-data-table"><thead><tr><th>市场（键）</th><th>销售额（万元）</th></tr></thead><tbody>'+entries.map(e=>'<tr><td>'+esc(e.key)+'</td><td>'+esc(e.value)+'</td></tr>').join('')+'</tbody></table></section>';
+    }
+    if (mode==='markets') {
+      const d=marketData(s),stage=Number(s.stage)||0,focus=s.focus||'越南';
+      controls+='<label>关注哪个市场？<select data-field="practice.focus">'+['越南','印尼','泰国','马来西亚'].map(m=>'<option value="'+m+'" '+(m===focus?'selected':'')+'>'+m+'</option>').join('')+'</select></label>';
+      if (focus==='越南'||focus==='印尼') {
+        const suffix=focus==='越南'?'Vietnam':'Indonesia';
+        controls+='<label>店铺 A · '+focus+'（万元）<input type="text" inputmode="numeric" maxlength="7" data-field="practice.a'+suffix+'" value="'+esc(s['a'+suffix])+'"></label>'+
+          '<label>店铺 B · '+focus+'（万元）<input type="text" inputmode="numeric" maxlength="7" data-field="practice.b'+suffix+'" value="'+esc(s['b'+suffix])+'"></label>';
+      }
+      controls+='<div class="wide-control"><div class="preset-row"><button class="btn btn-primary" type="button" data-action="practice-next" '+(!d.ok||stage>=4||(stage===3&&(!d.ar.ok||!d.br.ok))?'disabled':'')+'>下一步</button>'+
+        '<button class="btn" type="button" data-action="practice-all" '+(!d.ok?'disabled':'')+'>全部执行</button><button class="btn btn-subtle" type="button" data-action="practice-restart">从头观察</button></div>'+
+        '<p class="hint">修改市场或销售额后回到第 0 步。这里比较同一市场的销售额，差值固定为 A − B。</p></div>';
+      if (!d.ok) return {controls,visual:'<div class="error-message" role="status">'+esc(d.error)+'</div>',code:'# 请先修正销售额输入，再执行示例。',summary:'<div class="rule-note"><strong>先检查输入，再进行比较。</strong><p>本实验使用有限的非负整数销售额；这属于教学输入范围。</p></div>'};
+      const steps=['字典保存数据','从键得到集合','比较市场范围','按键取值并计算','生成业务摘要'];
+      visual='<div class="visual-header"><h2>第 '+stage+' 步 · '+steps[stage]+'</h2><span class="pill">'+(stage===4?'已完成':stage+' / 4 步')+'</span></div>'+
+        '<ol class="practice-steps" aria-label="市场分析步骤">'+steps.map((title,i)=>'<li class="'+(i===stage?'is-current':i<stage?'is-done':'')+'"><span>'+i+'</span>'+title+'</li>').join('')+'</ol>';
+      code='sales_a = '+E.dictRepr(d.a)+'\nsales_b = '+E.dictRepr(d.b);
+      if (stage===0) visual+='<div class="set-comparison">'+dataTable(d.a,'店铺 A · sales_a')+dataTable(d.b,'店铺 B · sales_b')+'</div><p class="hint">字典既保存市场名称，也保存对应销售额。下一步只取出键来比较市场范围。</p>';
+      if (stage>=1) code+='\n\nmarkets_a = set(sales_a.keys())\nmarkets_b = set(sales_b.keys())';
+      if (stage===1) visual+='<div class="set-comparison"><section class="collection-box"><h3>店铺 A 的键 → 集合</h3>'+chips(d.aKeys)+'</section><section class="collection-box"><h3>店铺 B 的键 → 集合</h3>'+chips(d.bKeys)+'</section></div><div class="notice">这一步取出的只有市场名称，没有销售额。之后用名称回到字典查询。</div>';
+      if (stage>=2) code+='\n\nall_markets = markets_a | markets_b\nshared_markets = markets_a & markets_b\nonly_a = markets_a - markets_b\nonly_b = markets_b - markets_a\nfocus_market = '+E.repr(focus)+'\nprint(focus_market in shared_markets)';
+      if (stage===2) visual+='<div class="market-result-grid">'+[['全部市场',d.all],['共同市场',d.shared],['A 独有',d.onlyA],['B 独有',d.onlyB]].map(([label,values])=>'<section class="collection-box"><h3>'+label+'</h3>'+chips(values)+'</section>').join('')+'</div>'+
+        box(focus+' 是否在共同市场中',E.repr(d.shared.includes(focus)),'bool')+'<p class="hint">集合结果的排列只服务观察，不规定 Python 的输出顺序。</p>';
+      if (stage>=3) {
+        code+='\n\nsales_a_value = sales_a[focus_market]\nsales_b_value = sales_b[focus_market]\nsales_gap = sales_a_value - sales_b_value';
+        if (!d.ar.ok || !d.br.ok) {
+          const failed=!d.ar.ok?'sales_a':'sales_b',result=!d.ar.ok?d.ar:d.br;
+          visual+='<div class="data-result-row">'+box('店铺 A',d.ar.ok?String(d.ar.result)+' 万元':'没有这个键',d.ar.ok?'int':'')+box('店铺 B',d.br.ok?String(d.br.result)+' 万元':'没有这个键',d.br.ok?'int':'')+'</div>'+
+            '<div class="error-message" role="status"><strong>'+esc(result.error)+'</strong><p><code>'+failed+'[focus_market]</code> 在这一行停止，差值没有算出，摘要也没有生成。</p></div>'+
+            '<p class="hint">这里分别展示两张数据表中是否有该键。缺少记录不能自动解释成销售额为 0；换到共同市场后再比较。</p>';
+          return {controls,visual,code,summary:'<div class="rule-note"><strong>先确认市场范围，才知道比较所需的数据是否齐全。</strong><p>方括号读取缺少的键会产生 KeyError。共同市场是两家字典都包含的键，能用于本例的直接销售额比较。</p></div>'};
+        }
+        const gap=d.ar.result-d.br.result;
+        if (stage===3) {
+          const max=Math.max(d.ar.result,d.br.result,1);
+          visual+='<div class="sales-bars">'+[['店铺 A',d.ar.result],['店铺 B',d.br.result]].map(([label,v])=>'<div class="sales-bar-row"><strong>'+label+'</strong><div class="sales-bar-track"><span style="width:'+(100*v/max)+'%"></span></div><code>'+v+' 万元</code></div>').join('')+'</div>'+
+            box('销售额差值（A − B）',String(gap)+' 万元','int','is-selected')+'<div class="notice">'+(gap===0?'两家店铺在这个市场的销售额相同。':gap>0?'店铺 A 比 B 高 '+gap+' 万元。':'店铺 A 比 B 低 '+(-gap)+' 万元。')+'</div>';
+          code+='\nprint(sales_a_value)\nprint(sales_b_value)\nprint(sales_gap)';
+        }
+        if (stage===4) {
+          const text='市场：'+focus+'\n店铺A销售额：'+d.ar.result+'万元\n店铺B销售额：'+d.br.result+'万元\n销售额差值（A-B）：'+gap+'万元';
+          visual+='<div class="business-summary"><h3>summary <span class="type-chip">str</span></h3><pre>'+esc(text)+'</pre></div>'+
+            '<div class="notice">字典保存数据 → 集合筛选市场 → 回到字典取值 → 输出比较结果。</div>';
+          code+='\n\nsummary = (\n  f"市场：{focus_market}\\n"\n  f"店铺A销售额：{sales_a_value}万元\\n"\n  f"店铺B销售额：{sales_b_value}万元\\n"\n  f"销售额差值（A-B）：{sales_gap}万元"\n)\nprint(summary)';
+        }
+      } else if(stage===1) code+='\nprint(markets_a)\nprint(markets_b)';
+      else if(stage===0) code+='\nprint(sales_a)\nprint(sales_b)';
+      summary='<div class="rule-note"><strong>集合负责筛选“哪些市场”，字典负责查询“对应多少销售额”。</strong><p>销售额大小不会改变集合关系。即使两家销售额不同，只要都包含这个市场，它仍然属于共同市场。</p><p>差值按 A − B 计算：负数表示 A 较低，正数表示 A 较高；0 表示两家相同。</p></div>';
+    } else {
+      const raw=String(s.bPrice == null?'85.00':s.bPrice).trim();
+      const priceValid=/^\d+(?:\.\d{1,2})?$/.test(raw)&&Number(raw)<=99999.99;
+      const available=['SKU-A01','SKU-B02','SKU-C03'].concat(s.stockAdded?['SKU-D04']:[]);
+      const promo=['SKU-B02','SKU-C03','SKU-D04'];
+      const prices=[{key:'SKU-A01',value:129.9,type:'float'},{key:'SKU-B02',value:s.priceChanged&&priceValid?Number(raw):89,type:'float'},{key:'SKU-C03',value:199,type:'float'},{key:'SKU-D04',value:59,type:'float'}];
+      const eligible=E.setOperation(available,promo,'intersection');
+      const total=eligible.reduce((sum,key)=>sum+prices.find(e=>e.key===key).value,0);
+      controls+='<div><span class="control-label">按课后任务改变条件</span><div class="preset-row">'+button('practice-stock','toggle',s.stockAdded?'已加入 SKU-D04':'把 SKU-D04 加入库存',s.stockAdded)+button('practice-price','toggle',s.priceChanged?'已应用新价格':'修改 SKU-B02 价格',s.priceChanged)+'</div><p class="hint">再次点击可撤销这一项修改。</p></div>'+
+        '<label>SKU-B02 新价格（元）<input type="text" inputmode="decimal" maxlength="10" data-field="practice.bPrice" value="'+esc(s.bPrice)+'" '+(s.priceChanged?'':'disabled')+'><span class="hint">0～99999.99，最多两位小数。</span></label>';
+      visual='<div class="visual-header"><h2>同时有库存、又参加促销的商品</h2><span class="pill">'+eligible.length+' 个符合条件</span></div>'+
+        '<div class="promotion-sets"><section class="collection-box"><h3>有库存</h3>'+chips(available)+'</section><section class="collection-box"><h3>参加促销</h3>'+chips(promo)+'</section><section class="collection-box is-selected"><h3>交集：可选商品</h3>'+chips(eligible)+'</section></div>';
+      if(s.priceChanged&&!priceValid) return {controls,visual:visual+'<div class="error-message" role="status">请把新价格改为 0～99999.99、最多两位小数的数值。当前价格未通过检查，尚未重新计算。</div>',code:'# 请先修正 SKU-B02 的新价格，再计算。',summary:'<div class="rule-note"><strong>先确认商品范围，再核对相应价格。</strong><p>价格输入错误不会变成 0，也不会被悄悄舍入。</p></div>'};
+      visual+='<div class="promotion-prices"><div class="collection-box"><table class="compact-data-table"><thead><tr><th>符合条件的商品</th><th>字典查询的价格</th></tr></thead><tbody>'+eligible.map(key=>'<tr><td>'+esc(key)+'</td><td>'+E.formatFixed(prices.find(e=>e.key===key).value,2)+' 元</td></tr>').join('')+'</tbody></table></div>'+box('每种商品各一件的价格总和',E.formatFixed(total,2)+' 元','float','is-selected')+'</div>'+
+        '<p class="hint">集合用于筛选商品，不记录购买数量。这里计算每个符合条件的 SKU 各取一件的价格总和。</p>';
+      code='available_skus = {"SKU-A01", "SKU-B02", "SKU-C03"}\npromotion_skus = {"SKU-B02", "SKU-C03", "SKU-D04"}\nprices = {\n  "SKU-A01": 129.90, "SKU-B02": 89.00,\n  "SKU-C03": 199.00, "SKU-D04": 59.00\n}';
+      if(s.stockAdded) code+='\navailable_skus.add("SKU-D04")';
+      if(s.priceChanged) code+='\nprices["SKU-B02"] = '+E.repr(Number(raw),'float');
+      code+='\n\neligible_skus = available_skus & promotion_skus\nprint(eligible_skus)\n\n# 按当前筛选结果，逐项取出价格相加。\ntotal_price = (\n  '+eligible.map(key=>'prices['+E.repr(key)+']').join('\n  + ')+'\n)\nprint(f"价格总和：{total_price:.2f} 元")';
+      summary='<div class="rule-note"><strong>交集确定可选商品，字典提供这些商品的价格。</strong><p>增加库存会改变参与计算的商品范围；修改价格会改变总额，但不会改变集合中的 SKU。</p><p>课件起点是 288.00 元；加入 SKU-D04 后为 347.00 元，再把 SKU-B02 改为 85.00 元后为 343.00 元。</p><p>当前代码按筛选结果逐项相加。学完循环后，可以把这一步扩展为任意数量商品的自动汇总。</p></div>';
+    }
+    return {controls,visual,code,summary};
+  };
+})(window);
+</script>
+  <script>(function () {
+  'use strict';
+  const C = window.DataLabContent;
+  const E = window.DataLabEngine;
+  const V = window.DataLabViews;
+  const STORAGE = 'classroom-whiteboard-slide5-v1';
+  let saved = {};
+  try {saved = JSON.parse(localStorage.getItem(STORAGE) || '{}') || {};} catch (_) {}
+  const known = id => C.modules.some(m => m.id === id);
+  const route = () => location.hash.slice(1).split('?')[0];
+  let current = known(route()) ? route() : known(saved.lastLesson) ? saved.lastLesson : C.modules[0].id;
+  const answers = {};
+  C.modules.forEach(m => {
+    const v = saved.answers && saved.answers[m.id];
+    if (Number.isInteger(v) && v >= 0 && v < m.quiz.options.length) answers[m.id] = v;
+  });
+  function initial(id) {
+    return {
+      unique:{mode:'dedup',raw:'泰国, 越南, 泰国, 印尼',op:'add',member:'马来西亚',ran:false,creation:'set',hashKind:'str'},
+      relations:{a:['泰国','越南','印尼'],b:['越南','印尼','马来西亚'],op:'union'},
+      lookup:{key:'price',method:'bracket',couponPresent:false,defaultText:'未使用优惠券'},
+      mutations:{op:'set',key:'status',value:'PAID',valueKind:'str',defaultProvided:true,defaultText:'未使用优惠券',ran:false},
+      views:{kind:'values',stage:0,snapshotStage:0},
+      practice:{mode:'markets',stage:0,focus:'越南',aVietnam:'98',bVietnam:'105',aIndonesia:'76',bIndonesia:'69',stockAdded:false,priceChanged:false,bPrice:'85.00'}
+    }[id];
+  }
+  const states = Object.fromEntries(C.modules.map(m => [m.id, initial(m.id)]));
+  const openedQuizzes = new Set();
+  const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  let activeCode = '', toastTimer, projecting = false;
+  function save() {
+    try {localStorage.setItem(STORAGE, JSON.stringify({lastLesson:current,answers}));} catch (_) {}
+  }
+  function toast(message) {
+    const node = document.getElementById('toast');
+    node.textContent = message;
+    node.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => node.classList.remove('visible'), 2400);
+  }
+  function preserveFocus(callback) {
+    const active = document.activeElement;
+    let selector = '', range;
+    if (active && active.dataset.field) selector = '[data-field="' + active.dataset.field + '"]';
+    else if (active && active.dataset.action) {
+      selector = '[data-action="' + active.dataset.action + '"]';
+      if (active.dataset.value !== undefined) selector += '[data-value="' + CSS.escape(active.dataset.value) + '"]';
+    }
+    try {if (active && active.selectionStart !== null) range = [active.selectionStart,active.selectionEnd];} catch (_) {}
+    callback();
+    const next = selector && document.querySelector(selector);
+    if (next && !next.disabled) {
+      next.focus({preventScroll:true});
+      if (range) {try {next.setSelectionRange(range[0],range[1]);} catch (_) {}}
+    }
+  }
+  function highlighted(code) {
+    function line(source) {
+      const pattern = /('[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"|#.*|\b(?:None|True|False|import|del|print|return|def|in)\b|\b\d+(?:\.\d+)?\b)/g;
+      let html = '', position = 0, match;
+      while ((match = pattern.exec(source))) {
+        html += esc(source.slice(position,match.index));
+        const token = match[0], type = token[0] === '#' ? 'comment' : /^['"]/.test(token) ? 'str' : /^\d/.test(token) ? 'num' : 'kw';
+        html += '<span class="token-' + type + '">' + esc(token) + '</span>';
+        position = match.index + token.length;
+      }
+      return html + esc(source.slice(position));
+    }
+    return code.split('\n').map((text,i) => '<span class="code-line"><span class="line-no" aria-hidden="true">' + (i+1) + '</span><span class="line-text">' + (line(text) || ' ') + '</span></span>').join('');
+  }
+  function quiz(module) {
+    const q = module.quiz, answer = answers[module.id], answered = Number.isInteger(answer), right = answer === q.answer;
+    return '<details class="check-panel" data-quiz-panel="' + module.id + '" ' + (openedQuizzes.has(module.id) ? 'open' : '') + '><summary>检验理解' +
+      (answered ? right ? ' · 已答对' : ' · 再想一想' : '') + '</summary><div class="check-content"><p class="check-question">' + esc(q.prompt) +
+      '</p>' + (q.code ? '<pre class="quiz-code">' + esc(q.code) + '</pre>' : '') + '<div class="quiz-options" role="group" aria-label="练习选项">' +
+      q.options.map((option,i) => '<button type="button" class="quiz-option" data-action="quiz-answer" data-value="' + i + '" aria-pressed="' + (answer === i) +
+        '"><span class="quiz-letter">' + String.fromCharCode(65+i) + '</span><span>' + esc(option.label) + '</span></button>').join('') +
+      '</div>' + (answered ? '<div class="quiz-feedback ' + (right ? '' : 'incorrect') + '" role="status"><strong>' + (right ? '判断正确。' : '再想一想。') + '</strong>' + esc(q.options[answer].explanation) + '</div>' : '') + '</div></details>';
+  }
+  function renderNav() {
+    document.getElementById('lesson-nav').innerHTML = C.modules.map((m,i) => '<a href="#' + m.id + '" ' + (m.id === current ? 'aria-current="page"' : '') + '><span class="nav-index">' +
+      String(i+1).padStart(2,'0') + '</span><span>' + esc(m.title) + '</span>' + (answers[m.id] === m.quiz.answer ? '<span class="nav-done" aria-label="练习已答对">✓</span>' : '') + '</a>').join('');
+    const count = C.modules.filter(m => answers[m.id] === m.quiz.answer).length;
+    document.getElementById('quiz-progress').textContent = count ? '练习答对 ' + count + ' / ' + C.modules.length : C.modules.length + ' 个动手实验';
+  }
+  function renderLesson() {
+    const module = C.modules.find(m => m.id === current);
+    const view = V[current](states[current]);
+    activeCode = view.code;
+    document.getElementById('lesson').innerHTML = '<div class="lesson-heading"><div><p class="source-tag">' + esc(module.pages) +
+      '</p><h1 id="lesson-title" tabindex="-1">' + esc(module.title) + '</h1><p class="lesson-question">' + esc(module.question) +
+      '</p></div><button type="button" class="btn btn-subtle" data-action="reset-experiment">重置实验</button></div>' +
+      '<div class="workbench"><section class="control-panel" aria-label="实验操作">' + view.controls + '</section><section class="visual-panel" aria-label="可视化结果">' + view.visual + '</section></div>' +
+      '<div class="evidence"><section class="rule-panel" aria-label="理解原理">' + view.summary + '</section><section class="code-panel" aria-label="对应的 Python 代码"><div class="code-toolbar"><span>对应的 Python</span><button type="button" class="btn btn-subtle" data-action="copy-code">复制代码</button></div><pre><code>' +
+      highlighted(view.code) + '</code></pre></section></div>' + (view.extra || '') +
+      '<div class="try-next"><strong>再试一步</strong><span>' + esc(module.try) + '</span></div>' + quiz(module);
+    const detail = document.querySelector('[data-quiz-panel]');
+    detail.addEventListener('toggle',() => {if (detail.open) openedQuizzes.add(module.id); else openedQuizzes.delete(module.id);});
+  }
+  function setProjection(value) {
+    projecting = value;
+    document.body.classList.toggle('projecting',value);
+    const button = document.getElementById('projection-toggle');
+    button.textContent = value ? '退出投影' : '投影模式';
+    button.setAttribute('aria-pressed',String(value));
+  }
+  function navigate() {
+    if (!known(route())) return;
+    current = route();
+    renderNav(); renderLesson(); save();
+    document.getElementById('lesson-title').focus({preventScroll:true});
+    if (window.innerWidth < 901) document.getElementById('lesson').scrollIntoView({block:'start'});
+  }
+  async function copyCode() {
+    try {
+      if (!navigator.clipboard || !window.isSecureContext) throw Error('fallback');
+      await navigator.clipboard.writeText(activeCode); toast('Python 代码已复制');
+    } catch (_) {
+      const area = document.createElement('textarea');
+      area.value = activeCode; area.setAttribute('readonly',''); area.style.cssText = 'position:fixed;left:-9999px;top:0';
+      document.body.appendChild(area); area.select();
+      let success = false;
+      try {success = document.execCommand('copy');} catch (_) {}
+      area.remove();
+      toast(success ? 'Python 代码已复制' : '浏览器未允许自动复制，请选中代码后复制。');
+    }
+  }
+  document.addEventListener('click',event => {
+    if (event.target.closest('#projection-toggle')) {setProjection(!projecting); return;}
+    const button = event.target.closest('[data-action]');
+    if (!button || button.disabled) return;
+    const action = button.dataset.action, value = button.dataset.value;
+    if (action === 'copy-code') {copyCode(); return;}
+    preserveFocus(() => {
+      const s = states[current];
+      switch (action) {
+        case 'reset-experiment': states[current] = initial(current); break;
+        case 'unique-mode': s.mode=value; s.ran=false; break;
+        case 'unique-preset': s.raw=value==='repeat'?'泰国, 泰国, 泰国, 泰国':value==='empty'?'':'泰国, 越南, 泰国, 印尼'; break;
+        case 'unique-operation': s.op=value; s.ran=false; break;
+        case 'unique-member': s.member=value; s.ran=false; break;
+        case 'unique-run': s.ran=true; break;
+        case 'unique-creation': s.creation=value; break;
+        case 'unique-hash': s.hashKind=value; break;
+        case 'relations-toggle': {
+          const [which,market]=value.split('|');
+          if (which==='a'||which==='b') s[which]=s[which].includes(market)?s[which].filter(x=>x!==market):s[which].concat(market);
+          break;
+        }
+        case 'relations-operation': s.op=value; break;
+        case 'relations-preset':
+          if(value==='same') {s.a=['泰国','越南'];s.b=['泰国','越南'];}
+          else if(value==='disjoint') {s.a=['泰国'];s.b=['马来西亚'];}
+          else {s.a=[];s.b=['越南','印尼'];}
+          break;
+        case 'lookup-key': s.key=value; break;
+        case 'lookup-method': s.method=value; break;
+        case 'lookup-coupon': s.couponPresent=value==='true'; break;
+        case 'mutation-op': s.op=value; s.ran=false; break;
+        case 'mutation-default': s.defaultProvided=value==='true'; s.ran=false; break;
+        case 'mutation-run': s.ran=true; break;
+        case 'mutation-preset':
+          if(value==='add') Object.assign(s,{op:'set',key:'status',value:'PAID',valueKind:'str'});
+          else if(value==='price') Object.assign(s,{op:'set',key:'price',value:'289.90',valueKind:'float'});
+          else if(value==='pop') Object.assign(s,{op:'pop',key:'price',defaultProvided:false});
+          else Object.assign(s,{op:'pop',key:'coupon',defaultProvided:false});
+          s.ran=false; break;
+        case 'views-kind': s.kind=value; break;
+        case 'views-step': s.stage=Math.min(3,s.stage+1); break;
+        case 'views-snapshot': s.snapshotStage=s.stage; break;
+        case 'practice-mode': s.mode=value; s.stage=0; break;
+        case 'practice-next':
+        case 'practice-all': {
+          const data=window.DataLabPractice.marketData(s);
+          if(data.ok) {const limit=data.ar.ok&&data.br.ok?4:3;s.stage=action==='practice-all'?limit:Math.min(limit,s.stage+1);}
+          break;
+        }
+        case 'practice-restart': s.stage=0; break;
+        case 'practice-stock': s.stockAdded=!s.stockAdded; break;
+        case 'practice-price': s.priceChanged=!s.priceChanged; break;
+        case 'quiz-answer': answers[current] = Number(value); openedQuizzes.add(current); save(); renderNav(); break;
+        case 'reset-quizzes': Object.keys(answers).forEach(key => delete answers[key]); save(); renderNav(); toast('本讲练习记录已清除'); break;
+        default: return;
+      }
+      renderLesson();
+    });
+  });
+  function updateField(event) {
+    const field = event.target.dataset.field;
+    if (!field) return;
+    const [id,key] = field.split('.');
+    if (!states[id]) return;
+    preserveFocus(() => {
+      states[id][key] = event.target.value;
+      if (id === 'unique' || id === 'mutations') states[id].ran = false;
+      if (id === 'mutations' && key === 'valueKind') states[id].value = {str:'PAID',int:'8',float:'289.90',bool:'True',none:'None'}[event.target.value] || '';
+      if (id === 'practice' && key !== 'bPrice') states[id].stage = 0;
+      renderLesson();
+    });
+  }
+  document.addEventListener('input',event => {if (event.target.tagName !== 'SELECT') updateField(event);});
+  document.addEventListener('change',event => {if (event.target.tagName === 'SELECT') updateField(event);});
+  document.addEventListener('keydown',event => {if (event.key === 'Escape') setProjection(false);});
+  window.addEventListener('hashchange',navigate);
+  renderNav(); renderLesson(); save();
+})();
+</script>
+</body>
+</html>
