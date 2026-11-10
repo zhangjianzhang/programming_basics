@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light">
+<title>代码组织实验室｜Python 第十讲</title>
+<style>
+:root{--bg:#F2F5FA;--paper:#fff;--ink:#17283D;--muted:#536477;--blue:#245FC4;--blue2:#E4EDFC;--line:#D8E0EA;--soft:#F7F9FC;--gold:#6D4C00;--goldbg:#FFF0C9;--red:#A32D32;--redbg:#FFF0F0;--green:#176447;--greenbg:#E9F6EF;--shadow:0 8px 26px rgba(25,48,78,.07);--radius:15px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}button,input{font:inherit}button{cursor:pointer}.topbar{height:66px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:10}.brand{display:flex;align-items:center;gap:12px;font-weight:750;text-decoration:none;color:var(--ink)}.mark{width:36px;height:36px;border-radius:10px;background:var(--blue);color:white;display:grid;place-items:center;font-weight:800}.brand small{display:block;font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.04em}.actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 13px;color:var(--ink);font-weight:650}.btn:hover{border-color:var(--blue);color:var(--blue)}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.btn.active{background:var(--blue2);color:var(--blue);border-color:#9bb9ed}.shell{max-width:1440px;margin:auto;display:grid;grid-template-columns:260px minmax(0,1fr);gap:22px;padding:24px}.sidebar{align-self:start;position:sticky;top:88px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}.eyebrow{font-size:11px;letter-spacing:.12em;color:var(--blue);font-weight:800}.sidebar h2{font-size:21px;line-height:1.35;margin:8px 0 18px}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;text-align:left;padding:10px 11px;border-radius:9px;color:var(--muted);font-weight:650;display:flex;gap:10px;align-items:center}.nav button .n{font-size:11px;color:#7C8CA0;font-variant-numeric:tabular-nums}.nav button:hover{background:var(--soft);color:var(--ink)}.nav button.active{background:var(--blue2);color:var(--blue)}.nav button.active .n{color:var(--blue)}.side-note{border-top:1px solid var(--line);margin-top:17px;padding-top:14px;color:var(--muted);font-size:13px}.main{min-width:0}.intro{padding:8px 4px 18px}.intro h1{font-size:30px;line-height:1.25;margin:6px 0 8px;letter-spacing:-.02em}.intro p{margin:0;color:var(--muted);max-width:850px}.lesson{display:none}.lesson.active{display:block}.heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:8px 0 15px}.heading h2{font-size:24px;margin:0 0 4px}.heading p{margin:0;color:var(--muted)}.source{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:20px;padding:5px 10px;color:var(--muted);font-size:12px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:15px;box-shadow:var(--shadow)}.card h3{margin:0 0 12px;font-size:17px}.lead{background:var(--blue2);border-left:4px solid var(--blue);padding:13px 15px;border-radius:9px;margin-bottom:15px}.lead strong{display:block;margin-bottom:3px}.muted{color:var(--muted)}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.filetree,.code{background:#F5F7FA;border:1px solid #D8E0E8;border-radius:11px;padding:15px 17px;overflow:auto}.filetree{font:14px/1.8 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre}.code{font:14px/1.75 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;tab-size:2;color:#263A50}.code .kw{color:#166A49;font-weight:700}.code .str{color:#A04439}.code .fn{color:#245FC4;font-weight:700}.code .comment{color:#78899C}.tile{border:1px solid var(--line);border-radius:11px;padding:13px;background:var(--soft)}.tile strong{display:block;margin-bottom:4px}.tile p{margin:0;color:var(--muted);font-size:14px}.control-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.choice{border:1px solid var(--line);background:#fff;padding:8px 12px;border-radius:9px;color:var(--ink);font-weight:650}.choice.selected{background:var(--blue2);border-color:#9bb9ed;color:var(--blue)}.output{border:1px solid #B8CBE7;background:#F5F8FE;border-radius:11px;padding:14px;margin-top:12px}.output .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);font-weight:800}.output strong{display:block;font-size:18px;margin:4px 0}.notice{padding:12px 14px;border-radius:9px;margin-top:10px;background:var(--goldbg);color:var(--gold)}.error{background:var(--redbg);color:var(--red)}.success{background:var(--greenbg);color:var(--green)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}th{background:#F6F8FB;color:var(--muted);font-weight:700}td code, p code, li code{background:#EEF2F7;padding:2px 5px;border-radius:5px;color:#29435F}.pill{display:inline-block;border-radius:20px;padding:3px 8px;background:#EEF2F7;color:var(--muted);font-size:12px}.step{display:flex;gap:12px;align-items:flex-start;margin:12px 0}.step b{flex:none;width:25px;height:25px;border-radius:50%;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-size:12px}.quiz-option{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:9px;padding:11px 13px;background:#fff;margin:8px 0}.quiz-option:hover{border-color:var(--blue)}.quiz-option.correct{border-color:#78B89A;background:var(--greenbg)}.quiz-option.wrong{border-color:#E1A0A0;background:var(--redbg)}.quiz-feedback{margin-top:10px;padding:12px;border-radius:9px;background:var(--soft);color:var(--muted)}.footer{max-width:1440px;margin:0 auto;padding:0 24px 25px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:15px}.progress{height:5px;background:#E8EDF4;border-radius:9px;overflow:hidden;margin-top:12px}.progress span{display:block;height:100%;width:0;background:var(--blue);transition:width .2s}.small{font-size:13px}.inline-field{width:90px;border:1px solid var(--line);border-radius:8px;padding:7px 9px}.checkline{display:flex;align-items:center;gap:8px;margin:8px 0}.projection body{font-size:19px}.projection .shell{max-width:1600px;grid-template-columns:290px 1fr}.projection .intro h1{font-size:36px}.projection .card{padding:25px}.projection .code{font-size:17px}.hidden{display:none!important}
+@media(max-width:900px){.shell{grid-template-columns:1fr;padding:15px}.sidebar{position:static}.nav{grid-template-columns:repeat(2,minmax(0,1fr))}.side-note{display:none}.two{grid-template-columns:1fr}.three{grid-template-columns:1fr}.heading{display:block}.source{display:inline-block;margin-top:8px}.topbar{padding:0 15px}.intro h1{font-size:26px}}@media(max-width:520px){.nav{grid-template-columns:1fr}.actions .btn{padding:7px 9px;font-size:12px}.brand{font-size:14px}.shell{padding:10px}.card{padding:15px}.intro h1{font-size:24px}}
+</style></head>
+<body>
+<header class="topbar"><a class="brand" href="#top"><span class="mark">Py</span><span>代码组织实验室<small>PYTHON · 第十讲</small></span></a><div class="actions"><button class="btn" id="projection">投影模式</button><button class="btn" id="reset">重置实验</button></div></header>
+<div class="shell" id="top"><aside class="sidebar"><div class="eyebrow">本讲知识地图</div><h2>把代码放在<br>合适的位置</h2><nav class="nav" id="nav">
+<button class="active" data-go="0"><span class="n">01</span>从单文件到模块</button><button data-go="1"><span class="n">02</span>导入模块并调用</button><button data-go="2"><span class="n">03</span>__name__ 的作用</button><button data-go="3"><span class="n">04</span>模块查找与排错</button><button data-go="4"><span class="n">05</span>使用标准库</button><button data-go="5"><span class="n">06</span>第三方库与环境</button><button data-go="6"><span class="n">07</span>综合订单实践</button><button data-go="7"><span class="n">08</span>检查理解</button></nav><div class="side-note">学习路径<br>先看结构，再看导入；最后让多个模块协作完成一项业务任务。<div class="progress"><span id="progress"></span></div><div class="small" id="progressText">1 / 8</div></div></aside>
+<main class="main"><section class="intro"><div class="eyebrow">INTERACTIVE LESSON</div><h1>从一个文件，到一个有分工的项目</h1><p>用跨境电商订单处理作为贯穿案例。每次改变一个设置，观察文件职责、导入关系和程序结果怎样变化。</p></section>
+<section class="lesson active" data-page="0"><div class="heading"><div><h2>01 从单文件到模块</h2><p>程序能运行，不代表代码组织得合理。</p></div><span class="source">课件第 3–6 页</span></div>
+<div class="lead"><strong>业务情境</strong>运营人员每天读取订单、清洗数据、计算实付金额、按渠道汇总，再保存报表。如果所有功能都放在 <code>main.py</code>，需求增加后会发生什么？</div>
+<div class="card"><h3>先观察：一个文件承担全部工作</h3><div class="code">main.py
+  read_orders(path)
+  clean_orders(orders)
+  calculate_payables(orders)
+  summarize_by_channel(orders)
+  save_report(summary, path)</div><p class="muted small">读取、清洗、计算、汇总、输出都挤在同一个文件里。请选择一种业务变化，看看最直接需要关注哪里。</p><div class="control-row" id="changeChoices"><button class="choice selected" data-change="commission">增加平台佣金规则</button><button class="choice" data-change="refund">退款分析也要清洗订单</button><button class="choice" data-change="report">修改报表格式</button><button class="choice" data-change="team">让合作者修改汇总</button></div><div class="output" id="singleResult"><span class="label">维护影响</span><strong>需要在较长的 main.py 中寻找并修改计算代码。</strong><span class="muted small">计算逻辑与其他职责混在一起，定位成本更高。</span></div></div>
+<div class="card"><h3>按职责拆分之后</h3><div class="two"><div class="filetree">order_project/
+├─ main.py
+├─ order_utils.py
+└─ report_utils.py</div><div class="tile"><strong>main.py</strong><p>组织处理流程，调用其他文件提供的函数。</p><strong>order_utils.py</strong><p>清洗订单、校验业务规则、计算实付金额。</p><strong>report_utils.py</strong><p>汇总订单，并将统计结果写入报表。</p></div></div><div class="notice success">拆分不改变业务逻辑，改变的是代码的组织方式：每个文件负责一类清晰任务。</div></div>
+<div class="card"><h3>模块、包和库不是一回事</h3><div class="three"><div class="tile"><strong>模块 Module</strong><p>一个 <code>.py</code> 文件，保存相关函数、变量和语句。</p></div><div class="tile"><strong>包 Package</strong><p>组织多个模块的目录，通常包含 <code>__init__.py</code>。</p></div><div class="tile"><strong>库 Library</strong><p>可复用代码集合的较宽泛称呼，可以包含模块和包。</p></div></div></div></section>
+<section class="lesson" data-page="1"><div class="heading"><div><h2>02 导入模块并调用</h2><p>模块文件名决定模块名；导入后通过名称找到其中的函数。</p></div><span class="source">课件第 7–8 页</span></div>
+<div class="lead"><strong>任务</strong>把订单金额计算函数放进 <code>order_utils.py</code>，然后在 <code>main.py</code> 中使用它。</div>
+<div class="card"><h3>模块文件：order_utils.py</h3><div class="code">"""订单数据校验和计算工具。"""
+
+def calculate_payable(amount, discount_rate):
+  if amount &lt; 0:
+    raise ValueError("订单金额不能为负数")
+  if not 0 &lt;= discount_rate &lt;= 1:
+    raise ValueError("折扣率必须在0和1之间")
+  return amount * (1 - discount_rate)</div><p class="muted small">文件名是 <code>order_utils.py</code>，导入时使用模块名 <code>order_utils</code>，不写扩展名。</p></div>
+<div class="card"><h3>切换导入方式</h3><div class="control-row" id="importChoices"><button class="choice selected" data-import="module">import order_utils</button><button class="choice" data-import="from">from … import …</button><button class="choice" data-import="alias">import … as …</button></div><div class="two"><div><div class="code" id="importCode">import order_utils
+
+payable = order_utils.calculate_payable(640.0, 0.15)
+print(f"实付金额：{payable:.2f}元")</div></div><div class="output"><span class="label">运行结果</span><strong id="importOutput">实付金额：544.00元</strong><span class="muted small" id="importExplain">函数来源清楚，调用时带上模块名，优先推荐。</span></div></div></div>
+<div class="card"><h3>为什么不推荐星号导入？</h3><div class="code">from order_utils import *</div><div class="notice">多个名称直接进入当前程序，阅读代码时难以判断函数来源，也可能覆盖已有名称。优先使用明确的导入方式。</div></div></section>
+<section class="lesson" data-page="2"><div class="heading"><div><h2>03 模块被导入时会发生什么</h2><p><code>__name__</code> 可以区分模块是直接运行，还是被其他程序导入。</p></div><span class="source">课件第 9 页</span></div>
+<div class="lead"><strong>问题</strong>把测试代码写在工具模块末尾，为什么从 <code>main.py</code> 导入时不会自动打印测试结果？</div>
+<div class="card"><h3>模块末尾的保护条件</h3><div class="code">if __name__ == "__main__":
+  result = calculate_payable(640.0, 0.15)
+  print(f"测试结果：{result:.2f}元")</div><div class="control-row"><button class="choice selected" data-runmode="direct">直接运行 order_utils.py</button><button class="choice" data-runmode="import">在 main.py 中导入</button></div><div class="two"><div class="tile"><strong>此时 __name__ 的值</strong><div class="code" id="nameValue">"__main__"</div></div><div class="output"><span class="label">测试代码是否执行</span><strong id="nameOutcome">执行</strong><span class="muted small" id="nameWhy">当前文件是程序入口，条件成立。</span></div></div></div>
+<div class="card"><h3>导入并不是什么都不做</h3><p>Python 会执行模块最外层的语句。因此，可复用模块的最外层通常放函数定义、常量和必要的初始化代码；不要把不希望导入时发生的测试或演示操作直接放在最外层。</p><div class="notice success">这段条件让函数既能被其他程序安全导入，也能在直接运行模块时执行简单测试。</div></div></section>
+<section class="lesson" data-page="3"><div class="heading"><div><h2>04 模块查找与常见错误</h2><p>导入失败时，先检查 Python 实际在哪里找模块。</p></div><span class="source">课件第 10–12 页</span></div>
+<div class="card"><h3>同一项目文件夹中的两个文件</h3><div class="filetree">order_project/
+├─ main.py
+└─ order_utils.py</div><p>当 <code>main.py</code> 在项目目录中运行时，可以直接写：</p><div class="code">import order_utils</div><div class="step"><b>1</b><div><strong>Python 内置模块</strong><div class="muted small">首先检查 Python 自身提供的内置模块。</div></div></div><div class="step"><b>2</b><div><strong>程序所在位置</strong><div class="muted small">运行 .py 文件时，查找脚本所在目录；Notebook 中查找当前工作目录。</div></div></div><div class="step"><b>3</b><div><strong>Python 环境中的目录</strong><div class="muted small">继续查找标准库和当前环境中已安装的第三方库。</div></div></div></div>
+<div class="card"><h3>选择遇到的问题，练习排查</h3><div class="control-row" id="errorChoices"><button class="choice selected" data-error="missing">ModuleNotFoundError</button><button class="choice" data-error="wrong">导入了错误的同名文件</button><button class="choice" data-error="stale">修改模块后结果没变化</button></div><div class="output" id="errorOutput"><span class="label">排查路径</span><strong>检查模块名、文件名和工作目录</strong><span class="muted small">确认模块位于 Python 的查找范围中。</span></div></div>
+<div class="card"><h3>两个有用的检查语句</h3><div class="code">from pathlib import Path
+import order_utils
+
+print(Path.cwd())
+print(order_utils.__file__)</div><p class="muted small"><code>Path.cwd()</code> 查看当前工作目录；<code>__file__</code> 查看实际导入的模块文件位置。</p><div class="notice">Notebook 通常会保留已经导入的模块。修改文件后，可重新启动内核，或使用 <code>importlib.reload(order_utils)</code> 重新加载。</div></div>
+<div class="card"><h3>避免模块名称冲突</h3><p>不要把自己的文件命名为 <code>random.py</code>、<code>json.py</code> 或 <code>csv.py</code> 等标准库模块名称，否则可能遮蔽同名模块。</p><div class="code">import importlib
+importlib.reload(order_utils)</div></div></section>
+<section class="lesson" data-page="4"><div class="heading"><div><h2>05 使用 Python 标准库</h2><p>先看看 Python 已经提供了什么，再决定是否自己实现或安装第三方库。</p></div><span class="source">课件第 13–14 页</span></div>
+<div class="card"><h3>让三个模块各做擅长的事</h3><div class="three"><div class="tile"><strong>pathlib</strong><p>构造文件路径，使用 <code>Path</code> 表示文件和目录。</p></div><div class="tile"><strong>csv</strong><p>读取结构化订单数据，使用 <code>DictReader</code> 按字段名读取。</p></div><div class="tile"><strong>statistics</strong><p>计算统计指标，使用 <code>mean()</code> 求平均值。</p></div></div></div>
+<div class="card"><h3>动手：三笔订单的平均金额</h3><p class="muted small">假设 CSV 文件中有三笔已清洗订单，金额分别为 360、640、500 元。</p><div class="table-wrap"><table><thead><tr><th>订单</th><th>金额</th></tr></thead><tbody><tr><td>O001</td><td>360.00</td></tr><tr><td>O002</td><td>640.00</td></tr><tr><td>O003</td><td>500.00</td></tr></tbody></table></div><div class="code">from pathlib import Path
+import csv
+from statistics import mean
+
+file_path = Path("data") / "orders.csv"
+amounts = []
+
+with file_path.open(encoding="utf-8-sig", newline="") as file:
+  reader = csv.DictReader(file)
+  for row in reader:
+    amounts.append(float(row["金额"]))
+
+print(f"订单数：{len(amounts)}")
+print(f"平均金额：{mean(amounts):.2f}元")</div><button class="btn primary" id="runStd">运行这段示例</button><div class="output hidden" id="stdOutput"><span class="label">输出</span><strong>订单数：3</strong><strong>平均金额：500.00元</strong><span class="muted small">pathlib 负责路径，csv 负责读取字段，statistics 负责计算指标。</span></div></div>
+<div class="notice">len()、print() 等内置函数可以直接使用；csv、pathlib 等标准库模块仍然需要先导入。</div></section>
+<section class="lesson" data-page="5"><div class="heading"><div><h2>06 第三方库与运行环境</h2><p>能导入不等于一定安装成功；关键是安装位置和运行代码的解释器是否一致。</p></div><span class="source">课件第 15–18 页</span></div>
+<div class="card"><h3>标准库与第三方库</h3><div class="two"><div class="tile"><strong>标准库</strong><p>随 Python 一起提供，通常可以直接导入，例如 <code>csv</code>、<code>pathlib</code>、<code>statistics</code>。</p></div><div class="tile"><strong>第三方库</strong><p>由其他开发者提供，通常需要安装，例如 <code>pandas</code>、<code>openpyxl</code>、<code>requests</code>。</p></div></div><div class="code" style="margin-top:12px">import pandas as pd
+orders = pd.read_csv("data/orders.csv")
+average = orders["金额"].mean()</div></div>
+<div class="card"><h3>选择安装方式</h3><div class="control-row"><button class="choice selected" data-install="notebook">Jupyter Notebook</button><button class="choice" data-install="terminal">本机终端</button></div><div class="code" id="installCode">%pip install pandas</div><p class="muted small" id="installExplain">Notebook 中的 %pip 面向当前内核运行安装命令。</p></div>
+<div class="card"><h3>为什么建议每个项目使用独立环境？</h3><div class="two"><div><strong>macOS / Linux</strong><div class="code">python3 -m venv .venv
+source .venv/bin/activate</div></div><div><strong>Windows PowerShell</strong><div class="code">py -m venv .venv
+.venv\Scripts\Activate.ps1</div></div></div><p>不同项目可以使用不同版本的第三方库，减少升级一个项目时影响其他项目的情况。</p><div class="notice">激活后，终端中的 <code>python</code> 和 <code>pip</code> 会指向这个虚拟环境。</div></div>
+<div class="card"><h3>让别人能够重建项目环境</h3><div class="two"><div><strong>记录当前依赖</strong><div class="code">python -m pip install pandas
+python -m pip freeze \
+  &gt; requirements.txt</div></div><div><strong>在新环境恢复</strong><div class="code">python -m pip install \
+  -r requirements.txt
+python -m pip check</div></div></div><p class="muted small">共享项目代码、数据说明和 requirements.txt；通常不提交或共享 .venv 目录，其他人在自己的电脑上重新创建。</p></div></section>
+<section class="lesson" data-page="6"><div class="heading"><div><h2>07 综合订单实践</h2><p>主程序连接模块：计算模块负责算，报表模块负责汇总。</p></div><span class="source">课件第 19–22 页</span></div>
+<div class="lead"><strong>业务任务</strong>读取 orders.csv，检查金额和折扣率，计算实付金额；无效订单显示原因并跳过；最后按渠道汇总。</div>
+<div class="card"><h3>测试数据 orders.csv</h3><div class="table-wrap"><table><thead><tr><th>订单号</th><th>渠道</th><th>金额</th><th>折扣率</th><th>预期</th></tr></thead><tbody><tr><td>O001</td><td>天猫</td><td>640.00</td><td>0.15</td><td><span class="pill">有效</span></td></tr><tr><td>O002</td><td>京东</td><td>360.00</td><td>0.10</td><td><span class="pill">有效</span></td></tr><tr><td>O003</td><td>天猫</td><td>500.00</td><td>0.20</td><td><span class="pill">有效</span></td></tr><tr><td>O004</td><td>抖音</td><td>六百</td><td>0.10</td><td><span class="pill">金额无法转换</span></td></tr><tr><td>O005</td><td>京东</td><td>800.00</td><td>1.20</td><td><span class="pill">折扣率超范围</span></td></tr><tr><td>O006</td><td>抖音</td><td>-100.00</td><td>0.05</td><td><span class="pill">金额为负数</span></td></tr></tbody></table></div><button class="btn primary" id="runOrders">运行订单处理程序</button><div id="orderOutput" class="hidden"><div class="two" style="margin-top:14px"><div class="output"><span class="label">有效订单汇总</span><strong>天猫：944.00 元</strong><strong>京东：324.00 元</strong><span class="muted small">3 笔有效订单参与汇总</span></div><div class="output"><span class="label">被跳过的订单</span><p>O004：could not convert string to float: '六百'</p><p>O005：折扣率必须在0和1之间</p><p>O006：订单金额不能为负数</p></div></div></div></div>
+<div class="card"><h3>三个文件如何协作？</h3><div class="two"><div><strong>order_utils.py</strong><div class="code">def calculate_payable(order):
+  amount = float(order["金额"])
+  rate = float(order["折扣率"])
+  if amount &lt; 0:
+    raise ValueError("订单金额不能为负数")
+  if not 0 &lt;= rate &lt;= 1:
+    raise ValueError("折扣率必须在0和1之间")
+  return amount * (1 - rate)</div></div><div><strong>report_utils.py</strong><div class="code">def summarize_by_channel(orders):
+  totals = {}
+  for order in orders:
+    channel = order["渠道"]
+    totals[channel] = (
+      totals.get(channel, 0.0)
+      + order["实付金额"]
+    )
+  return totals</div></div></div><div style="margin-top:12px"><strong>main.py：组织流程</strong><div class="code">from pathlib import Path
+import csv
+from order_utils import calculate_payable
+from report_utils import summarize_by_channel
+
+path = Path("data") / "orders.csv"
+valid_orders = []
+
+with path.open(encoding="utf-8-sig", newline="") as file:
+  for row in csv.DictReader(file):
+    try:
+      row["实付金额"] = calculate_payable(row)
+    except (KeyError, ValueError) as error:
+      order_id = row.get("订单号", "未知订单")
+      print(f"跳过{order_id}：{error}")
+      continue
+    valid_orders.append(row)
+
+summary = summarize_by_channel(valid_orders)</div></div></div>
+<div class="notice success">关键分工：main.py 负责流程，order_utils.py 负责业务计算，report_utils.py 负责渠道汇总。模块拆分不应改变有效订单的计算结果。</div></section>
+<section class="lesson" data-page="7"><div class="heading"><div><h2>08 检查理解</h2><p>用几个小问题检查是否真正理解了模块、导入和环境。</p></div><span class="source">依据课件第 6–18、23–26 页</span></div>
+<div class="card" id="quiz"><div class="eyebrow">QUICK CHECK · 1 / 4</div><h3 id="quizQuestion">一个保存函数定义和语句的 .py 文件，在 Python 中通常称为什么？</h3><div id="quizOptions"></div><div id="quizFeedback" class="quiz-feedback hidden" aria-live="polite"></div><div class="control-row"><button class="btn primary" id="nextQuiz" disabled>下一题</button><button class="btn" id="restartQuiz">重新练习</button></div></div>
+<div class="card"><h3>本讲的代码组织顺序</h3><div class="step"><b>1</b><div><strong>先明确职责</strong><div class="muted small">决定每一部分代码应该放在哪个模块。</div></div></div><div class="step"><b>2</b><div><strong>再建立导入关系</strong><div class="muted small">检查模块名、所在目录和导入方式。</div></div></div><div class="step"><b>3</b><div><strong>优先查标准库</strong><div class="muted small">标准库无法满足任务时，再评估第三方库。</div></div></div><div class="step"><b>4</b><div><strong>保证环境可重建</strong><div class="muted small">使用虚拟环境和 requirements.txt 记录依赖。</div></div></div></div>
+<div class="card"><h3>课后重构任务</h3><p>选择一个已经能够运行的订单处理程序，在不改变计算结果的前提下，将文件读取、业务计算和报表汇总代码拆分到不同模块中。</p><ul><li>包含 <code>main.py</code> 和至少两个自定义模块；</li><li>准备正常数据和能够触发异常处理的数据；</li><li>对比原程序与重构程序的结果；</li><li>如果使用第三方库，提交 <code>requirements.txt</code>。</li></ul><div class="notice">验收标准：主程序能够正常运行，各模块可以单独阅读，重构前后的有效订单汇总结果一致。</div></div></section>
+</main></div>
+<footer class="footer"><span>课堂白板 A · Python 交互教学</span><span>内容依据：第十讲《代码组织（编程练习）》课件，第 3–26 页。页面模拟指定操作，不执行任意 Python 代码。</span></footer>
+<script>
+(()=>{'use strict';const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let page=0;function go(n){page=n;$$('.lesson').forEach((x,i)=>x.classList.toggle('active',i===n));$$('#nav button').forEach((x,i)=>x.classList.toggle('active',i===n));$('#progress').style.width=((n+1)/8*100)+'%';$('#progressText').textContent=(n+1)+' / 8';window.scrollTo({top:0,behavior:'smooth'});}$('#nav').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(+b.dataset.go)});
+const changeText={commission:['需要在较长的 main.py 中寻找并修改计算代码。','平台佣金属于业务计算规则，但计算函数与读取、报表代码混在一起。'],refund:['退款分析也要清洗订单，容易复制已有代码，随后出现多份不一致的清洗规则。','清洗逻辑独立后，订单处理和退款分析可以调用同一个函数。'],report:['需要浏览与报表无关的文件读取和业务计算代码。','报表职责独立后，修改输出格式通常只需查看 report_utils.py。'],team:['需要提供较大的代码上下文，修改结果也更难检查。','职责边界清楚后，合作者可以集中修改报表模块。']};$('#changeChoices').addEventListener('click',e=>{const b=e.target.closest('[data-change]');if(!b)return;$$('#changeChoices .choice').forEach(x=>x.classList.toggle('selected',x===b));const [a,c]=changeText[b.dataset.change];$('#singleResult').innerHTML='<span class="label">维护影响</span><strong>'+a+'</strong><span class="muted small">'+c+'</span>'});
+const imports={module:['import order_utils\n\npayable = order_utils.calculate_payable(640.0, 0.15)\nprint(f"实付金额：{payable:.2f}元")','实付金额：544.00元','函数来源清楚，调用时带上模块名，优先推荐。'],from:['from order_utils import calculate_payable\n\npayable = calculate_payable(640.0, 0.15)\nprint(f"实付金额：{payable:.2f}元")','实付金额：544.00元','直接使用函数名，适合只需要少量明确函数的情况。'],alias:['import order_utils as ou\n\npayable = ou.calculate_payable(640.0, 0.15)\nprint(f"实付金额：{payable:.2f}元")','实付金额：544.00元','使用 ou 作为模块别名，适合名称较长或已有通用别名的模块。']};$('#importChoices').addEventListener('click',e=>{const b=e.target.closest('[data-import]');if(!b)return;$$('#importChoices .choice').forEach(x=>x.classList.toggle('selected',x===b));const v=imports[b.dataset.import];$('#importCode').textContent=v[0];$('#importOutput').textContent=v[1];$('#importExplain').textContent=v[2]});
+$$('[data-runmode]').forEach(b=>b.addEventListener('click',()=>{$$('[data-runmode]').forEach(x=>x.classList.toggle('selected',x===b));const direct=b.dataset.runmode==='direct';$('#nameValue').textContent=direct?'"__main__"':'"order_utils"';$('#nameOutcome').textContent=direct?'执行':'不执行';$('#nameWhy').textContent=direct?'当前文件是程序入口，条件成立。':'模块作为被导入对象，条件不成立；函数定义仍然可以被使用。'}));
+const errors={missing:['检查模块名、文件名和工作目录','确认文件名与 import 后的模块名一致；确认模块位于 Python 的查找范围中。'],wrong:['查看模块的实际文件位置','运行 print(order_utils.__file__)，确认 Python 导入的是预期文件；检查当前目录是否存在同名文件。'],stale:['重新加载模块或重启内核','Notebook 通常保留已经导入的模块。可使用 importlib.reload(order_utils)，或重新启动内核。']};$('#errorChoices').addEventListener('click',e=>{const b=e.target.closest('[data-error]');if(!b)return;$$('#errorChoices .choice').forEach(x=>x.classList.toggle('selected',x===b));const v=errors[b.dataset.error];$('#errorOutput').innerHTML='<span class="label">排查路径</span><strong>'+v[0]+'</strong><span class="muted small">'+v[1]+'</span>'});
+$('#runStd').addEventListener('click',()=>$('#stdOutput').classList.remove('hidden'));
+$$('[data-install]').forEach(b=>b.addEventListener('click',()=>{$$('[data-install]').forEach(x=>x.classList.toggle('selected',x===b));const nb=b.dataset.install==='notebook';$('#installCode').textContent=nb?'%pip install pandas':'python -m pip install pandas\npython -m pip show pandas';$('#installExplain').textContent=nb?'Notebook 中的 %pip 面向当前内核运行安装命令。':'终端中的 python -m pip 可以明确使用与 python 命令对应的包管理工具。'}));
+$('#runOrders').addEventListener('click',()=>$('#orderOutput').classList.remove('hidden'));
+const qs=[{q:'一个保存相关函数、变量和可执行语句的 .py 文件，在 Python 中通常称为什么？',o:['模块','包','虚拟环境'],a:0,e:'模块通常就是一个 .py 文件；包通常是组织多个模块的目录。'}, {q:'在 main.py 中导入 order_utils 后，下面哪种调用方式能清楚显示函数来源？',o:['calculate_payable(640, 0.15)','order_utils.calculate_payable(640, 0.15)','payable(640, 0.15)'],a:1,e:'import order_utils 后，通过模块名.函数名调用，来源清楚。'}, {q:'直接运行 order_utils.py 时，__name__ 的值是什么？',o:['"order_utils"','"__main__"','None'],a:1,e:'直接运行的模块会把 __name__ 设为 "__main__"；被导入时通常是模块名。'}, {q:'安装 pandas 后仍然无法 import，首先应该核对什么？',o:['是不是把 .venv 文件夹删掉','安装库和运行代码是否使用同一个 Python 环境','是不是必须把 pandas.py 放进项目目录'],a:1,e:'安装位置和实际运行代码的解释器环境必须一致。'}];let qi=0,answered=false,score=0;function renderQuiz(){answered=false;const q=qs[qi];$('#quizQuestion').textContent=q.q;$('#quiz .eyebrow').textContent='QUICK CHECK · '+(qi+1)+' / '+qs.length;$('#quizOptions').innerHTML=q.o.map((v,i)=>`<button class="quiz-option" data-answer="${i}">${String.fromCharCode(65+i)}. ${v}</button>`).join('');$('#quizFeedback').classList.add('hidden');$('#nextQuiz').disabled=true;$('#nextQuiz').textContent=qi===qs.length-1?'查看成绩':'下一题'}$('#quizOptions').addEventListener('click',e=>{const b=e.target.closest('[data-answer]');if(!b||answered)return;answered=true;const idx=+b.dataset.answer,q=qs[qi];$$('.quiz-option').forEach((x,i)=>{if(i===q.a)x.classList.add('correct');else if(i===idx)x.classList.add('wrong')});if(idx===q.a)score++;$('#quizFeedback').classList.remove('hidden');$('#quizFeedback').textContent=(idx===q.a?'回答正确。':'这次没有选对。')+q.e;$('#nextQuiz').disabled=false});$('#nextQuiz').addEventListener('click',()=>{if(!answered)return;if(qi===qs.length-1){$('#quizQuestion').textContent=`练习完成：${score} / ${qs.length} 题正确`;$('#quizOptions').innerHTML='';$('#quizFeedback').classList.remove('hidden');$('#quizFeedback').textContent=score===4?'全部答对，已经掌握本组核心概念。':'可以点击“重新练习”再巩固一次。';$('#nextQuiz').disabled=true;return}qi++;renderQuiz()});$('#restartQuiz').addEventListener('click',()=>{qi=0;score=0;renderQuiz()});renderQuiz();
+$('#projection').addEventListener('click',()=>{document.body.classList.toggle('projection');$('#projection').classList.toggle('active');$('#projection').textContent=document.body.classList.contains('projection')?'退出投影':'投影模式'});$('#reset').addEventListener('click',()=>{go(0);$('#singleResult').innerHTML='<span class="label">维护影响</span><strong>需要在较长的 main.py 中寻找并修改计算代码。</strong><span class="muted small">计算逻辑与其他职责混在一起，定位成本更高。</span>';$('#importCode').textContent=imports.module[0];$('#importOutput').textContent=imports.module[1];$('#importExplain').textContent=imports.module[2];$('#nameValue').textContent='"__main__"';$('#nameOutcome').textContent='执行';$('#nameWhy').textContent='当前文件是程序入口，条件成立。';$('#stdOutput').classList.add('hidden');$('#orderOutput').classList.add('hidden');qi=0;score=0;renderQuiz()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('projection')){$('#projection').click()}});})();
+</script></body></html>
