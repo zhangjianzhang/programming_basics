@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="以跨境订单为例，通过逐步执行和结果对照，理解 Python 的变量、数据类型、表达式、输入输出与业务测试。">
+  <meta name="color-scheme" content="light">
+  <title>变量与订单实验室｜Python 第二讲</title>
+  <style>:root {
+  --bg:#f2f5fa; --surface:#fff; --ink:#17283d; --muted:#536477;
+  --accent:#245fc4; --accent-ink:#fff; --selected:#e4edfc; --line:#d6dfeb;
+  --changed:#6d4c00; --changed-bg:#fff0c9; --error:#a32d32; --error-bg:#fff0f0;
+  --soft:#f6f8fc; --code-bg:#eef3fa; --code-ink:#17314d;
+  --token-str:#236242; --token-kw:#754b9a; --token-num:#9a4a0f;
+  --radius:10px; --tile-radius:12px; --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono","PingFang SC","Microsoft YaHei",monospace;
+  font-family:var(--font); color:var(--ink); font-synthesis:none; font-size:17px; color-scheme:light;
+}
+* {box-sizing:border-box}
+body {margin:0;background:var(--bg);color:var(--ink);line-height:1.7;min-width:320px}
+button,input,select {font:inherit;color:inherit}
+button,summary,a,input,select {-webkit-tap-highlight-color:transparent}
+button {cursor:pointer}
+button:disabled {cursor:default;opacity:.5}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+a {color:var(--accent);text-decoration-thickness:1px;text-underline-offset:4px}
+h1,h2,h3,p {margin:0}
+button,input,select {border-radius:var(--radius)}
+button {transition:background-color .15s,border-color .15s}
+button:hover:not(:disabled) {filter:brightness(.98)}
+code,pre,.mono {font-family:var(--mono)}
+code {font-size:.95em}
+.skip-link {position:fixed;left:16px;top:-100px;z-index:30;padding:12px 20px;background:var(--surface)}
+.skip-link:focus {top:10px}
+.topbar {display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:92px;padding:18px 36px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand {display:flex;gap:13px;align-items:center;color:var(--ink);text-decoration:none;font-size:21px;font-weight:750;line-height:1.25;white-space:nowrap}
+.brand small {display:block;font-weight:500;color:var(--muted);font-size:12px;letter-spacing:.06em;margin-top:7px}
+.brand-mark {display:flex;align-items:center;justify-content:center;gap:2px;color:var(--accent);font:700 36px/1 var(--mono);width:48px;height:48px;background:var(--selected);border-radius:12px}
+.brand-mark b {font-weight:500}
+.top-actions {display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.theme-options {display:flex;gap:5px;padding:4px;background:var(--soft);border:1px solid var(--line);border-radius:12px}
+.theme-options button {display:flex;align-items:center;gap:8px;min-height:42px;padding:7px 12px;background:transparent;border:1px solid transparent;font-size:14px;white-space:nowrap}
+.theme-options button[aria-pressed=true] {background:var(--surface);border-color:var(--line);font-weight:700}
+.theme-dot {width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.2)}
+.dot-a {background:#245fc4}.dot-b {background:#086a5b}.dot-c {background:#173a58;outline:1px solid #83d8f3}
+.btn {display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:9px 17px;border:1px solid var(--line);background:var(--surface);font-size:15px;font-weight:600;line-height:1.5;text-align:center}
+.btn-primary {background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-subtle {background:transparent;color:var(--muted)}
+.btn-small {font-size:13px;padding:7px 12px;min-height:38px}
+.shell {display:grid;grid-template-columns:218px minmax(0,1fr);max-width:1580px;margin:auto}
+.sidebar {padding:36px 22px 26px 28px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:29px}
+.course-name span {font-size:13px;color:var(--muted)}
+.course-name strong {display:block;font-size:22px;line-height:1.5;font-weight:650;margin-top:8px;letter-spacing:-.03em}
+.lesson-nav {display:flex;flex-direction:column;gap:9px}
+.lesson-nav a {position:relative;display:flex;gap:13px;align-items:center;min-height:48px;padding:10px 12px;text-decoration:none;color:var(--muted);font-size:16px;border-radius:7px}
+.lesson-nav a[aria-current=page] {background:var(--selected);color:var(--accent);font-weight:700}
+.nav-index {font:500 13px/1 var(--mono);opacity:.8}
+.nav-done {margin-left:auto;font-size:14px;color:var(--accent)}
+.sidebar-bottom {margin-top:auto;padding-top:36px;color:var(--muted);font-size:13px}
+.progress-note {display:block;margin-top:12px;font-size:12px}
+.lesson {min-width:0;padding:31px 34px 38px}
+.lesson-heading {display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}
+.source-tag {color:var(--muted);font-size:13px;margin-bottom:7px}
+h1 {font-size:32px;line-height:1.35;font-weight:750;letter-spacing:-.035em}
+.lesson-question {font-size:17px;line-height:1.7;color:var(--muted);margin-top:10px;max-width:800px}
+.lesson-heading>.btn {flex-shrink:0;margin-top:7px}
+.workbench {display:grid;grid-template-columns:minmax(225px,.72fr) minmax(0,2.4fr);gap:20px;align-items:stretch}
+.control-panel {display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);padding:22px;border-radius:var(--radius);min-width:0}
+.visual-panel {min-width:0;display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:25px 25px 22px}
+.control-label {display:block;font-size:14px;font-weight:700;line-height:1.5;margin-bottom:8px}
+.hint {font-size:13px;color:var(--muted);line-height:1.75}
+.field-row {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.field-row label {font-size:13px;display:flex;flex-direction:column;gap:5px;color:var(--muted)}
+.field-row input {width:100%;min-height:46px;border:1px solid var(--line);background:var(--soft);font-family:var(--mono);font-size:18px;padding:7px 9px;color:var(--ink)}
+.single-field input,.single-field select,.control-panel select,.control-panel>input {width:100%;min-height:46px;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.segmented {display:flex;gap:5px;flex-wrap:wrap}
+.segmented button {min-height:42px;padding:8px 12px;flex:1 0 auto;background:var(--soft);border:1px solid var(--line);font-size:14px;line-height:1.4}
+.segmented button[aria-pressed=true],.segmented .is-active,.segmented .active {color:var(--accent);border-color:var(--accent);background:var(--selected);font-weight:700}
+.action-stack {display:flex;flex-direction:column;gap:8px}
+.action-stack .btn {width:100%;justify-content:flex-start;font-size:14px}
+.action-stack .btn[aria-pressed=true] {color:var(--accent);border-color:var(--accent);background:var(--selected)}
+.preset-row {display:flex;gap:6px;flex-wrap:wrap}
+.preset-row button {border:1px solid var(--line);background:var(--surface);padding:6px 10px;min-height:38px;font-size:13px}
+.preset-row button:hover {border-color:var(--accent)}
+.control-panel hr {border:0;border-top:1px solid var(--line);margin:0}
+.visual-header {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.visual-header h2 {font-size:17px;font-weight:650;line-height:1.4}
+.visual-header code {font-size:17px;font-weight:650}
+.pill {font-size:12px;line-height:1.4;padding:5px 8px;border-radius:5px;background:var(--soft);color:var(--muted)}
+.pill.changed {background:var(--changed-bg);color:var(--changed)}
+.rail-scroll {overflow-x:auto;padding:6px 2px 7px;max-width:100%}
+.list-rail {display:flex;gap:8px;align-items:stretch;min-width:min-content;padding:8px 0}
+.list-tile {display:flex;flex:1 0 90px;min-width:0;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:var(--tile-radius);background:var(--soft);position:relative;text-align:center;overflow:hidden}
+.pos-index,.neg-index {font-family:var(--mono);font-size:13px;line-height:1.4;padding:7px 7px 6px;color:var(--muted);width:100%;background:var(--surface)}
+.pos-index {border-bottom:1px solid var(--line)}
+.neg-index {border-top:1px solid var(--line)}
+.tile-value {display:flex;align-items:center;justify-content:center;flex:1;padding:17px 9px;min-height:70px;font-size:17px;font-weight:650;white-space:nowrap}
+.list-tile.selected {border:2px solid var(--accent);background:var(--selected)}
+.list-tile.selected .pos-index,.list-tile.selected .neg-index {background:var(--selected);color:var(--accent)}
+.list-tile.changed {border-color:var(--changed);background:var(--changed-bg)}
+.list-tile.changed .pos-index {background:var(--changed-bg);color:var(--changed)}
+.list-tile.stop {border-style:dashed;border-color:var(--muted)}
+.take-order {font-size:11px;font-weight:650;color:var(--accent);padding:3px 5px 5px}
+.stop-flag {font-size:11px;padding:3px 5px 5px;color:var(--muted)}
+.list-legend {display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px}
+.list-legend span {display:flex;gap:6px;align-items:center}
+.legend-swatch {display:inline-block;width:11px;height:11px;border:1px solid var(--accent);background:var(--selected)}
+.sublist {display:flex;gap:5px;align-items:center;padding:0 5px;font-size:14px;font-family:var(--mono)}
+.sublist-item {padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:4px;white-space:nowrap;font-family:var(--font)}
+.list-tile.nested {min-width:180px;flex:1.5 0 180px}
+.empty-list {font:22px/1.5 var(--mono);padding:20px;color:var(--muted);background:var(--soft);border:1px dashed var(--line);border-radius:var(--radius);width:100%}
+.selection-result {border-top:1px solid var(--line);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.result-title {font-size:14px;color:var(--muted);font-weight:500}
+.result-value {font-size:18px;line-height:1.6;color:var(--accent);overflow-wrap:anywhere}
+.path {display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.path b {border:1px solid var(--line);border-radius:5px;min-width:28px;padding:1px 6px;text-align:center;background:var(--surface);color:var(--accent)}
+.result-pair {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.result-cell {min-width:0;padding:15px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);font-size:14px}
+.result-cell h3,.result-cell strong {font-size:14px;display:block;margin-bottom:7px}
+.result-cell code,.result-cell pre {display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin:0}
+.compare-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.comparison {min-width:0;display:flex;flex-direction:column;gap:12px}
+.comparison+ .comparison {border-left:1px solid var(--line);padding-left:20px}
+.comparison h3 {font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)}
+.comparison .list-tile {flex-basis:65px}
+.comparison .tile-value {font-size:15px;min-height:62px;padding:12px 7px}
+.comparison .list-rail {gap:5px}
+.return-line {display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;border-top:1px solid var(--line);padding-top:10px;color:var(--muted)}
+.return-line code {color:var(--ink);font-size:16px;font-weight:650;white-space:pre-wrap;overflow-wrap:anywhere}
+.evidence {display:grid;grid-template-columns:minmax(230px,.9fr) minmax(0,1.5fr);gap:20px;margin-top:20px;align-items:start}
+.rule-panel {padding:6px 2px;min-width:0;font-size:16px;line-height:1.85}
+.rule-panel p+p {margin-top:11px}
+.rule-note {line-height:1.8}
+.rule-note strong {color:var(--accent)}
+.rule-note .hint {display:block;margin-top:9px}
+.code-panel {min-width:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--code-bg)}
+.code-toolbar {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 15px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.code-toolbar .btn {min-height:31px;font-size:12px;padding:4px 9px}
+.code-panel pre {font-size:15px;line-height:1.8;color:var(--code-ink);padding:16px 18px;margin:0;overflow-x:auto}
+.code-line {display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;min-height:1.8em}
+.line-no {color:var(--muted);font-size:11px;user-select:none;line-height:2.4}
+.line-text {white-space:pre-wrap;overflow-wrap:anywhere}
+.token-str {color:var(--token-str)}.token-kw {color:var(--token-kw)}.token-num {color:var(--token-num)}.token-comment {color:var(--muted)}
+.error-message {padding:14px 17px;border-radius:var(--radius);background:var(--error-bg);color:var(--error);line-height:1.7;font-size:14px;border:1px solid currentColor}
+.status-note {font-size:14px;line-height:1.7;color:var(--muted)}
+.notice {padding:11px 14px;background:var(--changed-bg);color:var(--changed);border-radius:var(--radius);font-size:14px;line-height:1.7}
+.try-next {display:flex;gap:12px;font-size:14px;color:var(--muted);padding:20px 0 16px;border-bottom:1px solid var(--line);margin-top:2px}
+.try-next strong {flex-shrink:0;color:var(--ink);font-size:14px}
+.check-panel {margin-top:17px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.check-panel summary {cursor:pointer;padding:15px 20px;font-size:15px;font-weight:650}
+.check-content {padding:0 20px 20px}
+.check-question {font-size:17px;line-height:1.7;margin:8px 0 12px}
+.quiz-code {white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.8 var(--mono);padding:12px 15px;background:var(--soft);border-radius:7px;margin:0 0 14px;color:var(--muted)}
+.quiz-options {display:grid;gap:9px}
+.quiz-option {display:flex;gap:12px;text-align:left;align-items:flex-start;padding:12px 14px;background:var(--surface);border:1px solid var(--line);min-height:46px;font-size:14px;line-height:1.65}
+.quiz-letter {font-family:var(--mono);font-size:12px;flex-shrink:0;padding-top:2px;color:var(--muted)}
+.quiz-option[aria-pressed=true] {border-color:var(--accent);background:var(--selected)}
+.quiz-feedback {margin-top:13px;padding:12px 15px;line-height:1.8;font-size:14px;background:var(--selected);border-radius:var(--radius)}
+.quiz-feedback.incorrect {background:var(--changed-bg);color:var(--changed)}
+.chart-bars {display:flex;flex-direction:column;gap:10px;padding:8px 0}
+.bar-line {display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center}
+.bar-index {font:11px/1 var(--mono);color:var(--muted);text-align:right}
+.bar-track {position:relative;min-height:31px;display:flex;align-items:center;background:var(--soft)}
+.bar-fill {position:absolute;left:0;top:0;bottom:0;background:var(--selected);border-left:2px solid var(--accent)}
+.bar-label {position:relative;padding:2px 9px;font-size:13px;font-family:var(--mono);color:var(--ink);white-space:nowrap}
+.bar-scale {display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-left:40px;border-top:1px solid var(--line);padding-top:2px}
+.raw-value {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+.sort-trap {margin-top:8px;border-top:1px solid var(--line);padding-top:15px}
+.sort-trap summary {font-size:14px;color:var(--muted);cursor:pointer}
+.sort-trap .notice {margin-top:12px}
+.copy-graph {width:100%;height:auto;display:block}
+.copy-graph text {font-family:var(--font)}
+.memory-graph {width:100%;overflow-x:auto}
+.data-table {width:100%;border-collapse:separate;border-spacing:0;font-size:16px}
+.data-table th {font-size:12px;font-weight:500;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+.data-table td {padding:0;border-bottom:1px solid var(--line);background:var(--surface)}
+.data-table td:first-child {padding:10px 12px;color:var(--muted);font-family:var(--mono);font-size:13px;width:55px}
+.data-table button {width:100%;min-height:56px;display:block;text-align:left;padding:12px;border:2px solid transparent;background:transparent;border-radius:0;font-size:16px}
+.data-table tr.selected-row td,.data-table tr.is-row td {background:var(--soft)}
+.data-table button.selected,.data-table button[aria-pressed=true],.data-table .is-cell button {background:var(--selected);border-color:var(--accent);color:var(--accent);font-weight:700}
+.table-wrap {overflow-x:auto;width:100%}
+.table-scroll {overflow-x:auto;width:100%}
+.table-edit-row {display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}
+.table-edit-row input {min-height:46px;min-width:100px;flex:1;width:100%;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.table-edit-controls>.control-label {margin-top:12px}
+.table-lookup-results {margin-top:24px}
+.table-lookup-results .python-value {margin:12px 0 4px;overflow-wrap:anywhere;font-family:var(--mono);font-size:17px}
+.data-table .is-selected-row td {background:var(--soft)}
+.data-table tbody th {border-bottom:1px solid var(--line)}
+.data-table .is-selected-row th {background:var(--soft)}
+.practice-actions {display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.practice-step-title {font-size:17px}
+.practice-panel summary>.hint {display:block;margin-top:4px}
+.practice-data-table {min-width:265px}
+.practice-data-table td {padding:8px;font-size:12px}
+.practice-data-table th {font-size:10px;padding:7px}
+.practice-comparison h4 {font-size:14px;margin:0 0 10px}
+.practice-statistics .result-cell>strong {font-size:28px;color:var(--accent)}
+.sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.copy-diagram {overflow-x:auto;width:100%}
+.table-path {font-size:22px;font-family:var(--mono);padding:12px 0;color:var(--accent)}
+.table-reading {display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.practice-panel {margin-top:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.practice-panel summary {padding:13px 16px;cursor:pointer;font-weight:650;font-size:15px}
+.practice-body {padding:0 16px 18px;font-size:14px}
+.practice-body p {margin:8px 0}
+.practice-body pre {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;background:var(--code-bg);padding:12px;margin:12px 0;border-radius:7px}
+.practice-controls {display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.practice-panel .result-pair {grid-template-columns:repeat(2,minmax(0,1fr))}
+.site-footer {display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-top:1px solid var(--line);max-width:1580px;margin:auto;padding:20px 36px;font-size:12px;color:var(--muted)}
+.site-guide {max-width:680px;min-width:160px}
+.site-guide summary {cursor:pointer;text-align:right;color:var(--muted)}
+.site-guide>div {padding:18px 0;font-size:14px}
+.site-guide p+p {margin-top:12px}
+.site-guide .btn {margin-top:14px}
+.toast {position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:8px;font-size:14px;z-index:40;pointer-events:none;opacity:0;transition:opacity .15s}
+.toast.visible {opacity:1}
+.noscript {padding:30px;background:var(--error-bg);color:var(--error)}
+
+/* A: the list is the main blackboard; the controls sit directly below it. */
+body[data-theme=whiteboard] .workbench {grid-template-columns:1fr}
+body[data-theme=whiteboard] .visual-panel {grid-row:1}
+body[data-theme=whiteboard] .control-panel {display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;padding:18px 22px}
+body[data-theme=whiteboard] .control-panel>div {flex:1 1 160px}
+body[data-theme=whiteboard] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=whiteboard] .control-panel>.btn {flex:0 0 auto}
+body[data-theme=whiteboard] .control-panel hr {display:none}
+body[data-theme=whiteboard] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=whiteboard] .action-stack .btn {width:auto;justify-content:center;flex:1 1 auto}
+body[data-theme=whiteboard] .list-tile {flex-basis:85px}
+body[data-theme=whiteboard] .tile-value {font-size:21px;min-height:74px}
+
+/* B: a green business desk with horizontal navigation and a task column. */
+body[data-theme=workbench] {--bg:#ecf3f0;--surface:#fff;--ink:#173c36;--muted:#4d6860;--accent:#086a5b;--accent-ink:#fff;--selected:#dcefe8;--line:#ccdcd5;--soft:#f3f8f5;--changed:#745200;--changed-bg:#fcedbc;--code-bg:#edf4f0;--code-ink:#193f35;--token-str:#236242;--token-kw:#7b4283;--token-num:#91501c;--radius:4px;--tile-radius:4px}
+body[data-theme=workbench] .shell {grid-template-columns:1fr}
+body[data-theme=workbench] .sidebar {padding:14px 36px;border-right:0;border-bottom:1px solid var(--line);flex-direction:row;align-items:center;gap:30px;background:var(--surface)}
+body[data-theme=workbench] .course-name,body[data-theme=workbench] .sidebar-bottom {display:none}
+body[data-theme=workbench] .lesson-nav {flex-direction:row;flex-wrap:wrap;gap:9px;width:100%}
+body[data-theme=workbench] .lesson-nav a {flex:1;justify-content:center;font-size:15px;border-radius:3px;min-height:43px;white-space:nowrap}
+body[data-theme=workbench] .nav-done {margin-left:0}
+body[data-theme=workbench] .lesson {padding:28px 44px 40px}
+body[data-theme=workbench] .workbench {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .control-panel {border-top:3px solid var(--accent)}
+body[data-theme=workbench] .evidence {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .brand-mark {border-radius:4px}
+body[data-theme=workbench] .comparison h3 {font-size:22px}
+
+/* C: an object diagram on a deep-blue laboratory bench. */
+body[data-theme=blueprint] {--bg:#101b2d;--surface:#17253a;--ink:#f0f5fc;--muted:#b4c5db;--accent:#83d8f3;--accent-ink:#112339;--selected:#263f5a;--line:#38516c;--soft:#1d2e46;--changed:#f3c97f;--changed-bg:#3c3324;--error:#ffb4bb;--error-bg:#482b37;--code-bg:#132136;--code-ink:#dce8f8;--token-str:#a4dbc0;--token-kw:#d4b9f4;--token-num:#f3c97f;--radius:7px;--tile-radius:3px;color-scheme:dark}
+body[data-theme=blueprint] .topbar {border-bottom-color:var(--line)}
+body[data-theme=blueprint] .sidebar {background:#101b2d}
+body[data-theme=blueprint] .brand-mark {background:transparent;border:1px solid var(--accent);border-radius:3px}
+body[data-theme=blueprint] .workbench {grid-template-columns:1fr}
+body[data-theme=blueprint] .visual-panel {grid-row:1;border:1px solid var(--line);border-top:3px solid var(--accent)}
+body[data-theme=blueprint] .control-panel {flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;background:var(--soft)}
+body[data-theme=blueprint] .control-panel>div {flex:1 1 170px}
+body[data-theme=blueprint] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=blueprint] .control-panel hr {display:none}
+body[data-theme=blueprint] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=blueprint] .action-stack .btn {width:auto;flex:1 1 auto;justify-content:center}
+body[data-theme=blueprint] .list-tile {border-width:1px}
+body[data-theme=blueprint] .list-tile.selected {border-width:2px}
+body[data-theme=blueprint] .pos-index {background:var(--selected)}
+body[data-theme=blueprint] .tile-value {font-size:21px}
+body[data-theme=blueprint] .evidence {grid-template-columns:minmax(230px,1fr) minmax(0,1.6fr)}
+
+/* Projection raises teaching text sizes without scaling the whole page. */
+body.projecting {font-size:20px}
+body.projecting .theme-options,body.projecting .course-name,body.projecting .sidebar-bottom,body.projecting .check-panel,body.projecting .site-footer {display:none}
+body.projecting .shell {grid-template-columns:185px minmax(0,1fr)}
+body.projecting .sidebar {padding:25px 15px}
+body.projecting .lesson {padding:26px}
+body.projecting .lesson-nav a {font-size:16px}
+body.projecting h1 {font-size:38px}
+body.projecting .lesson-question,body.projecting .rule-panel {font-size:20px}
+body.projecting .tile-value {font-size:25px;min-height:84px}
+body.projecting .code-panel pre {font-size:20px}
+body.projecting .hint,body.projecting .control-label,body.projecting .btn,body.projecting .status-note,body.projecting .result-title {font-size:17px}
+body.projecting .result-value {font-size:22px}
+body.projecting[data-theme=workbench] .shell {grid-template-columns:1fr}
+body.projecting[data-theme=workbench] .sidebar {padding:10px 26px}
+
+@media (max-width:1150px) {
+  .topbar {padding:16px 24px;gap:18px}.top-actions {gap:10px}.theme-options button {font-size:12px;padding:7px 9px}.brand {font-size:19px}
+  .shell {grid-template-columns:185px minmax(0,1fr)}.sidebar {padding:28px 15px 25px 20px}.lesson {padding:27px 25px}.lesson-nav a {font-size:14px;padding:10px}
+  .course-name strong {font-size:20px}.workbench {grid-template-columns:220px minmax(0,1fr)}.visual-panel {padding:22px 20px}.control-panel {padding:20px}
+  body[data-theme=workbench] .lesson {padding:25px 30px}.theme-dot {width:8px;height:8px}.theme-options {gap:2px}
+}
+@media (max-width:900px) {
+  .topbar {flex-wrap:wrap;gap:14px;min-height:unset;padding:16px 22px}.top-actions {flex:1}.theme-options button {font-size:12px}.brand {font-size:18px}.projection-button {font-size:12px;padding:8px 12px}
+  .shell,.projecting .shell {grid-template-columns:1fr!important}.sidebar {padding:12px 20px;border-right:0;border-bottom:1px solid var(--line);background:var(--surface)}
+  .course-name,.sidebar-bottom {display:none}.lesson-nav {flex-direction:row;flex-wrap:wrap;gap:5px}.lesson-nav a {padding:7px 10px;min-height:38px;font-size:13px}.nav-index {font-size:11px}.nav-done {margin-left:3px}
+  .lesson {padding:24px}.workbench,body[data-theme=workbench] .workbench {grid-template-columns:1fr}.control-panel {flex-direction:row;flex-wrap:wrap}.control-panel>div {flex:1 1 180px}.control-panel>.hint {flex:1 1 180px}
+  .visual-panel {grid-row:1}.evidence,body[data-theme=workbench] .evidence,body[data-theme=blueprint] .evidence {grid-template-columns:1fr}.evidence {gap:14px}.rule-panel {padding:2px}
+  body[data-theme=workbench] .sidebar {padding:12px 20px}.site-footer {padding:20px 24px}.control-panel hr {display:none}.action-stack {flex-direction:row;flex-wrap:wrap}.action-stack .btn {width:auto;flex:1;justify-content:center}
+  h1 {font-size:29px}.lesson-question {font-size:15px}.lesson-heading>.btn {font-size:12px;padding:8px 10px}.source-tag {font-size:12px}
+}
+@media (max-width:600px) {
+  .topbar {padding:14px 16px}.brand-mark {width:38px;height:38px;font-size:29px}.brand {font-size:17px}.brand small {font-size:10px}
+  .top-actions {display:contents}.theme-options {order:3;width:100%;justify-content:space-between}.theme-options button {flex:1;justify-content:center;padding:8px 3px;font-size:11px;gap:5px;min-height:40px}.projection-button {margin-left:auto;font-size:12px}
+  .sidebar,body[data-theme=workbench] .sidebar {padding:10px 12px}.lesson-nav {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:3px}.lesson-nav a,body[data-theme=workbench] .lesson-nav a {font-size:12px;padding:8px 5px;gap:7px;justify-content:center}.nav-done {display:none}
+  .lesson,body[data-theme=workbench] .lesson,body.projecting .lesson {padding:20px 14px}.lesson-heading {gap:10px;margin-bottom:18px}.source-tag {font-size:11px}h1 {font-size:26px}.lesson-question {font-size:14px}.lesson-heading>.btn {font-size:11px;padding:7px 10px;min-height:38px}
+  .visual-panel {padding:18px 14px;gap:14px}.control-panel,body[data-theme=whiteboard] .control-panel,body[data-theme=blueprint] .control-panel {padding:16px 14px;gap:14px;flex-direction:column;align-items:stretch}
+  .control-panel>div,.control-panel>.hint,body[data-theme=whiteboard] .control-panel>div,body[data-theme=blueprint] .control-panel>div,body[data-theme=whiteboard] .control-panel>.hint,body[data-theme=blueprint] .control-panel>.hint {flex:initial}
+  .list-tile,body[data-theme=whiteboard] .list-tile {flex-basis:82px}.tile-value,body[data-theme=whiteboard] .tile-value,body[data-theme=blueprint] .tile-value {font-size:16px;min-height:62px}.pos-index,.neg-index {font-size:12px}
+  .compare-grid {grid-template-columns:1fr;gap:20px}.comparison+.comparison {border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px}.result-pair {grid-template-columns:1fr}.result-value {font-size:16px}.visual-header h2 {font-size:15px}
+  .rule-panel {font-size:15px}.code-panel pre {font-size:13px;padding:14px 12px}.code-line {gap:7px;grid-template-columns:18px minmax(0,1fr)}.try-next {font-size:13px;gap:9px;flex-direction:column}.try-next strong {font-size:13px}
+  .site-footer {padding:18px 16px;flex-direction:column;font-size:11px}.site-guide {min-width:0;max-width:100%}.site-guide summary {text-align:left}.data-table button {font-size:14px;padding:9px;min-height:52px}.data-table th {padding:8px;font-size:11px}.data-table td:first-child {width:35px;padding:8px}
+  .check-panel summary {padding:14px}.check-content {padding:0 14px 16px}.quiz-code {font-size:11px}.quiz-option {font-size:12px}.check-question {font-size:15px}.table-path {font-size:18px}.memory-graph svg,.copy-diagram svg {min-width:650px}
+  .practice-panel .result-pair {grid-template-columns:1fr}.btn,.segmented button,.theme-options button,.lesson-nav a,.preset-row button,.code-toolbar .btn {min-height:44px}
+  body.projecting h1 {font-size:30px}body.projecting .code-panel pre {font-size:16px}
+}
+@media (prefers-reduced-motion:reduce) {*,*:before,*:after {transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media print {.top-actions,.sidebar,.control-panel,.check-panel,.site-footer,.try-next,.toast {display:none!important}.shell {display:block}.lesson {padding:0}.code-panel,.visual-panel {break-inside:avoid}body {background:#fff;color:#17283d}.workbench,.evidence {display:block}.rule-panel {padding:16px 0}}
+
+/* Sixth lecture: execution state, not object references. */
+textarea {font:inherit;color:inherit}
+textarea:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+.flow-wide {flex:1 1 100%!important;min-width:0}
+.control-panel .single-field {min-width:160px}
+.preset-row button[aria-pressed=true] {background:var(--selected);color:var(--accent);border-color:var(--accent);font-weight:650}
+.flow-branches {display:grid;gap:10px}
+.flow-branch {display:grid;grid-template-columns:38px 1fr;gap:12px;padding:15px 18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft)}
+.flow-branch.is-selected {border-color:var(--accent);background:var(--selected)}
+.flow-branch.is-false {background:var(--surface);color:var(--muted)}
+.flow-branch-number {font:13px/1.8 var(--mono);padding-top:1px;color:var(--muted)}
+.flow-branch code {font-size:14px;overflow-wrap:anywhere}
+.flow-branch h3 {font-size:18px;line-height:1.5;margin-top:3px}
+.flow-branch p {font-size:13px;color:var(--muted);margin-top:3px}
+.flow-branch>div:last-child {display:grid;grid-template-columns:minmax(170px,1fr) minmax(100px,.7fr) minmax(180px,1.2fr);gap:14px;align-items:center;min-width:0}
+.flow-branch h3,.flow-branch p {margin-top:0}
+.flow-branch.is-selected p {color:var(--accent)}
+.flow-decision-result,.flow-outside {display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 16px;background:var(--selected);border-radius:var(--radius)}
+.flow-decision-result span,.flow-outside span {color:var(--muted);font:14px var(--mono)}
+.flow-decision-result strong {font-size:23px;color:var(--accent)}
+.flow-outside code {font-size:14px}
+.flow-outside strong {font-size:14px}
+.flow-metrics {display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.flow-metric {display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;min-width:0}
+.flow-metric span {font-size:13px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+.flow-metric strong {font-size:25px;line-height:1.3;color:var(--accent);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.flow-metric small {font-size:12px;color:var(--muted)}
+.flow-four-metrics {grid-template-columns:repeat(4,minmax(0,1fr))}
+.flow-four-metrics strong {font-size:22px}
+.flow-table-wrap {overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:var(--radius)}
+.flow-table {width:100%;border-collapse:collapse;text-align:left;font-size:14px;white-space:normal}
+.flow-table th,.flow-table td {padding:11px 13px;border-bottom:1px solid var(--line);line-height:1.5}
+.flow-table thead {background:var(--soft);font-size:13px;color:var(--muted)}
+.flow-table tbody tr:last-child th,.flow-table tbody tr:last-child td {border-bottom:0}
+.flow-table tbody th {font-weight:650}
+.flow-current-row {background:var(--changed-bg)}
+.flow-current-row th:first-child {box-shadow:inset 3px 0 var(--changed)}
+.flow-selected-row {background:var(--selected)}
+.flow-order-status {font:12px var(--mono);color:var(--muted)}
+.flow-order-status.is-paid {color:var(--accent)}
+.flow-current-item {display:flex;flex-direction:column;gap:6px;border-left:3px solid var(--accent);padding:10px 14px;background:var(--soft)}
+.flow-current-item span {font-size:13px;color:var(--muted)}
+.flow-current-item code {font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.flow-banner {display:flex;justify-content:space-between;gap:16px;align-items:center;border:1px solid var(--line);padding:10px 14px;border-radius:var(--radius)}
+.flow-banner code {font-size:14px;overflow-wrap:anywhere}
+.flow-banner strong {color:var(--accent)}
+.flow-execution {border-top:1px solid var(--line);padding-top:18px;display:grid;gap:14px}
+.flow-stepper {display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flow-stepper .btn {font-size:14px;min-height:40px;padding:7px 12px}
+.flow-step-count {margin-left:auto;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.flow-step-note {padding:11px 14px;background:var(--selected);border-left:3px solid var(--accent);border-radius:4px;min-height:56px;font-size:14px;line-height:1.65}
+.flow-step-note>strong {font-weight:550}
+.flow-current-code {display:flex;gap:13px;margin-top:7px;align-items:baseline;min-width:0}
+.flow-current-code span {font:11px var(--mono);white-space:nowrap;color:var(--muted)}
+.flow-current-code code {font:13px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.flow-output {display:grid;grid-template-columns:80px minmax(0,1fr);gap:12px;padding:12px 14px;background:var(--soft);border-radius:var(--radius)}
+.flow-output>span {font-size:12px;color:var(--muted)}
+.flow-output pre {margin:0;font:14px/1.7 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;max-height:185px;overflow-y:auto}
+.flow-muted {color:var(--muted);font-size:13px}
+.flow-error-text {color:var(--error)}
+.code-line.is-current {background:var(--selected);box-shadow:inset 3px 0 var(--accent)}
+.code-line.is-current .line-no {color:var(--accent);font-weight:700}
+.code-line {padding:0 4px}
+.flow-edit-table input,.flow-edit-table select {min-width:0;width:100%;min-height:40px;padding:5px 8px;border:1px solid var(--line);background:var(--surface);border-radius:5px;font-size:14px}
+.flow-edit-table th:first-child {width:17%}
+.flow-edit-table td:nth-child(2) {width:30%}
+.flow-edit-table td:nth-child(3) {width:53%}
+body.projecting .flow-step-note,body.projecting .flow-current-code code,body.projecting .flow-table,body.projecting .flow-output pre {font-size:18px}
+body.projecting .flow-branch h3 {font-size:22px}
+body.projecting .flow-metric strong {font-size:28px}
+@media(max-width:1100px) {.flow-four-metrics {grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1100px) and (min-width:901px) {.flow-branch>div:last-child {grid-template-columns:minmax(140px,1fr) minmax(90px,.7fr)}.flow-branch p {grid-column:1/-1}}
+@media(max-width:600px) {
+  .flow-branch {grid-template-columns:25px 1fr;gap:8px;padding:12px}
+  .flow-branch>div:last-child {display:block}.flow-branch h3,.flow-branch p {margin-top:3px}
+  .flow-branch code {font-size:12px}.flow-branch h3 {font-size:17px}
+  .flow-metrics {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .flow-metric {padding:11px 12px}.flow-metric strong {font-size:21px}
+  .flow-table {font-size:12px}.flow-table th,.flow-table td {padding:9px 7px}
+  .flow-order-status {font-size:10px}
+  .flow-stepper .btn {font-size:12px;padding:7px 10px;flex:1 1 38%}
+  .flow-step-count {margin-left:0;flex-basis:100%;text-align:center}
+  .flow-output {grid-template-columns:1fr;gap:6px}
+  .flow-output pre {font-size:12px}
+  .flow-current-code {display:block}.flow-current-code span {display:block;margin-bottom:5px}
+  .flow-edit-table input,.flow-edit-table select {font-size:12px;padding:5px}
+  body[data-theme=whiteboard] .control-panel>.flow-wide,body[data-theme=whiteboard] .control-panel>.flow-cv-wide {flex:initial!important}
+}
+
+
+/* Second lecture: reusable variable rows. */
+.b2-shared-vars{display:grid;gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0}
+.b2-shared-vars>div{display:grid;grid-template-columns:minmax(120px,1fr) minmax(90px,1.2fr) auto;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+.b2-shared-vars>div:last-child{border-bottom:0}
+.b2-shared-vars code{font:14px/1.6 var(--mono);overflow-wrap:anywhere;white-space:pre-wrap;min-width:0}
+.b2-var-name{color:var(--muted)}
+.b2-var-value{color:var(--ink);font-weight:600!important}
+.b2-shared-vars .pill{font-size:12px;align-self:center}
+body.projecting .b2-shared-vars code{font-size:18px}
+@media(max-width:600px){.b2-shared-vars>div{grid-template-columns:minmax(0,1fr) auto;gap:5px 9px}.b2-var-name{grid-column:1/-1}.b2-shared-vars code{font-size:13px}}
+
+/* Slide 2 core: names, values, expressions and type transitions. */
+.b2-assignment-flow {display:grid;grid-template-columns:minmax(0,1fr) 22px minmax(0,1.15fr) 22px minmax(0,1fr);gap:10px;align-items:stretch}
+.b2-assignment-flow section {padding:17px 15px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft);display:flex;flex-direction:column;gap:10px;min-width:0}
+.b2-assignment-flow section>span {font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.b2-assignment-flow strong {font:600 23px/1.5 var(--mono);overflow-wrap:anywhere}
+.b2-assignment-flow .b2-assigned {border-color:var(--accent);background:var(--selected);color:var(--accent)}
+.b2-assignment-flow .b2-expression {background:var(--surface)}
+.b2-flow-arrow {display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:24px}
+.b2-history th {min-width:112px}.b2-history th span {display:block;margin-top:5px;font-size:11px;font-weight:400;color:var(--muted)}
+.b2-history code {white-space:normal;overflow-wrap:anywhere}
+.b2-value-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.b2-value-card {border:1px solid var(--line);background:var(--soft);border-radius:var(--radius);padding:16px;display:flex;align-items:flex-start;flex-direction:column;gap:10px;min-width:0}
+.b2-value-card.is-current {border-color:var(--accent);box-shadow:inset 3px 0 var(--accent)}
+.b2-value-card>code {font:13px/1.5 var(--mono);color:var(--muted);overflow-wrap:anywhere}
+.b2-value-card>strong {font:600 26px/1.35 var(--mono);color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.b2-type {font:13px/1.4 var(--mono);padding:3px 8px;border-radius:4px;background:var(--selected);color:var(--accent)}
+.b2-value-card p {font-size:13px;line-height:1.65;color:var(--muted)}
+.b2-operation {display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr) 20px minmax(0,1fr);gap:10px;align-items:stretch}
+.b2-operator {display:flex;align-items:center;justify-content:center;font-size:23px;color:var(--muted)}
+.b2-conversion-grid {display:grid;grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr);gap:15px;align-items:stretch}
+.b2-conversion-grid>section {display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:0}
+.b2-conversion-grid h3 {grid-column:1/-1;font-size:15px;margin:0 0 2px}
+.b2-conversion-grid .b2-value-card {padding:13px}.b2-conversion-grid .b2-value-card>strong {font-size:22px}
+.b2-convert-arrow {display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--muted)}
+.b2-subtotal {display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:15px 18px;background:var(--selected);border:1px solid var(--accent);border-radius:var(--radius)}
+.b2-subtotal>span {font-size:13px;color:var(--muted)}.b2-subtotal>strong {font:600 24px/1.5 var(--mono);color:var(--accent);overflow-wrap:anywhere}
+.b2-presets {display:flex;flex-direction:column;gap:10px}.b2-presets .segmented {flex-wrap:wrap}.b2-presets button {font-size:13px}
+body.projecting .b2-value-card>strong,body.projecting .b2-assignment-flow strong {font-size:29px}
+body.projecting .b2-value-card>code,body.projecting .b2-value-card p,body.projecting .b2-type {font-size:16px}
+@media(max-width:1150px){.b2-conversion-grid>section {grid-template-columns:1fr}.b2-conversion-grid h3 {grid-column:auto}}
+@media(max-width:680px){
+  .b2-assignment-flow {grid-template-columns:1fr}.b2-flow-arrow {display:none}
+  .b2-assignment-flow section {display:grid;grid-template-columns:minmax(110px,.8fr) minmax(0,1.2fr);gap:10px;align-items:center;padding:12px}
+  .b2-assignment-flow strong {font-size:20px}.b2-assignment-flow section>span {font-size:12px}
+  .b2-value-grid {grid-template-columns:1fr}.b2-value-card>strong {font-size:24px}
+  .b2-operation {grid-template-columns:1fr}.b2-operator {padding:0;height:18px}
+  .b2-conversion-grid {grid-template-columns:minmax(0,1fr) 14px minmax(0,1fr);gap:7px}
+  .b2-conversion-grid .b2-value-card {padding:10px 8px}.b2-conversion-grid .b2-value-card>strong {font-size:18px}
+  .b2-conversion-grid .b2-value-card>code {font-size:11px}.b2-conversion-grid .b2-value-card p {font-size:11px}
+  .b2-conversion-grid h3 {font-size:13px}.b2-convert-arrow {font-size:20px}
+  .b2-subtotal {padding:12px}.b2-subtotal>strong {font-size:20px}
+}
+
+/* Slide 2: expressions, evaluation and acceptance. */
+.b2x-await{padding:24px;border:1px dashed var(--line);border-radius:var(--radius);color:var(--muted);line-height:1.7}
+.b2x-order-given{display:flex;flex-wrap:wrap;gap:9px 22px;padding:13px 15px;background:var(--soft);border-radius:var(--radius);font-size:13px;color:var(--muted)}
+.b2x-order-given strong{display:inline-block;color:var(--ink);font-weight:600;margin-left:5px}
+.b2x-calculations{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.b2x-calculations li{display:grid;grid-template-columns:26px minmax(150px,1.1fr) minmax(140px,1fr);align-items:center;gap:12px;border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;background:var(--surface)}
+.b2x-step-no{font:12px var(--mono);color:var(--muted)}
+.b2x-calculations li>div{display:grid;gap:4px;min-width:0}
+.b2x-calculations strong{font-size:14px;font-weight:600}
+.b2x-calculations code{font:14px/1.6 var(--mono);overflow-wrap:anywhere}
+.b2x-term-result{text-align:right;color:var(--accent)}
+.b2x-term-result code{font-size:18px;font-weight:650}
+.b2x-term-result small{font:12px var(--mono);color:var(--muted)}
+.b2x-value-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.b2x-value{display:grid;gap:10px;padding:16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft);min-width:0;align-content:start}
+.b2x-value>span{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.b2x-value>code{font:650 21px/1.5 var(--mono);overflow-wrap:anywhere;color:var(--accent)}
+.b2x-value>small{font:12px var(--mono);color:var(--muted)}
+.b2x-four-values{grid-template-columns:repeat(2,minmax(0,1fr))}
+.b2x-warning{padding:12px 15px;border-left:3px solid var(--changed);background:var(--changed-bg);font-size:14px;line-height:1.75;border-radius:4px}
+.b2x-equation{padding:15px;background:var(--selected);text-align:center;border-radius:var(--radius)}
+.b2x-equation code{font:650 22px/1.5 var(--mono);overflow-wrap:anywhere}
+.b2x-conditions{display:grid;gap:9px}
+.b2x-condition{display:grid;grid-template-columns:22px minmax(0,1fr) 94px;align-items:center;gap:10px;padding:15px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft);min-width:0}
+.b2x-condition code{font:15px/1.65 var(--mono);overflow-wrap:anywhere}
+.b2x-condition strong{text-align:right;font:650 16px/1.6 var(--mono)}
+.b2x-condition.is-evaluated{background:var(--selected);border-color:var(--accent);color:var(--accent)}
+.b2x-condition.is-skipped{border-style:dashed;color:var(--muted);background:var(--surface)}
+.b2x-condition.is-error{background:var(--error-bg);border-color:var(--error);color:var(--error)}
+.b2x-operator{font-size:13px;color:var(--muted);margin:0}.b2x-operator code{font-weight:650;color:var(--ink)}
+.b2x-result-band{display:flex;align-items:center;justify-content:space-between;gap:15px;border-radius:var(--radius);border:1px solid var(--line);padding:15px 17px;background:var(--surface);min-width:0}
+.b2x-result-band span{font-size:14px;line-height:1.6;color:var(--muted)}
+.b2x-result-band strong{font:650 22px/1.5 var(--mono);color:var(--accent);flex-shrink:0}
+.b2x-result-band.is-error strong{font-size:16px;color:var(--error)}
+.b2x-comparison{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.b2x-subhead{font-size:15px;margin:0}
+.b2x-message{border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:var(--surface);display:grid;gap:10px}
+.b2x-message h3{font-size:15px;margin:0}.b2x-message pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:16px/1.8 var(--mono)}
+.b2x-order-input{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.b2x-order-input>div{display:grid;gap:7px;padding:13px;background:var(--soft);border-radius:var(--radius);min-width:0}
+.b2x-order-input span{font-size:12px;color:var(--muted)}.b2x-order-input code{font:17px/1.6 var(--mono);overflow-wrap:anywhere}
+.b2x-acceptance{border:1px solid var(--line);border-radius:var(--radius);padding:17px;display:grid;gap:12px;background:var(--soft)}
+.b2x-acceptance h3,.b2x-suite h3{font-size:16px;margin:0}.b2x-acceptance p{font-size:14px;line-height:1.7;margin:0}
+.b2x-section-title{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.b2x-acceptance.is-passed{border-color:var(--accent);background:var(--selected)}
+.b2x-acceptance.is-passed .b2x-section-title>strong{color:var(--accent)}
+.b2x-acceptance.is-failed{border-color:var(--error);background:var(--error-bg)}
+.b2x-acceptance.is-failed .b2x-section-title>strong{color:var(--error)}
+.b2x-acceptance-values{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.b2x-acceptance-values>div{display:grid;gap:5px}.b2x-acceptance-values span{font-size:12px;color:var(--muted)}.b2x-acceptance-values strong{font-size:22px;font-variant-numeric:tabular-nums}
+.b2x-suite{display:grid;gap:13px;min-width:0}.b2x-suite-table{min-width:680px}.b2x-suite-table td{font-variant-numeric:tabular-nums}
+.b2x-failed-row{background:var(--error-bg)}
+body.projecting .b2x-calculations code,body.projecting .b2x-condition code,body.projecting .b2x-message pre,body.projecting .b2x-warning,body.projecting .b2x-acceptance p{font-size:18px}
+body.projecting .b2x-value>code{font-size:25px}
+@media(max-width:900px){.b2x-comparison{grid-template-columns:1fr}.b2x-value-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+  .b2x-calculations li{grid-template-columns:20px minmax(0,1fr);gap:8px;padding:12px}
+  .b2x-term-result{grid-column:2;text-align:left}.b2x-term-result code{font-size:18px}
+  .b2x-value-grid{grid-template-columns:1fr}.b2x-value{padding:13px}.b2x-value>code{font-size:20px}
+  .b2x-condition{grid-template-columns:16px minmax(0,1fr);gap:7px;padding:12px}.b2x-condition strong{grid-column:2;text-align:left;font-size:15px}.b2x-condition code{font-size:13px}
+  .b2x-order-input{grid-template-columns:repeat(2,minmax(0,1fr))}.b2x-order-input>div{padding:11px}
+  .b2x-result-band{padding:12px}.b2x-result-band strong{font-size:20px}
+  .b2x-acceptance-values strong{font-size:20px}.b2x-equation code{font-size:19px}
+  .b2x-message pre{font-size:14px}.b2x-acceptance{padding:13px}
+}
+</style>
+</head>
+<body data-theme="whiteboard">
+  <a class="skip-link" href="#lesson-title">跳到当前实验</a>
+  <header class="topbar">
+    <a class="brand" href="#assignment" aria-label="变量与订单实验室首页"><span class="brand-mark" aria-hidden="true">x<b>=</b></span><span>变量与订单实验室<small>Python 第二讲</small></span></a>
+    <div class="top-actions"><button type="button" class="btn btn-subtle projection-button" id="projection-toggle" aria-pressed="false">投影模式</button></div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="course-name"><span>这一讲</span><strong>用变量记录，<br>用表达式计算。</strong></div>
+      <nav class="lesson-nav" id="lesson-nav" aria-label="知识点目录"></nav>
+      <div class="sidebar-bottom"><p>先预测结果，<br>再观察每一步。</p><span id="quiz-progress" class="progress-note">7 个动手实验</span></div>
+    </aside>
+    <main id="lesson" class="lesson"></main>
+  </div>
+  <footer class="site-footer">
+    <span>课件案例：跨境订单与库存</span>
+    <details class="site-guide"><summary>使用说明与来源</summary><div>
+      <p>选择知识点，先预测，再点击“下一步”观察执行。可退回、运行到最后或从头演示；更改选项后从初始数据重新比较。“重置实验”恢复当前模块默认选项。</p>
+      <p>采用课堂白板 A 统一风格。投影模式增大字号，按 Esc 退出。程序代码每层使用 2 个空格缩进。</p>
+      <p>本页面模拟指定示例的 Python 行为，不执行任意 Python 代码。样式、脚本和案例均已内嵌，无需联网。只在当前浏览器保存最近模块与测验选择，不上传数据。</p>
+      <p>内容依据：slide-2(1).pdf，共 29 页，精选第 4–28 页。原始数值与格式化文本分开展示；赋值语句不视为返回 None。原课件订单程序尚未校验负数数量与超额优惠，本页保留这一缺口，由测试反馈指出业务不符合之处。</p>
+      <p>“运算与括号”中的幂运算，以及“条件与短路”中的短路和复杂业务逻辑，对应课件拓展内容。金额按本讲 float 示例计算，严格的结算精度规则可在后续学习中单独讨论。</p>
+      <p><a href="https://docs.python.org/3/tutorial/introduction.html" target="_blank" rel="noopener noreferrer">Python 官方：数值与字符串</a> · <a href="https://docs.python.org/3/library/functions.html" target="_blank" rel="noopener noreferrer">内置函数</a> · <a href="https://docs.python.org/3/reference/expressions.html" target="_blank" rel="noopener noreferrer">表达式与短路</a> · <a href="https://docs.python.org/3/tutorial/floatingpoint.html" target="_blank" rel="noopener noreferrer">浮点数</a></p>
+      <button type="button" class="btn btn-subtle" data-action="reset-quizzes">清除本讲练习记录</button>
+    </div></details>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">请在浏览器中启用 JavaScript，再使用交互实验。页面不需要联网。</p></noscript>
+  <script>/* Chinese teaching content based on slide-2(1).pdf, 29 pages. */
+window.BasicsLabContent = {
+  modules: [
+    {
+      id: 'assignment',
+      title: '变量与执行顺序',
+      navTitle: '变量与赋值',
+      pages: '课件 4–8 页',
+      question: '同一行“库存减 3”再运行一次，为什么结果又变了？',
+      try: '切换到重复扣减，逐步比较每次读取的旧值。再观察：修改数量后，已经算好的小计会自动跟着变吗？',
+      quiz: {
+        prompt: '下面三行依次执行后，stock 的值是多少？',
+        code: 'stock = 50\nstock = stock - 3\nstock = stock - 3',
+        answer: 2,
+        options: [
+          {label: '47', explanation: '47 是第一次扣减后的值。第二次会读取已经更新为 47 的 stock，再减去 3。'},
+          {label: '50', explanation: '赋值会把右侧计算的新结果交给左侧名称。两次扣减都执行了，stock 不会仍是初始值。'},
+          {label: '44', explanation: '先计算 50 − 3 = 47，再计算 47 − 3 = 44。每次执行都使用变量当时的当前值。'}
+        ]
+      }
+    },
+    {
+      id: 'types',
+      title: '值与数据类型',
+      navTitle: '值与类型',
+      pages: '课件 9–13 页',
+      question: '3 和 "3" 看起来相近，为什么做加法时会得到不同的结果？',
+      try: '比较数字与文本的加法，再看 None 与 "None"。留意变量的表示形式、类型，以及它在业务中表示什么。',
+      quiz: {
+        prompt: '商品编码 000872 要完整保留，包括开头的三个 0，最合适的写法是哪一个？',
+        answer: 1,
+        options: [
+          {label: 'product_code = 872', explanation: '整数 872 已经不包含原编码开头的三个 0。商品编码用于标识，通常不应按数量保存。'},
+          {label: 'product_code = "000872"', explanation: '字符串保留完整字符和前导零，符合商品编码的用途。引号表示这是文本，不是要相乘或相加的数量。'},
+          {label: 'product_code = True', explanation: '布尔值适合表示“是否付款”等两种状态，不能保存一串具体的商品编码。'}
+        ]
+      }
+    },
+    {
+      id: 'conversion',
+      title: '输入与类型转换',
+      navTitle: '输入与转换',
+      pages: '课件 14–15、18–19 页',
+      question: '输入框里敲下数字后，为什么还要先转换类型才能计算订单金额？',
+      try: '先用数量 3 和单价 29.90 运行，再把数量改为 3.0 或 three。观察错误发生在哪一步，哪些原始文本仍然保留。',
+      quiz: {
+        prompt: '执行下面两行后，两个变量的类型分别是什么？',
+        code: 'quantity_text = "3"\nquantity = int(quantity_text)',
+        answer: 1,
+        options: [
+          {label: 'quantity_text 和 quantity 都是 int', explanation: 'int() 产生一个新的整数值，没有改写 quantity_text。原始字符串仍然由 quantity_text 引用。'},
+          {label: 'quantity_text 是 str，quantity 是 int', explanation: '原始输入文本保留为字符串，转换得到的整数交给 quantity。分开保存有助于观察输入与计算数据的区别。'},
+          {label: 'quantity_text 和 quantity 都是 str', explanation: '第一行确实得到字符串；第二行调用 int() 后，交给 quantity 的结果已经是整数。'}
+        ]
+      }
+    },
+    {
+      id: 'arithmetic',
+      title: '算术与括号',
+      navTitle: '算术与括号',
+      pages: '课件 16、26 页',
+      question: '优惠减在哪一步、汇率乘在哪一部分，会怎样改变订单金额？',
+      try: '先用同一笔订单比较不同括号位置，再切换到装箱，观察总件数、整箱数和余数之间的关系。',
+      quiz: {
+        prompt: '共有 17 件商品，每箱装 6 件。要计算能够装满的整箱数，应使用哪一个表达式？',
+        answer: 2,
+        options: [
+          {label: '17 / 6', explanation: '普通除法得到带小数的比值，不能直接表示已经装满的整箱数。'},
+          {label: '17 % 6', explanation: '取余得到 5，表示装完两整箱后，还剩下 5 件商品。'},
+          {label: '17 // 6', explanation: '在这个正整数装箱场景中，整除结果是 2，表示能够装满两箱。'}
+        ]
+      }
+    },
+    {
+      id: 'logic',
+      title: '条件、逻辑与短路',
+      navTitle: '条件与短路',
+      pages: '课件 17、27–28 页；后两页为拓展',
+      question: '订单已经付款但后来退款，还能发货吗？多个条件怎样一起作判断？',
+      try: '切换付款与退款状态，再进入平均成交价场景，把数量设为 0，比较先检查与先做除法的执行顺序。',
+      quiz: {
+        prompt: '下面的 result 会得到什么？',
+        code: 'sales = 3000\nquantity = 0\nresult = quantity != 0 and sales / quantity >= 100',
+        answer: 0,
+        options: [
+          {label: 'False；右侧的除法不执行', explanation: '左侧 quantity != 0 已经为 False，and 的结果已确定，因此跳过右侧，不会执行除以 0。'},
+          {label: '先除以 0 报错，再得到 False', explanation: '短路是在执行右侧之前就跳过它，不是先触发错误再把错误忽略。'},
+          {label: 'True；只要写了保护条件就成立', explanation: '保护条件避免了危险计算，但 quantity 为 0 时，该条件自身的结果是 False。'}
+        ]
+      }
+    },
+    {
+      id: 'formatting',
+      title: '浮点数与显示格式',
+      navTitle: '数值与显示',
+      pages: '课件 10、20 页',
+      question: '屏幕显示 603.06，是否意味着变量里保存的值也变成了 603.06？',
+      try: '比较原值、round 得到的新数值与格式化得到的文本，再切换 0.1 + 0.2，观察显示位数改变后原值是否变化。',
+      quiz: {
+        prompt: '执行下面的 print 后，哪种描述正确？',
+        code: 'amount_cny = 603.064\nprint(f"{amount_cny:.2f}")',
+        answer: 2,
+        options: [
+          {label: 'amount_cny 变成字符串 "603.06"', explanation: '格式化生成了输出文本，但没有把文本重新赋给 amount_cny。原变量仍然引用原来的浮点数。'},
+          {label: 'amount_cny 变成浮点数 603.06', explanation: ':.2f 控制输出时显示几位小数，没有对原变量进行重新赋值。'},
+          {label: '输出 603.06，amount_cny 仍是 603.064', explanation: '输出的格式与变量保存的数值是两件事。这里输出保留两位小数，原值与类型都没有改变。'}
+        ]
+      }
+    },
+    {
+      id: 'order',
+      title: '订单计算与基准测试',
+      navTitle: '订单计算与测试',
+      pages: '课件 21–25 页',
+      question: '程序能够算出一个金额，怎样判断它符合订单的业务规则？',
+      try: '运行六组课件测试，重点比较负数数量与优惠超总价：程序是否继续计算？业务上是否应该接受这样的结果？',
+      quiz: {
+        prompt: '标准订单计算得到 603.06 元，与预先确定的结果一致。这能说明什么？',
+        answer: 1,
+        options: [
+          {label: '任何输入都会得到正确结果', explanation: '这一组数据没有覆盖零值、小数和不符合业务规则的输入，不能据此保证其他情况全部正确。'},
+          {label: '这组数据通过，还需要检查其他场景', explanation: '基准测试提供了一条正确性证据。继续测试边界与异常业务数据，才能发现尚未表达的规则。'},
+          {label: '不必再检查单位和计算公式', explanation: '数值吻合不能代替对输入含义、币种、优惠范围与公式的核验。业务验收包含这些条件。'}
+        ]
+      }
+    }
+  ]
+};
+</script>
+  <script>/* Slide 2: bounded, offline models of the displayed Python programs. */
+(function(root,factory){
+  'use strict';
+  const api=factory();
+  if(typeof module==='object'&&module.exports)module.exports=api;
+  if(root)root.BasicsLabEngine=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+  'use strict';
+  const has=(object,key)=>Object.prototype.hasOwnProperty.call(object||{},key);
+  function deepClone(value){
+    if(Array.isArray(value))return value.map(deepClone);
+    if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,deepClone(v)]));
+    return value;
+  }
+  function floatRepr(value){
+    if(Number.isNaN(value))return 'nan';
+    if(value===Infinity)return 'inf';
+    if(value===-Infinity)return '-inf';
+    if(Object.is(value,-0))return '-0.0';
+    if(value===0)return '0.0';
+    const magnitude=Math.abs(value);
+    if(magnitude<1e-4||magnitude>=1e16){
+      const [mantissa,exponent]=value.toExponential().split('e');
+      const n=Number(exponent);
+      return mantissa+'e'+(n>=0?'+':'-')+String(Math.abs(n)).padStart(2,'0');
+    }
+    return Number.isInteger(value)?String(value)+'.0':String(value);
+  }
+  function repr(value,type){
+    if(value===null)return 'None';
+    if(value===true)return 'True';
+    if(value===false)return 'False';
+    if(typeof value==='number')return type==='int'&&value===0?'0':type==='float'||!Number.isInteger(value)||!Number.isFinite(value)||Object.is(value,-0)?floatRepr(value):String(value);
+    if(typeof value==='string'){
+      const quote=value.includes("'")&&!value.includes('"')?'"':"'";
+      return quote+Array.from(value).map(ch=>{
+        if(ch==='\\')return '\\\\';
+        if(ch===quote)return '\\'+quote;
+        if(ch==='\n')return '\\n';
+        if(ch==='\r')return '\\r';
+        if(ch==='\t')return '\\t';
+        const cp=ch.codePointAt(0);
+        if(cp<32||cp===127||(/[\p{C}\p{Z}]/u.test(ch)&&ch!==' '))return cp<256?'\\x'+cp.toString(16).padStart(2,'0'):cp<65536?'\\u'+cp.toString(16).padStart(4,'0'):'\\U'+cp.toString(16).padStart(8,'0');
+        return ch;
+      }).join('')+quote;
+    }
+    if(Array.isArray(value))return '['+value.map((v,i)=>repr(v,Array.isArray(type)?type[i]:undefined)).join(', ')+']';
+    if(value&&typeof value==='object')return '{'+Object.keys(value).map(k=>repr(k)+': '+repr(value[k],type&&typeof type==='object'?type[k]:undefined)).join(', ')+'}';
+    return '尚未赋值';
+  }
+  const pyType=value=>value===null?'NoneType':typeof value==='boolean'?'bool':typeof value==='string'?'str':Array.isArray(value)?'list':typeof value==='number'?(Number.isInteger(value)?'int':'float'):'dict';
+  function choose(value,fallback,choices,label){const v=value===undefined?fallback:value;if(!choices.includes(v))throw new RangeError(label+'无效。');return v;}
+  function boolean(value,fallback){if(value===undefined)return fallback;if(value===true||value==='true')return true;if(value===false||value==='false')return false;throw new RangeError('请选择有效的开关状态。');}
+  function program(){const lines=[];return {lines,add(text){lines.push(text);return lines.length;}};}
+  function tracer(p,extras){
+    const trace=[],state=Object.assign({line:null,lines:[],note:'先预测，再点击下一步。',vars:{},varTypes:{},varReprs:{},stdout:'',done:false,error:null},deepClone(extras||{}));
+    function emit(line,note,patch){Object.assign(state,patch||{},{line:line||null,lines:line?[line]:[],note});trace.push(deepClone(state));}
+    function assign(name,value,type){state.vars[name]=deepClone(value);state.varTypes[name]=type||pyType(value);state.varReprs[name]=repr(value,state.varTypes[name]);}
+    function print(text,line,note){state.stdout+=String(text)+'\n';emit(line,note||'print 将结果输出到屏幕。');}
+    function error(type,message,line,note){emit(line,note,{error:{type,message},done:true});}
+    function finish(meta){return Object.assign({ok:true,error:null,code:p.lines.join('\n'),lines:p.lines.slice(),trace,outcome:deepClone(trace[trace.length-1])},meta||{});}
+    function done(){emit(null,'程序执行结束。',{done:true});}
+    emit(null,'先预测，再点击下一步。');
+    return {state,trace,emit,assign,print,error,finish,done};
+  }
+  function invalid(error){return {ok:false,error:String(error),code:'# 请先检查实验参数。',lines:['# 请先检查实验参数。'],trace:[]};}
+  function safe(fn){return function(config){try{return fn(config||{});}catch(error){return invalid(error.message);}};}
+  function stateAt(model,cursor){if(!model||!model.trace||!model.trace.length)return null;const n=Number(cursor);return model.trace[Math.max(0,Math.min(model.trace.length-1,Number.isFinite(n)?Math.floor(n):0))];}
+  const api={repr,floatRepr,stateAt,deepClone,_helpers:{has,pyType,choose,boolean,program,tracer,safe}};
+  api.assignment=safe(c=>{
+    const mode=choose(c.mode,'stock',['stock','derived'],'赋值实验'),preset=choose(c.preset,'normal',['normal','repeat','beforeInit'],'执行顺序'),recalculate=boolean(c.recalculate,false),p=program();
+    const r=tracer(p,{history:[],assignment:null});
+    function assign(line,name,value,type,expression,note){
+      const before=has(r.state.vars,name)?r.state.varReprs[name]:null;
+      r.assign(name,value,type);
+      const operation={line,name,before,expression,result:r.state.varReprs[name],type};
+      r.state.history.push(operation);r.emit(line,note,{assignment:operation});
+    }
+    if(mode==='stock'){
+      const steps=preset==='beforeInit'?[['stock = stock - 3',3]]:[['stock = 50',null],['stock = stock - 3',3],...(preset==='repeat'?[['stock = stock - 3',3]]:[]),['stock = stock - 5',5]];
+      const numbered=steps.map(([source,delta])=>({line:p.add(source),delta}));
+      const print=p.add('print(stock)');
+      for(const step of numbered){
+        if(step.delta===null){assign(step.line,'stock',50,'int','50','右侧 50 已得到，再让 stock 引用这个整数。');continue;}
+        if(!has(r.state.vars,'stock')){
+          r.state.assignment={line:step.line,name:'stock',before:null,expression:'stock - '+step.delta,result:null,type:'int'};
+          r.error('NameError',"name 'stock' is not defined",step.line,'尚未给 stock 赋值，右侧就试图读取它；本次赋值没有完成。');
+          return r.finish({mode,preset,recalculate,names:['stock']});
+        }
+        const before=r.state.vars.stock;
+        assign(step.line,'stock',before-step.delta,'int',before+' - '+step.delta,'先读取当前 stock = '+before+'，算出 '+(before-step.delta)+'，再重新赋给 stock。');
+      }
+      r.print(repr(r.state.vars.stock),print);r.done();
+      return r.finish({mode,preset,recalculate,names:['stock']});
+    }
+    const initPrice=p.add('unit_price_usd = 29.90'),initQuantity=p.add('quantity = 3'),initSubtotal=p.add('subtotal_usd = unit_price_usd * quantity'),changeQuantity=p.add('quantity = 5'),firstPrint=p.add('print(subtotal_usd)');
+    let recalcLine,recalcPrint;
+    if(recalculate){recalcLine=p.add('subtotal_usd = unit_price_usd * quantity');recalcPrint=p.add('print(subtotal_usd)');}
+    assign(initPrice,'unit_price_usd',29.9,'float','29.90','先记录美元单价；29.90 的 float 表示为 29.9。');
+    assign(initQuantity,'quantity',3,'int','3','记录当前购买数量。');
+    assign(initSubtotal,'subtotal_usd',29.9*3,'float','29.9 * 3','使用此刻的单价和数量计算一次，将结果绑定到 subtotal_usd。');
+    assign(changeQuantity,'quantity',5,'int','5','quantity 改为 5；已经赋值的 subtotal_usd 不会自动重新计算。');
+    r.print(repr(r.state.vars.subtotal_usd,'float'),firstPrint,'读取 subtotal_usd 当前保存的值，仍是先前用数量 3 算出的结果。');
+    if(recalculate){assign(recalcLine,'subtotal_usd',29.9*5,'float','29.9 * 5','再次执行乘法赋值，subtotal_usd 才使用当前数量 5 更新。');r.print(repr(r.state.vars.subtotal_usd,'float'),recalcPrint);}
+    r.done();return r.finish({mode,preset,recalculate,names:['unit_price_usd','quantity','subtotal_usd']});
+  });
+  const TYPE_CASES={
+    numberText:[{name:'quantity',source:'3',value:3,type:'int',label:'可以做整数计算'},{name:'quantity_text',source:'"3"',value:'3',type:'str',label:'一个文本字符'},{name:'quantity_float',source:'3.0',value:3,type:'float',label:'浮点数形式的 3'}],
+    noneText:[{name:'refund_reason',source:'None',value:null,type:'NoneType',label:'当前没有可用的值'},{name:'reason_text',source:'"None"',value:'None',type:'str',label:'四个字母组成的文本'}],
+    booleanText:[{name:'is_paid',source:'False',value:false,type:'bool',label:'付款状态为假'},{name:'paid_text',source:'"False"',value:'False',type:'str',label:'一段文字，不是布尔值'}],
+    productCode:[{name:'product_code',source:'"000872"',value:'000872',type:'str',label:'保留完整商品编码'},{name:'numeric_code',source:'int(product_code)',value:872,type:'int',label:'转成数字后不保留前导零'}]
+  };
+  const OP_CASES={numericAdd:{left:3,right:2,leftType:'int',rightType:'int',op:'+',value:5,type:'int'},textAdd:{left:'3',right:'2',leftType:'str',rightType:'str',op:'+',value:'32',type:'str'},repeat:{left:'3',right:2,leftType:'str',rightType:'int',op:'*',value:'33',type:'str'},mixed:{left:3,right:'2',leftType:'int',rightType:'str',op:'+',error:{type:'TypeError',message:"unsupported operand type(s) for +: 'int' and 'str'"}}};
+  api.types=safe(c=>{
+    const mode=choose(c.mode,'values',['values','operations'],'类型实验'),preset=choose(c.preset,'numberText',Object.keys(TYPE_CASES),'类型预设'),operation=choose(c.operation,'numericAdd',Object.keys(OP_CASES),'操作预设'),p=program(),r=tracer(p,{activeName:null});
+    if(mode==='values'){
+      const spec=deepClone(TYPE_CASES[preset]);
+      for(const row of spec)row.line=p.add(row.name+' = '+row.source);
+      const prints=spec.map(row=>({row,line:p.add('print(repr('+row.name+'), type('+row.name+').__name__)')}));
+      for(const row of spec){r.assign(row.name,row.value,row.type);r.emit(row.line,'将 '+row.source+' 赋给 '+row.name+'；值的类型是 '+row.type+'。',{activeName:row.name});}
+      for(const {row,line} of prints)r.print(repr(row.value,row.type)+' '+row.type,line,'同时查看值的表示形式与类型名称。');
+      r.done();return r.finish({mode,preset,operation,spec,names:spec.map(x=>x.name)});
+    }
+    const spec=deepClone(OP_CASES[operation]),left=p.add('left = '+repr(spec.left,spec.leftType)),right=p.add('right = '+repr(spec.right,spec.rightType)),operate=p.add('result = left '+spec.op+' right'),printValue=p.add('print(repr(result))'),printType=p.add('print(type(result).__name__)');
+    r.assign('left',spec.left,spec.leftType);r.emit(left,'读取左侧数据的值与类型。',{activeName:'left'});
+    r.assign('right',spec.right,spec.rightType);r.emit(right,'读取右侧数据的值与类型。',{activeName:'right'});
+    if(spec.error)r.error(spec.error.type,spec.error.message,operate,'int 与 str 不能直接相加；result 没有完成赋值。');
+    else{r.assign('result',spec.value,spec.type);r.emit(operate,operation==='numericAdd'?'两个整数执行加法。':operation==='textAdd'?'两个字符串执行拼接，得到文本，而不是算术和。':'字符串乘以整数，表示把文本重复指定次数。',{activeName:'result'});r.print(repr(spec.value,spec.type),printValue);r.print(spec.type,printType);r.done();}
+    return r.finish({mode,preset,operation,spec,names:['left','right','result']});
+  });
+  const PY_SPACE='[\\t\\n\\v\\f\\r \\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000]';
+  const trimNumber=text=>text.replace(new RegExp('^'+PY_SPACE+'+|'+PY_SPACE+'+$','g'),'');
+  const DIGIT='[0-9](?:_?[0-9])*',INTEGER=new RegExp('^[+-]?'+DIGIT+'$'),FLOAT=new RegExp('^[+-]?(?:(?:'+DIGIT+')(?:\\.(?:'+DIGIT+')?)?|\\.(?:'+DIGIT+'))(?:[eE][+-]?(?:'+DIGIT+'))?$');
+  function parseNumeric(text,type){
+    if(Array.from(text).some(ch=>ch.charCodeAt(0)>127&&/\p{Nd}/u.test(ch)))throw new RangeError('Python 也能识别部分 Unicode 数字；本实验请使用键盘上的 0～9 来比较转换过程。');
+    const cleaned=trimNumber(text),valid=type==='int'?INTEGER.test(cleaned):FLOAT.test(cleaned)||/^[+-]?(inf(?:inity)?|nan)$/i.test(cleaned);
+    if(!valid)return {error:{type:'ValueError',message:type==='int'?'invalid literal for int() with base 10: '+repr(text):'could not convert string to float: '+repr(text)}};
+    const value=/^[+-]?(inf(?:inity)?|nan)$/i.test(cleaned)?Number.NaN:Number(cleaned.replace(/_/g,''));
+    if(!Number.isFinite(value))throw new RangeError('这个文本可转换为非有限 float（inf 或 nan）；本实验只演示有限数值，请改用普通数字。');
+    if(Math.abs(value)>1000000)throw new RangeError('本实验的数值绝对值上限为 1,000,000。这是演示范围，不是 Python 的数值上限。');
+    return {value:type==='int'&&value===0?0:value};
+  }
+  api.conversion=safe(c=>{
+    const quantityText=c.quantityText===undefined?'3':String(c.quantityText),priceText=c.priceText===undefined?'29.90':String(c.priceText),convert=boolean(c.convert,true);
+    for(const text of [quantityText,priceText])if(Array.from(text).length>40||/[\0\r\n]/.test(text))throw new RangeError('每项输入最多 40 个字符；请使用单行文字，不含空字符。');
+    const p=program(),quantityInput=p.add('quantity_text = input()  # 购买数量'),priceInput=p.add('unit_price_text = input()  # 美元单价');
+    let quantityLine,priceLine;
+    if(convert){quantityLine=p.add('quantity = int(quantity_text)');priceLine=p.add('unit_price_usd = float(unit_price_text)');}
+    const subtotal=p.add(convert?'subtotal_usd = unit_price_usd * quantity':'subtotal_usd = unit_price_text * quantity_text'),print=p.add('print(subtotal_usd)');
+    const r=tracer(p,{activeName:null,conversionStage:'input'}),metadata={convert,inputs:[quantityText,priceText],quantityText,priceText,names:convert?['quantity_text','unit_price_text','quantity','unit_price_usd','subtotal_usd']:['quantity_text','unit_price_text','subtotal_usd']};
+    r.assign('quantity_text',quantityText,'str');r.emit(quantityInput,'模拟键入购买数量；input() 返回的仍是字符串。',{activeName:'quantity_text'});
+    r.assign('unit_price_text',priceText,'str');r.emit(priceInput,'模拟键入商品单价；引号用于展示 str，不属于键入内容。',{activeName:'unit_price_text'});
+    if(!convert){r.error('TypeError',"can't multiply sequence by non-int of type 'str'",subtotal,'两个字符串不能相乘；Python 不会因为文字看起来像数字就自动转换。');return r.finish(metadata);}
+    const quantity=parseNumeric(quantityText,'int');
+    if(quantity.error){r.error(quantity.error.type,quantity.error.message,quantityLine,'数量文本不符合 int 的格式；quantity 没有赋值，后续语句不执行。');return r.finish(metadata);}
+    r.assign('quantity',quantity.value,'int');r.emit(quantityLine,'int 返回新的整数；quantity_text 仍保留原始文字。',{activeName:'quantity',conversionStage:'converted'});
+    const price=parseNumeric(priceText,'float');
+    if(price.error){r.error(price.error.type,price.error.message,priceLine,'单价文本不符合 float 的格式；unit_price_usd 没有赋值，后续计算不执行。');return r.finish(metadata);}
+    r.assign('unit_price_usd',price.value,'float');r.emit(priceLine,'float 返回新的浮点数；unit_price_text 的值和类型保持不变。',{activeName:'unit_price_usd'});
+    const total=price.value*quantity.value;
+    r.assign('subtotal_usd',total,'float');r.emit(subtotal,'用转换后的两个数值相乘，得到商品总价。',{activeName:'subtotal_usd',conversionStage:'calculated'});
+    r.print(repr(total,'float'),print);r.done();return r.finish(metadata);
+  });
+  return api;
+});
+</script>
+  <script>/* Slide 2: arithmetic, Boolean evaluation, float formatting and business tests. */
+(function(root,factory){
+  'use strict';
+  const api=typeof module==='object'&&module.exports?require('./engine.js'):root.BasicsLabEngine;
+  factory(api);
+  if(typeof module==='object'&&module.exports)module.exports=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(E){
+  'use strict';
+  const has=(obj,key)=>Object.prototype.hasOwnProperty.call(obj,key);
+  const clone=value=>Array.isArray(value)?value.map(clone):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([k,v])=>[k,clone(v)])):value;
+  const py=(value,type)=>E.repr(value,type);
+  const choice=(v,fallback,allowed,label)=>{const out=v===undefined?fallback:v;if(!allowed.includes(out))throw new RangeError(label+'无效。');return out;};
+  function bool(v,fallback){if(v===undefined)return fallback;if(v===true||v==='true')return true;if(v===false||v==='false')return false;throw new RangeError('请选择 True 或 False。');}
+  function parameter(v,fallback,label,integer){
+    const text=String(v===undefined?fallback:v).trim(),pattern=integer?/^[+-]?\d+$/:/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/;
+    if(!pattern.test(text)||text.length>32)throw new RangeError(label+'请填写'+(integer?'整数':'普通十进制数')+'。');
+    const number=Number(text);
+    if(!Number.isFinite(number)||Math.abs(number)>1000000)throw new RangeError(label+'在本实验中的范围为 −1000000～1000000。');
+    const type=integer||!text.includes('.')?'int':'float';
+    return {number:type==='int'&&number===0?0:number,type};
+  }
+  function formatFixed(value,precision=2){
+    if(!Number.isFinite(value)||!Number.isInteger(precision)||precision<0||precision>6)throw new RangeError('格式化参数无效。');
+    const negative=value<0||Object.is(value,-0),view=new DataView(new ArrayBuffer(8));
+    view.setFloat64(0,Math.abs(value),false);
+    const high=view.getUint32(0,false),low=view.getUint32(4,false),exponent=(high>>>20)&2047;
+    let mantissa=(BigInt(high&1048575)<<32n)+BigInt(low),shift;
+    if(exponent===0)shift=-1074;else{mantissa+=1n<<52n;shift=exponent-1023-52;}
+    let numerator=mantissa*(10n**BigInt(precision)),denominator=1n;
+    if(shift>=0)numerator<<=BigInt(shift);else denominator<<=BigInt(-shift);
+    let q=numerator/denominator;const rem=numerator%denominator;
+    if(rem*2n>denominator||(rem*2n===denominator&&q%2n===1n))q+=1n;
+    let digits=q.toString().padStart(precision+1,'0');
+    if(precision)digits=digits.slice(0,-precision)+'.'+digits.slice(-precision);
+    return (negative?'-':'')+digits;
+  }
+  const roundFloat=(value,digits=2)=>Number(formatFixed(value,digits));
+  function program(){return {lines:[],add(line){this.lines.push(line);return this.lines.length;}};}
+  function tracer(p,extra={}){
+    const trace=[],state=Object.assign({line:null,lines:[],note:'先预测，再点击下一步。',vars:{},varTypes:{},varReprs:{},stdout:'',done:false,error:null},clone(extra));
+    function emit(line,note,patch={}){Object.assign(state,clone(patch),{line:Array.isArray(line)?line[0]:line||null,lines:Array.isArray(line)?line:line?[line]:[],note});trace.push(clone(state));}
+    function assign(name,value,type,line,note,patch){state.vars[name]=clone(value);state.varTypes[name]=type;state.varReprs[name]=py(value,type);emit(line,note,patch);}
+    function print(text,line,note){state.stdout+=text+'\n';emit(line,note||'print 把结果写到屏幕。');}
+    function fail(type,message,line,note,patch={}){emit(line,note,Object.assign({},patch,{error:{type,message},done:true}));}
+    function done(note,patch={}){emit(null,note||'程序执行结束。',Object.assign({},patch,{done:true}));}
+    emit(null,'先预测，再点击下一步。');
+    return {state,trace,emit,assign,print,fail,done,finish(meta={}){return Object.assign({ok:true,error:null,code:p.lines.join('\n'),lines:p.lines.slice(),trace,outcome:clone(trace[trace.length-1])},meta);}};
+  }
+  const safe=fn=>function(c={}){try{return fn(c||{});}catch(error){return {ok:false,error:error.message,code:'# 请先检查实验参数。',lines:['# 请先检查实验参数。'],trace:[]};}};
+  function item(label,expression,value,type){return {label,expression,value,type,repr:py(value,type)};}
+  const pending=expression=>({expression,status:'pending'});
+  const evaluated=(expression,value)=>({expression,status:'evaluated',value,repr:py(value,'bool')});
+  const skipped=expression=>({expression,status:'skipped'});
+  const failed=expression=>({expression,status:'error'});
+
+  E.arithmetic=safe(c=>{
+    const mode=choice(c.mode,'order',['order','packing','power'],'算术场景'),p=program(),r=tracer(p,{terms:[]});
+    if(mode==='order'){
+      const formula=choice(c.formula,'grouped',['grouped','ungrouped','perItem'],'订单公式');
+      const inputs=[['unit_price_usd',29.9,'float','29.90'],['quantity',3,'int','3'],['discount_usd',5,'float','5.00'],['exchange_rate',7.12,'float','7.12']];
+      inputs.forEach(([name,value,type,source])=>{const line=p.add(name+' = '+source);r.assign(name,value,type,line,'记录本次订单使用的 '+name+'。');});
+      p.add('');
+      const expression={grouped:'(unit_price_usd * quantity - discount_usd) * exchange_rate',ungrouped:'unit_price_usd * quantity - discount_usd * exchange_rate',perItem:'(unit_price_usd - discount_usd) * quantity * exchange_rate'}[formula];
+      const line=p.add('amount_cny = '+expression),subtotal=29.9*3;
+      let result,terms;
+      if(formula==='grouped'){
+        result=(subtotal-5)*7.12;
+        terms=[item('先算商品总价','29.9 * 3',subtotal,'float'),item('整单减去优惠',py(subtotal,'float')+' - 5.0',subtotal-5,'float'),item('最后换算人民币',py(subtotal-5,'float')+' * 7.12',result,'float')];
+      }else if(formula==='ungrouped'){
+        const convertedDiscount=5*7.12;result=subtotal-convertedDiscount;
+        terms=[item('先算左侧乘法','29.9 * 3',subtotal,'float'),item('再算右侧乘法','5.0 * 7.12',convertedDiscount,'float'),item('最后相减',py(subtotal,'float')+' - '+py(convertedDiscount,'float'),result,'float')];
+      }else{
+        const each=29.9-5,all=each*3;result=all*7.12;
+        terms=[item('每件都减去优惠','29.9 - 5.0',each,'float'),item('再乘购买数量',py(each,'float')+' * 3',all,'float'),item('换算人民币',py(all,'float')+' * 7.12',result,'float')];
+      }
+      r.assign('amount_cny',result,'float',line,formula==='grouped'?'括号内完成美元计算，再整体乘汇率。':formula==='ungrouped'?'两个乘法先完成，最后相减；这里把美元与人民币混在了一次减法中。':'括号让每件商品都减去 5 美元，改变了“整单减 5 美元”的业务规则。',{terms});
+      const out=p.add('print(f"人民币实付金额：{amount_cny:.2f}元")');r.print('人民币实付金额：'+formatFixed(result)+'元',out);r.done();
+      return r.finish({mode,formula,expression});
+    }
+    if(mode==='packing'){
+      const a=parameter(c.units,'23','商品件数',true).number,b=parameter(c.boxSize,'6','每箱件数',true).number;
+      const lines=[p.add('units = '+py(a,'int')),p.add('box_size = '+py(b,'int')),p.add('box_ratio = units / box_size'),p.add('full_boxes = units // box_size'),p.add('remaining = units % box_size'),p.add('print(box_ratio, full_boxes, remaining)')];
+      r.assign('units',a,'int',lines[0],'记录总件数。');r.assign('box_size',b,'int',lines[1],'记录每箱件数。');
+      if(b===0){r.fail('ZeroDivisionError','division by zero',lines[2],'除数为 0，第一条除法就产生异常，后续整除和取余没有执行。');return r.finish({mode});}
+      const ratio=a/b,boxes=Math.floor(ratio),remaining=a-boxes*b;
+      r.assign('box_ratio',ratio,'float',lines[2],'/ 得到普通除法结果，类型是 float。');
+      r.assign('full_boxes',boxes===0?0:boxes,'int',lines[3],'// 得到向负无穷方向取整的商。');
+      r.assign('remaining',remaining===0?0:remaining,'int',lines[4],'% 得到余数；总件数 = 商 × 每箱件数 + 余数。');
+      r.print(py(ratio,'float')+' '+py(boxes===0?0:boxes,'int')+' '+py(remaining===0?0:remaining,'int'),lines[5]);r.done();
+      return r.finish({mode});
+    }
+    const power=choice(c.power,'negative',['negative','grouped','reciprocal'],'幂表达式');
+    const expression={negative:'-2 ** 2',grouped:'(-2) ** 2',reciprocal:'2 ** -2'}[power],value={negative:-4,grouped:4,reciprocal:0.25}[power],type=power==='reciprocal'?'float':'int';
+    const line=p.add('result = '+expression),out=p.add('print(result)');
+    const terms=power==='negative'?[item('先做幂运算','2 ** 2',4,'int'),item('再取负号','-(4)',-4,'int')]:power==='grouped'?[item('括号确定底数','(-2)',-2,'int'),item('负数整体平方','(-2) ** 2',4,'int')]:[item('指数是负数','2 ** (-2)',0.25,'float')];
+    r.assign('result',value,type,line,power==='negative'?'幂运算先于左侧负号，所以结果为 -4。':power==='grouped'?'括号把 -2 作为整体底数，所以平方得到 4。':'幂的右侧允许一元负号；2 的 -2 次方是 1/4。',{terms});r.print(py(value,type),out);r.done();
+    return r.finish({mode,power,expression});
+  });
+
+  E.logic=safe(c=>{
+    const mode=choice(c.mode,'shipping',['shipping','average','discount'],'逻辑场景'),p=program();
+    if(mode==='shipping'){
+      const paid=bool(c.isPaid,true),refunded=bool(c.isRefunded,false),expressions=['is_paid','not is_refunded'];
+      const r=tracer(p,{conditions:expressions.map(pending),operator:'and',result:null});
+      const a=p.add('is_paid = '+py(paid)),b=p.add('is_refunded = '+py(refunded)),line=p.add('can_ship = is_paid and not is_refunded'),out=p.add('print(can_ship)');
+      r.assign('is_paid',paid,'bool',a,'记录是否已付款。');r.assign('is_refunded',refunded,'bool',b,'记录是否已退款。');
+      const result=paid&&!refunded,conditions=[evaluated(expressions[0],paid),paid?evaluated(expressions[1],!refunded):skipped(expressions[1])];
+      r.assign('can_ship',result,'bool',line,paid?'已付款，再检查是否没有退款。':'左侧已经是 False，and 不再求值右侧。',{conditions,result});r.print(py(result),out);r.done();
+      return r.finish({mode});
+    }
+    if(mode==='average'){
+      const q=parameter(c.quantity,'0','销售数量',true).number,s=parameter(c.sales,'3000','销售额',false),guard=choice(c.guard,'safe',['safe','reversed','or'],'条件顺序');
+      const a='quantity != 0',b='sales / quantity >= 100',expressions=guard==='reversed'?[b,a]:[a,b],operator=guard==='or'?'or':'and';
+      const r=tracer(p,{conditions:expressions.map(pending),operator,result:null});
+      const salesLine=p.add('sales = '+py(s.number,s.type)),quantityLine=p.add('quantity = '+py(q,'int')),line=p.add('qualifies = '+expressions.join(' '+operator+' ')),out=p.add('print(qualifies)');
+      r.assign('sales',s.number,s.type,salesLine,'记录销售额。');r.assign('quantity',q,'int',quantityLine,'记录销售数量。');
+      let result,conditions;
+      if(guard==='reversed'){
+        if(q===0){r.fail('ZeroDivisionError',s.type==='float'?'float division by zero':'division by zero',line,'除法写在前面，尚未执行数量检查就发生除零错误。',{conditions:[failed(b),skipped(a)]});return r.finish({mode,guard});}
+        const left=s.number/q>=100;result=left&&(q!==0);conditions=[evaluated(b,left),left?evaluated(a,q!==0):skipped(a)];
+      }else{
+        const left=q!==0,runRight=operator==='and'?left:!left;
+        if(runRight&&q===0){r.fail('ZeroDivisionError',s.type==='float'?'float division by zero':'division by zero',line,'把 and 换成 or 后，左侧 False 不能确定结果，于是继续执行除法并发生除零错误。',{conditions:[evaluated(a,left),failed(b)]});return r.finish({mode,guard});}
+        const right=runRight?s.number/q>=100:undefined;result=operator==='and'?left&&right:left||right;conditions=[evaluated(a,left),runRight?evaluated(b,right):skipped(b)];
+      }
+      r.assign('qualifies',!!result,'bool',line,conditions.some(x=>x.status==='skipped')?'左侧已能确定整个表达式，右侧保持“未执行”。':'依次完成两个条件，再得到布尔结果。',{conditions,result:!!result});r.print(py(!!result),out);r.done();
+      return r.finish({mode,guard});
+    }
+    const price=parameter(c.price,'29.90','商品价格',false),quantity=parameter(c.discountQuantity,'3','数量',true).number,amount=parameter(c.amount,'500','订单金额',false),member=bool(c.isMember,false);
+    const expressions=['price > 0','quantity > 0','amount >= 500','is_member'];
+    const r=tracer(p,{conditions:expressions.map(pending),operator:'and … or',result:null,originalResult:null,correctedResult:null});
+    [['price',price.number,price.type],['quantity',quantity,'int'],['amount',amount.number,amount.type],['is_member',member,'bool']].forEach(([name,value,type])=>{const line=p.add(name+' = '+py(value,type));r.assign(name,value,type,line,'记录 '+name+'。');});
+    p.add('');
+    const originalLine=p.add('original_allowed = price > 0 and quantity > 0 and amount >= 500 or is_member');
+    const validLine=p.add('data_valid = price > 0 and quantity > 0');
+    const allowedLine=p.add('discount_allowed = amount >= 500 or is_member');
+    const correctedLine=p.add('can_discount = data_valid and discount_allowed');
+    const out=p.add('print(original_allowed, can_discount)');
+    const priceOk=price.number>0,quantityOk=quantity>0,amountOk=amount.number>=500,chain=priceOk&&quantityOk&&amountOk,original=chain||member;
+    const conditions=[evaluated(expressions[0],priceOk),priceOk?evaluated(expressions[1],quantityOk):skipped(expressions[1]),priceOk&&quantityOk?evaluated(expressions[2],amountOk):skipped(expressions[2]),chain?skipped(expressions[3]):evaluated(expressions[3],member)];
+    r.assign('original_allowed',original,'bool',originalLine,'and 的优先级高于 or；左侧整组为 False 时，只要会员为 True，原表达式就会成立。',{conditions,originalResult:original});
+    const dataValid=priceOk&&quantityOk,discountAllowed=amountOk||member,corrected=dataValid&&discountAllowed;
+    r.assign('data_valid',dataValid,'bool',validLine,'先单独检查价格和数量是否有效。');
+    r.assign('discount_allowed',discountAllowed,'bool',allowedLine,'再检查金额门槛或会员资格。');
+    r.assign('can_discount',corrected,'bool',correctedLine,'最后用 and 要求两组条件同时满足。',{correctedResult:corrected,result:corrected});
+    r.print(py(original)+' '+py(corrected),out);r.done();return r.finish({mode});
+  });
+
+  const formatPresets={
+    amount:{label:'课件金额 603.064',expression:'603.064',value:603.064},
+    addition:{label:'0.1 + 0.2',expression:'0.1 + 0.2',value:0.1+0.2},
+    multiplication:{label:'7.5 × 5.31',expression:'7.5 * 5.31',value:7.5*5.31},
+    rounding:{label:'2.675 的舍入',expression:'2.675',value:2.675},
+    evenLow:{label:'恰好中点 2.5',expression:'2.5',value:2.5},
+    evenHigh:{label:'恰好中点 3.5',expression:'3.5',value:3.5}
+  };
+  E.formatting=safe(c=>{
+    const preset=choice(c.preset,'amount',Object.keys(formatPresets),'小数示例'),digits=Number(choice(String(c.digits===undefined?'2':c.digits),'2',['0','2','4'],'小数位数'));
+    const spec=formatPresets[preset],p=program(),r=tracer(p,{formatted:null,rounded:null,message:null});
+    const a=p.add('amount_cny = '+spec.expression),b=p.add('rounded_cny = round(amount_cny, '+digits+')'),d=p.add('display_text = f"{amount_cny:.'+digits+'f}"');
+    p.add('');const id=p.add('order_id = "CN-2026-0908"'),message=p.add('message = (');p.add('  f"订单{order_id}的人民币实付金额"');p.add('  f"为{amount_cny:.'+digits+'f}元"');p.add(')');p.add('');
+    const out1=p.add('print("原值：", amount_cny)'),out2=p.add('print("round 结果：", rounded_cny)'),out3=p.add('print(message)');
+    r.assign('amount_cny',spec.value,'float',a,'计算表达式，保存原始 float 值。');
+    const rounded=roundFloat(spec.value,digits),formatted=formatFixed(spec.value,digits);
+    r.assign('rounded_cny',rounded,'float',b,'round 返回一个新的数值；原变量 amount_cny 没有被重新赋值。',{rounded});
+    r.assign('display_text',formatted,'str',d,'格式说明生成字符串，用固定小数位展示；不改写原始数值。',{formatted});
+    r.assign('order_id','CN-2026-0908','str',id,'记录订单编号。');
+    const text='订单CN-2026-0908的人民币实付金额为'+formatted+'元';
+    r.assign('message',text,'str',[message,message+1,message+2,message+3],'括号里的相邻 f-string 连接成一个字符串；代码换行没有自动进入文本。',{message:text});
+    r.print('原值： '+py(spec.value,'float'),out1,'print 的两个参数之间默认插入一个空格，结尾换行。');
+    r.print('round 结果： '+py(rounded,'float'),out2);r.print(text,out3,'message 本身没有换行；print 在输出末尾添加换行。');r.done();
+    return r.finish({preset,digits,expression:spec.expression});
+  });
+
+  const orderPresets={
+    normal:{label:'正常订单',price:'29.90',quantity:'3',discount:'5.00',rate:'7.12',expected:603.06,reason:'检查基本公式与整单优惠。'},
+    noDiscount:{label:'无优惠',price:'29.90',quantity:'3',discount:'0.00',rate:'7.12',expected:638.66,reason:'优惠为零时也应正确。'},
+    zero:{label:'数量为 0',price:'29.90',quantity:'0',discount:'0.00',rate:'7.12',expected:0,reason:'检查零值边界。'},
+    decimal:{label:'小数金额',price:'0.10',quantity:'3',discount:'0.00',rate:'7.12',expected:2.14,reason:'检查小数运算与最终显示。'},
+    negative:{label:'负数数量',price:'29.90',quantity:'-2',discount:'0.00',rate:'7.12',expected:'reject',reason:'业务应拒绝负数数量，原程序尚未校验。'},
+    overDiscount:{label:'优惠超总价',price:'29.90',quantity:'3',discount:'100.00',rate:'7.12',expected:'reject',reason:'业务应拒绝超过商品总价的优惠，原程序尚未校验。'}
+  };
+  E.order=safe(c=>{
+    const preset=choice(c.preset,'normal',Object.keys(orderPresets),'测试场景'),formula=choice(c.formula,'correct',['correct','omitDiscount'],'计算公式'),spec=orderPresets[preset],p=program(),r=tracer(p,{acceptance:null,stage:'input'});
+    const raw=[['unit_price_text',spec.price],['quantity_text',spec.quantity],['discount_text',spec.discount],['exchange_rate_text',spec.rate]];
+    raw.forEach(([name,value])=>{const line=p.add(name+' = '+py(value));r.assign(name,value,'str',line,'把本组原始输入保存为字符串。');});
+    p.add('');
+    const converted=[['unit_price_usd','unit_price_text',Number(spec.price),'float'],['quantity','quantity_text',Number(spec.quantity),'int'],['discount_usd','discount_text',Number(spec.discount),'float'],['exchange_rate','exchange_rate_text',Number(spec.rate),'float']];
+    converted.forEach(([name,source,value,type])=>{const line=p.add(name+' = '+type+'('+source+')');r.assign(name,value,type,line,'显式转换类型，原始字符串仍然保留。',{stage:'convert'});});
+    p.add('');
+    const subtotalLine=p.add('subtotal_usd = unit_price_usd * quantity'),amountLine=p.add(formula==='correct'?'amount_usd = subtotal_usd - discount_usd':'amount_usd = subtotal_usd'),exchangeLine=p.add('converted_cny = amount_usd * exchange_rate'),roundLine=p.add('actual_cny = round(converted_cny, 2)'),out=p.add('print(f"人民币实付金额：{actual_cny:.2f}元")');
+    const subtotal=Number(spec.price)*Number(spec.quantity),amount=formula==='correct'?subtotal-Number(spec.discount):subtotal,convertedCny=amount*Number(spec.rate),actual=roundFloat(convertedCny,2);
+    r.assign('subtotal_usd',subtotal,'float',subtotalLine,'先计算美元商品总价。',{stage:'compute'});
+    r.assign('amount_usd',amount,'float',amountLine,formula==='correct'?'按整单优惠规则减去优惠金额。':'故意漏掉优惠：没有从商品总价中减去 discount_usd。');
+    r.assign('converted_cny',convertedCny,'float',exchangeLine,'把美元实付金额乘汇率，换算成人民币。');
+    r.assign('actual_cny',actual,'float',roundLine,'对最终人民币结果取两位小数，得到新的 float 数值。');
+    r.print('人民币实付金额：'+formatFixed(actual)+'元',out,'输出币种、金额和单位。');
+    const acceptance={expected:spec.expected,actual,passed:spec.expected!=='reject'&&actual===spec.expected,reason:spec.reason,kind:spec.expected==='reject'?'business':'numeric'};
+    r.done(spec.expected==='reject'?'程序执行完毕；页面验收发现：本场景业务应拒绝，原程序却继续算出了金额。':'程序执行完毕；页面将实际结果与课件给定的独立预期比较。',{acceptance,stage:'done'});
+    return r.finish({preset,formula,input:clone(spec),expected:spec.expected});
+  });
+  E.testSuite=function(formula='correct'){
+    return Object.keys(orderPresets).map(preset=>{const model=E.order({preset,formula});if(!model.ok)throw new RangeError(model.error);return Object.assign({preset,label:orderPresets[preset].label,input:clone(orderPresets[preset])},model.outcome.acceptance);});
+  };
+  E.formatFixed=formatFixed;E.roundFloat=roundFloat;E.formatPresets=clone(formatPresets);E.orderPresets=clone(orderPresets);
+});
+</script>
+  <script>(function(root){
+  'use strict';
+  const esc=value=>String(value==null?'':value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const has=(obj,key)=>Object.prototype.hasOwnProperty.call(obj||{},key);
+  const button=(action,value,label,active,key)=>'<button type="button" data-action="'+esc(action)+'" data-value="'+esc(value)+'"'+(key?' data-key="'+esc(key)+'"':'')+' aria-pressed="'+!!active+'">'+esc(label)+'</button>';
+  const tabs=(items,current,action,key)=>'<div class="segmented">'+items.map(x=>button(action||'set-mode',x[0],x[1],String(current)===String(x[0]),key)).join('')+'</div>';
+  const field=(id,key,label,value,hint)=>'<div class="single-field"><label class="control-label" for="'+id+'-'+key+'">'+esc(label)+'</label><input id="'+id+'-'+key+'" type="text" data-field="'+id+'.'+key+'" value="'+esc(value)+'" maxlength="120" spellcheck="false" autocomplete="off">'+(hint?'<p class="hint">'+esc(hint)+'</p>':'')+'</div>';
+  const errorText=error=>typeof error==='string'?error:error?((error.type||error.name||'')+(error.message?': '+error.message:'')):'请检查输入。';
+  const invalid=model=>'<div class="error-message" role="status"><strong>'+esc(errorText(model.error))+'</strong><p>请修改实验参数后再执行。</p></div>';
+  const metric=(label,value,foot)=>'<div class="flow-metric"><span>'+esc(label)+'</span><strong>'+esc(value===undefined?'—':value)+'</strong>'+(foot?'<small>'+esc(foot)+'</small>':'')+'</div>';
+  const empty={vars:{},varTypes:{},varReprs:{},stdout:'',done:false,error:null};
+  const frame=(model,cursor)=>model.ok?root.BasicsLabEngine.stateAt(model,cursor):empty;
+  const value=(f,key,format)=>has(f.vars,key)?(format?format(f.vars[key]):f.vars[key]):undefined;
+  function variableTable(names,f){
+    return '<div class="b2-shared-vars">'+names.map(name=>'<div><code class="b2-var-name">'+esc(name)+'</code><code class="b2-var-value">'+esc(has(f.vars,name)?has(f.varReprs,name)?f.varReprs[name]:root.BasicsLabEngine.repr(f.vars[name],(f.varTypes||{})[name]):'尚未赋值')+'</code><span class="pill">'+esc(has(f.vars,name)?(f.varTypes||{})[name]||'':'—')+'</span></div>').join('')+'</div>';
+  }
+  root.BasicsLabUI={esc,has,button,tabs,field,errorText,invalid,metric,frame,value,variableTable};
+})(window);
+</script>
+  <script>(function(root){
+  'use strict';
+  const E=root.BasicsLabEngine,U=root.BasicsLabUI,V=root.BasicsLabViews=root.BasicsLabViews||{},esc=U.esc;
+  const optionTabs=(items,current,key)=>U.tabs(items,current,'set-option',key);
+  const group=(label,content)=>'<div><span class="control-label">'+esc(label)+'</span>'+content+'</div>';
+  const header=(title,tag)=>'<div class="visual-header"><h2>'+esc(title)+'</h2>'+(tag?'<span class="pill">'+esc(tag)+'</span>':'')+'</div>';
+  const shown=(f,name)=>U.has(f.vars,name)?f.varReprs[name]:'尚未赋值';
+  function valueCard(f,name,label){return '<section class="b2-value-card '+(f.activeName===name?'is-current':'')+'"><code>'+esc(name)+'</code><strong>'+esc(shown(f,name))+'</strong><span class="b2-type">'+esc(U.has(f.varTypes,name)?f.varTypes[name]:'等待执行')+'</span>'+(label?'<p>'+esc(label)+'</p>':'')+'</section>';}
+  function historyTable(history){return '<div class="flow-table-wrap"><table class="flow-table b2-history"><thead><tr><th>执行语句</th><th>赋值前</th><th>右侧计算</th><th>赋值后</th></tr></thead><tbody>'+(history.length?history.map((x,i)=>'<tr class="'+(i===history.length-1?'flow-current-row':'')+'"><th><code>'+esc(x.name)+'</code><span>第 '+x.line+' 行</span></th><td><code>'+esc(x.before===null?'尚未赋值':x.before)+'</code></td><td><code>'+esc(x.expression)+'</code></td><td><code>'+esc(x.result)+'</code></td></tr>').join(''):'<tr><td colspan="4" class="flow-muted">执行后，逐条记录赋值前后的变化。</td></tr>')+'</tbody></table></div>';}
+  V.assignment=function(s){
+    const model=E.assignment(s),f=U.frame(model,s.cursor);
+    const controls=group('观察内容',U.tabs([['stock','库存逐次扣减'],['derived','改数量后，小计会变吗？']],s.mode))+(s.mode==='stock'?group('实际执行顺序',optionTabs([['normal','依次运行'],['repeat','重复扣 3 件'],['beforeInit','先扣减，未初始化']],s.preset,'preset')):group('改变数量以后',optionTabs([['false','不重算小计'],['true','重新计算小计']],s.recalculate,'recalculate')));
+    let visual=U.invalid(model);
+    if(model.ok){
+      const a=f.assignment;
+      visual=header(s.mode==='stock'?'先算右侧，再更新左侧变量':'赋值记录当时的结果','实际执行状态')+
+        '<div class="b2-assignment-flow"><section><span>赋值前 · '+esc(a?a.name:s.mode==='stock'?'stock':'变量')+'</span><strong>'+esc(a&&a.before!==null?a.before:'尚未赋值')+'</strong></section><div class="b2-flow-arrow" aria-hidden="true">→</div><section class="b2-expression"><span>右侧计算</span><strong>'+esc(a?a.expression:'等待执行')+'</strong></section><div class="b2-flow-arrow" aria-hidden="true">→</div><section class="b2-assigned"><span>赋值后 · '+esc(a?a.name:s.mode==='stock'?'stock':'变量')+'</span><strong>'+esc(a&&a.result!==null?a.result:f.error?'未完成赋值':'尚未赋值')+'</strong></section></div>'+
+        U.variableTable(model.names,f)+historyTable(f.history||[]);
+      if(s.mode==='derived')visual+='<p class="hint">变量面板显示 Python 的数值表示；例如 29.90 × 3 的浮点结果带有长尾，显示格式将在后面的实验中比较。</p>';
+    }
+    const summary='<div class="rule-note"><strong>= 是赋值：先读取右侧当前值，完成计算，再把结果绑定到左侧名称。</strong><p>重复运行 <code>stock = stock - 3</code> 会再次扣减；它不会自动回到最初的 50。Notebook 中决定变量状态的是实际执行顺序。</p><p>计算过一次的 <code>subtotal_usd</code> 不会持续追踪 <code>quantity</code>。数量改变后，要再次执行乘法赋值，才能得到新的小计。</p><p>命名时区分两件事：<code>2nd_order_id</code>、<code>unit-price</code>、<code>exchange rate</code> 不能作为这里的赋值目标；<code>float</code> 和 <code>a</code> 虽然语法有效，但前者会覆盖内置名称，后者业务含义不清。优先使用 <code>unit_price_usd</code> 这样明确的名称。</p></div>';
+    return {model,frame:f,code:model.code,controls,visual,summary};
+  };
+  V.types=function(s){
+    const model=E.types(s),f=U.frame(model,s.cursor),controls=group('观察内容',U.tabs([['values','查看值与类型'],['operations','比较同一个运算符']],s.mode))+(s.mode==='values'?group('一组对照',optionTabs([['numberText','3、"3" 与 3.0'],['noneText','None 与 "None"'],['booleanText','False 与 "False"'],['productCode','带前导零的编码']],s.preset,'preset')):group('表达式',optionTabs([['numericAdd','3 + 2'],['textAdd','"3" + "2"'],['repeat','"3" * 2'],['mixed','3 + "2"']],s.operation,'operation')));
+    let visual=U.invalid(model);
+    if(model.ok){
+      visual=header(s.mode==='values'?'看清值，再看它的类型':'运算的含义由数据类型决定','repr(value) 与 type');
+      if(s.mode==='values')visual+='<div class="b2-value-grid">'+model.spec.map(x=>valueCard(f,x.name,x.label)).join('')+'</div>';
+      else visual+='<div class="b2-operation">'+valueCard(f,'left')+'<span class="b2-operator">'+esc(model.spec.op)+'</span>'+valueCard(f,'right')+'<span class="b2-operator">=</span>'+valueCard(f,'result',f.error?'本次运算出错，没有结果变量':'执行表达式后才会出现结果')+'</div>';
+      visual+='<p class="hint">这里用 <code>repr()</code> 显示字符串引号，便于区分数字和文本；引号不是字符串内容本身。</p>';
+    }
+    const summary='<div class="rule-note"><strong>外观看起来相似，不代表类型相同。</strong><p><code>3</code> 是整数，<code>3.0</code> 是浮点数，<code>"3"</code> 是字符串。两个数相加是算术加法，两个字符串相加是拼接；字符串乘整数表示重复文本。</p><p><code>False</code> 是布尔值；<code>None</code> 是表示当前没有值的特殊值，类型名为 <code>NoneType</code>。加上引号以后，<code>"False"</code> 和 <code>"None"</code> 都只是文本。</p><p>商品编码 <code>"000872"</code> 用来标识商品，保留为字符串可以保存前导零。不要仅因内容含数字，就把它改成数值类型。</p></div>';
+    return {model,frame:f,code:model.code,controls,visual,summary};
+  };
+  V.conversion=function(s){
+    const model=E.conversion(s),f=U.frame(model,s.cursor);
+    const controls=U.field('conversion','quantityText','购买数量 · 原始输入',s.quantityText)+U.field('conversion','priceText','美元单价 · 原始输入',s.priceText)+group('参与计算前',optionTabs([['true','先做类型转换'],['false','直接使用原始文本']],s.convert,'convert'))+
+      '<div class="flow-wide b2-presets"><span class="control-label">快速换一个输入</span>'+optionTabs([['3','数量 3'],['3.0','数量 3.0'],['three','数量 three'],[' 3 ','数量两端有空格']],s.quantityText,'quantityText')+optionTabs([['29.90','单价 29.90'],['29.90美元','单价带“美元”'],['','空单价']],s.priceText,'priceText')+'</div>';
+    let visual=U.invalid(model);
+    if(model.ok){
+      visual=header('原始输入保留，转换结果另有变量','input() 返回 str')+'<div class="b2-conversion-grid"><section><h3>原始文本</h3>'+valueCard(f,'quantity_text','input() 接收购买数量')+valueCard(f,'unit_price_text','input() 接收美元单价')+'</section><div class="b2-convert-arrow" aria-hidden="true">→</div><section><h3>'+(s.convert?'转换为数值':'本次未转换')+'</h3>'+valueCard(f,'quantity',s.convert?'int(quantity_text)':'没有执行 int')+valueCard(f,'unit_price_usd',s.convert?'float(unit_price_text)':'没有执行 float')+'</section></div>'+
+        '<div class="b2-subtotal"><span>商品总价 · subtotal_usd</span><strong>'+esc(shown(f,'subtotal_usd'))+'</strong><span>'+esc(U.has(f.varTypes,'subtotal_usd')?f.varTypes.subtotal_usd:'等待数值计算')+'</span></div>';
+    }
+    const summary='<div class="rule-note"><strong>输入的是数字字符，也要先确认它的类型。</strong><p><code>input()</code> 返回字符串。<code>int("3")</code> 可以得到整数 3，<code>float("29.90")</code> 可以得到浮点数 29.9；原来的字符串变量仍保持原值和原类型。</p><p><code>int("3.0")</code> 不会自动先转成浮点数；它会产生 <code>ValueError</code>。<code>"29.90美元"</code> 也不是可直接转换的浮点数字符串。转换失败时，当前赋值没有完成，后续语句停止执行。</p><p>转换成功不等于业务有效。负数数量也能转成整数；是否允许这笔订单，要在后面的业务测试中核验。</p><p class="hint">本实验每项输入最多 40 个字符，成功转换的数值须有限且绝对值不超过 1,000,000；这是演示范围，不是 Python 的数值上限。代码中的两个 input() 依次接收左侧设置的数量和单价。</p></div>';
+    return {model,frame:f,code:model.code,controls,visual,summary};
+  };
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script>
+  <script>/* Whiteboard A views for the four expression and business-calculation labs. */
+(function(root){
+  'use strict';
+  const E=root.BasicsLabEngine,U=root.BasicsLabUI,V=root.BasicsLabViews=root.BasicsLabViews||{},esc=U.esc,has=U.has;
+  const py=(v,t)=>E.repr(v,t),options=(items,value,key)=>U.tabs(items,value,'set-option',key);
+  const control=(label,content)=>'<div class="flow-wide"><span class="control-label">'+esc(label)+'</span>'+content+'</div>';
+  const heading=(title,tag)=>'<div class="visual-header"><h2>'+esc(title)+'</h2>'+(tag?'<span class="pill">'+esc(tag)+'</span>':'')+'</div>';
+  const cell=(f,key)=>has(f.vars,key)?f.varReprs[key]:'尚未赋值';
+  const stat=(label,f,key,type)=>'<section class="b2x-value"><span>'+esc(label)+'</span><code>'+esc(cell(f,key))+'</code><small>'+esc(has(f.vars,key)?(f.varTypes[key]||type):'等待执行')+'</small></section>';
+  const boolWord=value=>value===null||value===undefined?'尚未求值':py(value,'bool');
+  function termsTable(terms){
+    if(!terms.length)return '<div class="b2x-await">运行到表达式所在行，观察它按什么顺序计算。</div>';
+    return '<ol class="b2x-calculations">'+terms.map((term,i)=>'<li><span class="b2x-step-no">'+(i+1)+'</span><div><strong>'+esc(term.label)+'</strong><code>'+esc(term.expression)+'</code></div><div class="b2x-term-result"><code>'+esc(term.repr)+'</code><small>'+esc(term.type)+'</small></div></li>').join('')+'</ol>';
+  }
+  function conditionsTable(conditions){
+    return '<div class="b2x-conditions">'+conditions.map((condition,i)=>{
+      const labels={pending:'尚未求值',evaluated:condition.repr,skipped:'未执行',error:'除零异常'};
+      return '<div class="b2x-condition is-'+esc(condition.status)+'"><span class="b2x-step-no">'+(i+1)+'</span><code>'+esc(condition.expression)+'</code><strong>'+esc(labels[condition.status])+'</strong></div>';
+    }).join('')+'</div>';
+  }
+  function resultBand(label,value,error){return '<div class="b2x-result-band'+(error?' is-error':'')+'"><span>'+esc(label)+'</span><strong>'+esc(error?'没有得到结果':boolWord(value))+'</strong></div>';}
+
+  V.arithmetic=function(state){
+    const s=Object.assign({mode:'order',formula:'grouped',units:'23',boxSize:'6',power:'negative',cursor:0},state),model=E.arithmetic(s),f=U.frame(model,s.cursor);
+    let controls=control('选择计算场景',U.tabs([['order','订单与括号'],['packing','装箱与余数'],['power','幂与负号']],s.mode));
+    if(s.mode==='order')controls+=control('比较表达式',options([['grouped','整单优惠后换汇'],['ungrouped','移去括号'],['perItem','每件减去优惠']],s.formula,'formula'));
+    else if(s.mode==='packing')controls+=U.field('arithmetic','units','总件数 units',s.units)+U.field('arithmetic','boxSize','每箱件数 box_size',s.boxSize,'可试 0；负数只用于观察数学规则。');
+    else controls+=control('选择幂表达式',options([['negative','-2 ** 2'],['grouped','(-2) ** 2'],['reciprocal','2 ** -2']],s.power,'power'));
+    let visual='';
+    if(model.ok){
+      if(s.mode==='order'){
+        visual=heading('括号会改变计算顺序，也会改变业务含义','美元 → 人民币')+'<div class="b2x-order-given"><span>单价 <strong>29.90 美元</strong></span><span>数量 <strong>3 件</strong></span><span>整单优惠 <strong>5.00 美元</strong></span><span>汇率 <strong>7.12</strong></span></div>'+termsTable(f.terms||[])+
+          '<div class="b2x-value-grid">'+stat('amount_cny 的原始值',f,'amount_cny','float')+'</div>';
+        if(has(f.vars,'amount_cny')&&s.formula!=='grouped')visual+='<p class="b2x-warning">'+(s.formula==='ungrouped'?'程序能够运行，但只有优惠乘了汇率，不能表达整笔订单换汇。':'程序能够运行，但 5 美元优惠被扣了 3 次，与整单减 5 美元的规则不同。')+'</p>';
+      }else if(s.mode==='packing'){
+        visual=heading('同一组整数，三种除法观察','/ · // · %')+'<div class="b2x-value-grid">'+stat('普通除法 box_ratio',f,'box_ratio','float')+stat('整除 full_boxes',f,'full_boxes','int')+stat('余数 remaining',f,'remaining','int')+'</div>';
+        if(has(f.vars,'remaining'))visual+='<div class="b2x-equation"><code>'+esc(py(f.vars.units,'int')+' = '+py(f.vars.full_boxes,'int')+' × '+py(f.vars.box_size,'int')+' + '+py(f.vars.remaining,'int'))+'</code></div>';
+        if(Number(s.units)<0||Number(s.boxSize)<0)visual+='<p class="hint">当前使用负数观察数学规则，不表示可接受的真实装箱业务数据。// 向负无穷取整，不能简单理解为“删掉小数”。</p>';
+      }else visual=heading('先明确底数，再理解幂运算','课后拓展')+termsTable(f.terms||[])+U.variableTable(['result'],f);
+    }
+    const summary='<div class="rule-note"><strong>表达式要同时满足运算规则和业务规则。</strong><p>课程订单按“美元单价 × 数量 − 整单优惠”算出美元实付，再整体乘汇率。括号把需要先完成的计算放在一起。</p><p><code>/</code> 得到除法结果；整数的 <code>//</code> 得到向负无穷取整的商，<code>%</code> 得到余数。除数不能是 0。</p><p><code>-2 ** 2</code> 先算平方再取负；<code>(-2) ** 2</code> 把负数整体作为底数。不确定时主动加括号，或拆成多个步骤。</p></div>';
+    return {model,frame:f,code:model.code,controls,visual:model.ok?visual:U.invalid(model),summary};
+  };
+
+  V.logic=function(state){
+    const s=Object.assign({mode:'shipping',isPaid:true,isRefunded:false,quantity:'0',sales:'3000',guard:'safe',price:'29.90',discountQuantity:'3',amount:'500',isMember:false,cursor:0},state),model=E.logic(s),f=U.frame(model,s.cursor);
+    let controls=control('选择判断任务',U.tabs([['shipping','是否发货'],['average','避免除零'],['discount','会员优惠规则']],s.mode));
+    if(s.mode==='shipping')controls+=control('是否已付款',options([['true','True'],['false','False']],String(s.isPaid),'isPaid'))+control('是否已退款',options([['false','False'],['true','True']],String(s.isRefunded),'isRefunded'));
+    else if(s.mode==='average')controls+=U.field('logic','sales','销售额 sales',s.sales)+U.field('logic','quantity','销售数量 quantity',s.quantity)+control('检查条件怎样组合',options([['safe','先检查，再用 and'],['reversed','把除法放前面'],['or','把 and 换成 or']],s.guard,'guard'));
+    else controls+=U.field('logic','price','价格 price',s.price)+U.field('logic','discountQuantity','数量 quantity',s.discountQuantity)+U.field('logic','amount','金额 amount',s.amount)+control('是否会员 is_member',options([['false','False'],['true','True']],String(s.isMember),'isMember'));
+    let visual='';
+    if(model.ok){
+      if(s.mode==='discount'){
+        visual=heading('数据有效，才有资格判断优惠','课后拓展')+'<h3 class="b2x-subhead">原表达式的求值情况</h3>'+conditionsTable(f.conditions||[])+
+          '<div class="b2x-comparison">'+resultBand('原来的混合表达式',f.originalResult)+resultBand('拆分后：有效数据且符合优惠',f.correctedResult)+'</div>';
+        if(f.correctedResult!==null&&f.originalResult!==f.correctedResult)visual+='<p class="b2x-warning">原表达式让会员身份绕过了价格或数量检查。拆分后，数据无效会得到 False。</p>';
+        visual+=U.variableTable(['data_valid','discount_allowed','can_discount'],f);
+      }else{
+        visual=heading(s.mode==='shipping'?'付款且未退款，才能发货':'左侧已确定结果，右侧就不再求值',s.mode==='average'?'课后拓展':'and / not')+conditionsTable(f.conditions||[])+
+          '<p class="b2x-operator">组合方式：<code>'+esc(f.operator)+'</code></p>'+resultBand(s.mode==='shipping'?'can_ship':'qualifies',f.result,f.error);
+        if(s.mode==='average'&&s.guard==='or'&&!f.error&&f.done)visual+='<p class="b2x-warning">这个 or 版本只要数量不为 0 就得到 True，不再检查平均成交价，改变了原来的业务条件。</p>';
+      }
+    }
+    const summary='<div class="rule-note"><strong>先看条件含义，再看求值顺序。</strong><p><code>and</code> 在左侧为假时跳过右侧；<code>or</code> 在左侧为真时跳过右侧。“未执行”表示没有求值，不能填成 False。</p><p>检查必须放在可能出错的操作之前。<code>quantity != 0 and sales / quantity &gt;= 100</code> 会先检查数量；交换顺序后就失去了这个保护。</p><p><code>not</code> 的优先级高于 <code>and</code>，<code>and</code> 高于 <code>or</code>；实际求值还遵循从左到右与短路规则。把“数据有效”和“允许优惠”分别命名后再组合，更容易核验。</p><p class="hint">这里参与组合的都是布尔判断。在一般 Python 表达式中，and/or 会返回选中的操作数，不一定返回 bool。</p></div>';
+    return {model,frame:f,code:model.code,controls,visual:model.ok?visual:U.invalid(model),summary};
+  };
+
+  V.formatting=function(state){
+    const s=Object.assign({preset:'amount',digits:'2',cursor:0},state),model=E.formatting(s),f=U.frame(model,s.cursor);
+    const controls=control('选择一个小数案例',options(Object.entries(E.formatPresets).map(([key,x])=>[key,x.label]),s.preset,'preset'))+control('保留的小数位数',options([['0','0 位'],['2','2 位'],['4','4 位']],String(s.digits),'digits'));
+    let visual='';
+    if(model.ok){
+      visual=heading('原数值、新数值和显示文本，分开观察','round / f-string')+'<div class="b2x-value-grid">'+stat('原变量 amount_cny',f,'amount_cny','float')+stat('新数值 rounded_cny',f,'rounded_cny','float')+stat('格式文本 display_text',f,'display_text','str')+'</div>'+
+        '<section class="b2x-message"><h3>分两行书写的 f-string</h3><pre>'+esc(f.message===null?'执行到 message 赋值后，在这里查看完整字符串。':f.message)+'</pre>'+(f.message!==null?'<p class="hint">message 中没有换行符。代码中的换行方便阅读；实际输出由字符串内容和 print 决定。</p>':'')+'</section>';
+      if(s.preset==='rounding'||s.preset==='evenLow'||s.preset==='evenHigh')visual+='<p class="b2x-warning">拓展观察：round 不是简单的“遇 5 就进 1”。恰好中点时取偶数；2.675 的二进制近似值略小于十进制中点，所以取两位得到 2.67。</p>';
+    }
+    const summary='<div class="rule-note"><strong>显示得整齐，不等于改写了变量。</strong><p>许多十进制小数在 float 中只能近似表示，运算后可能出现较长尾数。上方“原变量”显示实际数值的 Python 表示，不把它预先隐藏成两位小数。</p><p><code>round(amount_cny, 2)</code> 返回一个新的数值；<code>f"{amount_cny:.2f}"</code> 生成保留两位小数的文本。只有显式重新赋值，才会改变原变量所引用的值。</p><p>括号中的相邻字符串会连接起来；代码写在多行，不意味着文本中包含换行。<code>print</code> 多个参数默认用空格分隔，最后添加换行。</p><p class="hint">本课沿用 float 练习类型和表达式。对精度要求严格的金额结算，需要进一步学习 Decimal 或整数分等方案。</p></div>';
+    return {model,frame:f,code:model.code,controls,visual:model.ok?visual:U.invalid(model),summary};
+  };
+
+  function orderInput(spec){
+    return '<div class="b2x-order-input">'+[['单价（美元）',spec.price],['数量（件）',spec.quantity],['优惠（美元）',spec.discount],['汇率',spec.rate]].map(([label,value])=>'<div><span>'+label+'</span><code>'+esc(py(value,'str'))+'</code></div>').join('')+'</div>';
+  }
+  function acceptanceBox(a){
+    if(!a)return '<section class="b2x-acceptance is-waiting"><h3>页面验收</h3><p>先运行当前程序，再与课件给定的独立预期比较。</p></section>';
+    return '<section class="b2x-acceptance '+(a.passed?'is-passed':'is-failed')+'"><div class="b2x-section-title"><h3>页面验收</h3><strong>'+esc(a.passed?'通过':'未通过')+'</strong></div><div class="b2x-acceptance-values"><div><span>业务预期</span><strong>'+esc(a.expected==='reject'?'应拒绝':E.formatFixed(a.expected)+' 元')+'</strong></div><div><span>实际结果</span><strong>'+esc(E.formatFixed(a.actual)+' 元')+'</strong></div></div><p>'+esc(a.reason)+'</p>'+(a.kind==='business'?'<p>原程序没有拒绝这个输入。页面验收指出问题，但没有替程序添加校验代码。</p>':'')+'</section>';
+  }
+  function suiteTable(formula){
+    const rows=E.testSuite(formula),passed=rows.filter(x=>x.passed).length;
+    return '<section class="b2x-suite"><div class="b2x-section-title"><h3>六组场景测试</h3><span class="pill">通过 '+passed+' / '+rows.length+'</span></div><div class="flow-table-wrap"><table class="flow-table b2x-suite-table"><thead><tr><th>场景</th><th>单价</th><th>数量</th><th>优惠</th><th>汇率</th><th>独立预期</th><th>实际结果</th><th>验收</th></tr></thead><tbody>'+rows.map(row=>'<tr class="'+(row.passed?'':'b2x-failed-row')+'"><th scope="row">'+esc(row.label)+'</th><td>'+esc(row.input.price)+'</td><td>'+esc(row.input.quantity)+'</td><td>'+esc(row.input.discount)+'</td><td>'+esc(row.input.rate)+'</td><td>'+esc(row.expected==='reject'?'应拒绝':E.formatFixed(row.expected))+'</td><td>'+esc(E.formatFixed(row.actual))+'</td><td>'+esc(row.passed?'通过':'未通过')+'</td></tr>').join('')+'</tbody></table></div><p class="hint">金额以元显示；单价与优惠输入单位为美元。预期来自课件第 24 页，不由当前计算公式生成。</p></section>';
+  }
+  V.order=function(state){
+    const s=Object.assign({preset:'normal',formula:'correct',tested:false,cursor:0},state),model=E.order(s),f=U.frame(model,s.cursor);
+    const controls=control('选择测试场景',options(Object.entries(E.orderPresets).map(([key,x])=>[key,x.label]),s.preset,'preset'))+control('选择待检查的程序',options([['correct','课件公式'],['omitDiscount','故意漏减优惠']],s.formula,'formula'))+'<div class="flow-wide"><button type="button" class="btn btn-subtle" data-action="run-suite"'+(!model.ok?' disabled':'')+'>运行全部六组测试</button></div>';
+    let visual='';
+    if(model.ok){
+      visual=heading('从原始输入走到可核验的订单结果','跨境订单')+orderInput(model.input)+'<p class="hint">本次输入都是字符串。逐步执行时，代码先转换类型，再计算金额。</p>'+
+        '<div class="b2x-value-grid b2x-four-values">'+stat('美元商品总价',f,'subtotal_usd','float')+stat('美元实付金额',f,'amount_usd','float')+stat('换汇后的原值',f,'converted_cny','float')+stat('人民币最终金额',f,'actual_cny','float')+'</div>'+acceptanceBox(f.acceptance);
+      if(s.tested)visual+=suiteTable(s.formula);
+    }
+    const summary='<div class="rule-note"><strong>先给出独立预期，再检查程序实际算出了什么。</strong><p>课件基准为 <code>(29.90 × 3 − 5.00) × 7.12</code>，最终应显示 <code>603.06 元</code>。本实验保留分步转换和计算，让每个中间变量都可检查。</p><p>一组测试通过，只能说明这一组情况符合预期。试试“故意漏减优惠”：无优惠场景可能通过，正常优惠订单却会失败。</p><p>负数数量和超额优惠仍会被原程序算成金额。这正是课件要求通过测试发现的缺口：算术公式正确，并不代表业务规则已经完整实现。输入校验留待后续学习。</p><p class="hint">上方“页面验收”独立比较预期与结果，不改变展示代码的运行过程。</p></div>';
+    return {model,frame:f,code:model.code,controls,visual:model.ok?visual:U.invalid(model),summary};
+  };
+})(window);
+</script>
+  <script>(function () {
+  'use strict';
+  const C = window.BasicsLabContent;
+  const E = window.BasicsLabEngine;
+  const V = window.BasicsLabViews;
+  const STORAGE = 'classroom-whiteboard-slide2-v1';
+  let saved = {};
+  try {saved = JSON.parse(localStorage.getItem(STORAGE) || '{}') || {};} catch (_) {}
+  const known = id => C.modules.some(m => m.id === id);
+  const route = () => location.hash.slice(1).split('?')[0];
+  let current = known(route()) ? route() : known(saved.lastLesson) ? saved.lastLesson : C.modules[0].id;
+  const answers = {};
+  C.modules.forEach(m => {
+    const v = saved.answers && saved.answers[m.id];
+    if (Number.isInteger(v) && v >= 0 && v < m.quiz.options.length) answers[m.id] = v;
+  });
+  function initial(id) {
+    return {
+      assignment:{mode:'stock',preset:'normal',recalculate:false,cursor:0},
+      types:{mode:'values',preset:'numberText',operation:'numericAdd',cursor:0},
+      conversion:{quantityText:'3',priceText:'29.90',convert:true,cursor:0},
+      arithmetic:{mode:'order',formula:'grouped',units:'23',boxSize:'6',power:'negative',cursor:0},
+      logic:{mode:'shipping',isPaid:true,isRefunded:false,quantity:'0',sales:'3000',guard:'safe',price:'29.90',discountQuantity:'3',amount:'500',isMember:false,cursor:0},
+      formatting:{preset:'amount',digits:'2',cursor:0},
+      order:{preset:'normal',formula:'correct',tested:false,cursor:0}
+    }[id];
+  }
+  const states = Object.fromEntries(C.modules.map(m => [m.id, initial(m.id)]));
+  const openedQuizzes = new Set();
+  const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  let activeCode = '', activeModel = null, toastTimer, projecting = false;
+  function save() {
+    try {localStorage.setItem(STORAGE, JSON.stringify({lastLesson:current,answers}));} catch (_) {}
+  }
+  function toast(message) {
+    const node = document.getElementById('toast');
+    node.textContent = message;
+    node.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => node.classList.remove('visible'), 2400);
+  }
+  function preserveFocus(callback) {
+    const active = document.activeElement;
+    let selector = '', range;
+    if (active && active.dataset.field) selector = '[data-field="' + active.dataset.field + '"]';
+    else if (active && active.dataset.action) {
+      selector = '[data-action="' + active.dataset.action + '"]';
+      if (active.dataset.key !== undefined) selector += '[data-key="' + CSS.escape(active.dataset.key) + '"]';
+      if (active.dataset.value !== undefined) selector += '[data-value="' + CSS.escape(active.dataset.value) + '"]';
+    }
+    try {if (active && active.selectionStart !== null) range = [active.selectionStart,active.selectionEnd];} catch (_) {}
+    callback();
+    const next = selector && document.querySelector(selector);
+    if (next && !next.disabled) {
+      next.focus({preventScroll:true});
+      if (range) {try {next.setSelectionRange(range[0],range[1]);} catch (_) {}}
+    }
+  }
+  function highlighted(code, activeLines) {
+    const active = activeLines || [];
+    function line(source) {
+      const pattern = /('[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"|#.*|\b(?:None|True|False|import|from|with|as|try|except|raise|del|print|return|def|assert|in|if|elif|else|for|while|break|continue|and|or|not)\b|\b\d+(?:\.\d+)?\b)/g;
+      let html = '', position = 0, match;
+      while ((match = pattern.exec(source))) {
+        html += esc(source.slice(position,match.index));
+        const token = match[0], type = token[0] === '#' ? 'comment' : /^['"]/.test(token) ? 'str' : /^\d/.test(token) ? 'num' : 'kw';
+        html += '<span class="token-' + type + '">' + esc(token) + '</span>';
+        position = match.index + token.length;
+      }
+      return html + esc(source.slice(position));
+    }
+    return code.split('\n').map((text,i) => '<span class="code-line'+(active.includes(i+1)?' is-current':'')+'"><span class="line-no" aria-hidden="true">' + (i+1) + '</span><span class="line-text">' + (line(text) || ' ') + '</span></span>').join('');
+  }
+  function quiz(module) {
+    const q = module.quiz, answer = answers[module.id], answered = Number.isInteger(answer), right = answer === q.answer;
+    return '<details class="check-panel" data-quiz-panel="' + module.id + '" ' + (openedQuizzes.has(module.id) ? 'open' : '') + '><summary>检验理解' +
+      (answered ? right ? ' · 已答对' : ' · 再想一想' : '') + '</summary><div class="check-content"><p class="check-question">' + esc(q.prompt) +
+      '</p>' + (q.code ? '<pre class="quiz-code">' + esc(q.code) + '</pre>' : '') + '<div class="quiz-options" role="group" aria-label="练习选项">' +
+      q.options.map((option,i) => '<button type="button" class="quiz-option" data-action="quiz-answer" data-value="' + i + '" aria-pressed="' + (answer === i) +
+        '"><span class="quiz-letter">' + String.fromCharCode(65+i) + '</span><span>' + esc(option.label) + '</span></button>').join('') +
+      '</div>' + (answered ? '<div class="quiz-feedback ' + (right ? '' : 'incorrect') + '" role="status"><strong>' + (right ? '判断正确。' : '再想一想。') + '</strong>' + esc(q.options[answer].explanation) + '</div>' : '') + '</div></details>';
+  }
+  function renderNav() {
+    document.getElementById('lesson-nav').innerHTML = C.modules.map((m,i) => '<a href="#' + m.id + '" ' + (m.id === current ? 'aria-current="page"' : '') + '><span class="nav-index">' +
+      String(i+1).padStart(2,'0') + '</span><span>' + esc(m.navTitle || m.title) + '</span>' + (answers[m.id] === m.quiz.answer ? '<span class="nav-done" aria-label="练习已答对">✓</span>' : '') + '</a>').join('');
+    const count = C.modules.filter(m => answers[m.id] === m.quiz.answer).length;
+    document.getElementById('quiz-progress').textContent = count ? '练习答对 ' + count + ' / ' + C.modules.length : C.modules.length + ' 个动手实验';
+  }
+  function tracePanel(model,frame,state) {
+    if (!model || !model.ok || !model.trace || !model.trace.length) return '';
+    const end=model.trace.length-1, cursor=Math.max(0,Math.min(end,Number(state.cursor)||0));
+    const last=model.trace[end];
+    const stateName=frame.error?'异常终止':frame.paused?'演示暂停':frame.done?'执行结束':cursor===0?'尚未开始':'执行中';
+    const line=Number(frame.line), currentLine=line>0?(model.lines||model.code.split('\n'))[line-1]:'';
+    return '<div class="flow-execution"><div class="flow-stepper" role="group" aria-label="逐步执行">'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-start" '+(cursor===0?'disabled':'')+'>从头演示</button>'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-back" '+(cursor===0?'disabled':'')+'>上一步</button>'+
+      '<button type="button" class="btn btn-primary" data-action="trace-next" '+(cursor===end?'disabled':'')+'>下一步 →</button>'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-end" '+(cursor===end?'disabled':'')+'>'+(last.paused?'运行至暂停':'运行到最后')+'</button>'+
+      '<span class="flow-step-count">'+cursor+' / '+end+' 步 · '+stateName+'</span></div>'+
+      '<div class="flow-step-note" role="status" aria-live="polite"><strong>'+esc(frame.note||'先预测，再点击下一步。')+'</strong>'+
+      (currentLine?'<div class="flow-current-code"><span>第 '+line+' 行</span><code>'+esc(currentLine)+'</code></div>':'')+'</div>'+
+      '<div class="flow-output"><span>程序输出</span><pre>'+(frame.stdout?esc(frame.stdout):'<span class="flow-muted">尚未产生输出</span>')+
+      (frame.error?'\n<span class="flow-error-text">'+esc(BasicsLabUI.errorText(frame.error))+'</span>':'')+'</pre></div></div>';
+  }
+  function renderLesson() {
+    const module=C.modules.find(m=>m.id===current), state=states[current], view=V[current](state);
+    activeCode=view.code||''; activeModel=view.model||null;
+    const frame=view.frame || (activeModel&&activeModel.ok?E.stateAt(activeModel,state.cursor):{});
+    const lines=frame.lines || (frame.line?[frame.line]:[]);
+    document.getElementById('lesson').innerHTML='<div class="lesson-heading"><div><p class="source-tag">'+esc(module.pages)+
+      '</p><h1 id="lesson-title" tabindex="-1">'+esc(module.title)+'</h1><p class="lesson-question">'+esc(module.question)+
+      '</p></div><button type="button" class="btn btn-subtle" data-action="reset-experiment">重置实验</button></div>'+
+      '<div class="workbench"><section class="control-panel" aria-label="实验操作">'+view.controls+'</section><section class="visual-panel" aria-label="可视化结果">'+view.visual+tracePanel(activeModel,frame,state)+'</section></div>'+
+      '<div class="evidence"><section class="rule-panel" aria-label="理解原理">'+view.summary+'</section><section class="code-panel" aria-label="对应的 Python 代码"><div class="code-toolbar"><span>对应的 Python · 蓝色行是当前位置</span><button type="button" class="btn btn-subtle" data-action="copy-code">复制代码</button></div><pre><code>'+highlighted(activeCode,lines)+'</code></pre></section></div>'+
+      '<div class="try-next"><strong>再试一步</strong><span>'+esc(module.try)+'</span></div>'+quiz(module);
+    const detail=document.querySelector('[data-quiz-panel]');
+    detail.addEventListener('toggle',()=>{if(detail.open)openedQuizzes.add(module.id);else openedQuizzes.delete(module.id);});
+  }
+  function setProjection(value) {
+    projecting = value;
+    document.body.classList.toggle('projecting',value);
+    const button = document.getElementById('projection-toggle');
+    button.textContent = value ? '退出投影' : '投影模式';
+    button.setAttribute('aria-pressed',String(value));
+  }
+  function navigate() {
+    if (!known(route())) return;
+    current = route();
+    renderNav(); renderLesson(); save();
+    document.getElementById('lesson-title').focus({preventScroll:true});
+    if (window.innerWidth < 901) document.getElementById('lesson').scrollIntoView({block:'start'});
+  }
+  async function copyCode() {
+    try {
+      if (!navigator.clipboard || !window.isSecureContext) throw Error('fallback');
+      await navigator.clipboard.writeText(activeCode); toast('Python 代码已复制');
+    } catch (_) {
+      const area = document.createElement('textarea');
+      area.value = activeCode; area.setAttribute('readonly',''); area.style.cssText = 'position:fixed;left:-9999px;top:0';
+      document.body.appendChild(area); area.select();
+      let success = false;
+      try {success = document.execCommand('copy');} catch (_) {}
+      area.remove();
+      toast(success ? 'Python 代码已复制' : '浏览器未允许自动复制，请选中代码后复制。');
+    }
+  }
+  document.addEventListener('click',event=>{
+    if(event.target.closest('#projection-toggle')){setProjection(!projecting);return;}
+    const button=event.target.closest('[data-action]');
+    if(!button||button.disabled)return;
+    const action=button.dataset.action,value=button.dataset.value;
+    if(action==='copy-code'){copyCode();return;}
+    preserveFocus(()=>{
+      const s=states[current];
+      switch(action){
+        case 'reset-experiment':states[current]=initial(current);break;
+        case 'set-mode':s.mode=value;s.cursor=0;s.tested=false;break;
+        case 'set-option':
+          s[button.dataset.key]=value==='true'?true:value==='false'?false:value;
+          s.cursor=0;s.tested=false;break;
+        case 'run-suite':if(current==='order')s.tested=true;break;
+        case 'trace-start':s.cursor=0;break;
+        case 'trace-back':s.cursor=Math.max(0,s.cursor-1);break;
+        case 'trace-next':if(activeModel&&activeModel.ok)s.cursor=Math.min(activeModel.trace.length-1,s.cursor+1);break;
+        case 'trace-end':if(activeModel&&activeModel.ok)s.cursor=activeModel.trace.length-1;break;
+        case 'quiz-answer':answers[current]=Number(value);openedQuizzes.add(current);save();renderNav();break;
+        case 'reset-quizzes':Object.keys(answers).forEach(key=>delete answers[key]);save();renderNav();toast('本讲练习记录已清除');break;
+        default:return;
+      }
+      renderLesson();
+    });
+  });
+  function updateField(event) {
+    const field=event.target.dataset.field;
+    if(!field)return;
+    const parts=field.split('.'),id=parts[0],key=parts[1];
+    if(!states[id])return;
+    preserveFocus(()=>{
+      states[id][key]=event.target.value;
+      states[id].cursor=0;
+      states[id].tested=false;
+      renderLesson();
+    });
+  }
+  document.addEventListener('input',event=>{if(event.target.tagName!=='SELECT')updateField(event);});
+  document.addEventListener('change',event=>{if(event.target.tagName==='SELECT')updateField(event);});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')setProjection(false);});
+  window.addEventListener('hashchange',navigate);
+  renderNav();renderLesson();save();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="通过订单处理与库存补货，逐步观察 Python 条件判断、for、while、break、continue 和短路运算的执行过程。">
+  <meta name="color-scheme" content="light">
+  <title>流程控制实验室｜Python 第六讲</title>
+  <style>:root {
+  --bg:#f2f5fa; --surface:#fff; --ink:#17283d; --muted:#536477;
+  --accent:#245fc4; --accent-ink:#fff; --selected:#e4edfc; --line:#d6dfeb;
+  --changed:#6d4c00; --changed-bg:#fff0c9; --error:#a32d32; --error-bg:#fff0f0;
+  --soft:#f6f8fc; --code-bg:#eef3fa; --code-ink:#17314d;
+  --token-str:#236242; --token-kw:#754b9a; --token-num:#9a4a0f;
+  --radius:10px; --tile-radius:12px; --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono","PingFang SC","Microsoft YaHei",monospace;
+  font-family:var(--font); color:var(--ink); font-synthesis:none; font-size:17px; color-scheme:light;
+}
+* {box-sizing:border-box}
+body {margin:0;background:var(--bg);color:var(--ink);line-height:1.7;min-width:320px}
+button,input,select {font:inherit;color:inherit}
+button,summary,a,input,select {-webkit-tap-highlight-color:transparent}
+button {cursor:pointer}
+button:disabled {cursor:default;opacity:.5}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+a {color:var(--accent);text-decoration-thickness:1px;text-underline-offset:4px}
+h1,h2,h3,p {margin:0}
+button,input,select {border-radius:var(--radius)}
+button {transition:background-color .15s,border-color .15s}
+button:hover:not(:disabled) {filter:brightness(.98)}
+code,pre,.mono {font-family:var(--mono)}
+code {font-size:.95em}
+.skip-link {position:fixed;left:16px;top:-100px;z-index:30;padding:12px 20px;background:var(--surface)}
+.skip-link:focus {top:10px}
+.topbar {display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:92px;padding:18px 36px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand {display:flex;gap:13px;align-items:center;color:var(--ink);text-decoration:none;font-size:21px;font-weight:750;line-height:1.25;white-space:nowrap}
+.brand small {display:block;font-weight:500;color:var(--muted);font-size:12px;letter-spacing:.06em;margin-top:7px}
+.brand-mark {display:flex;align-items:center;justify-content:center;gap:2px;color:var(--accent);font:700 36px/1 var(--mono);width:48px;height:48px;background:var(--selected);border-radius:12px}
+.brand-mark b {font-weight:500}
+.top-actions {display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.theme-options {display:flex;gap:5px;padding:4px;background:var(--soft);border:1px solid var(--line);border-radius:12px}
+.theme-options button {display:flex;align-items:center;gap:8px;min-height:42px;padding:7px 12px;background:transparent;border:1px solid transparent;font-size:14px;white-space:nowrap}
+.theme-options button[aria-pressed=true] {background:var(--surface);border-color:var(--line);font-weight:700}
+.theme-dot {width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.2)}
+.dot-a {background:#245fc4}.dot-b {background:#086a5b}.dot-c {background:#173a58;outline:1px solid #83d8f3}
+.btn {display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:9px 17px;border:1px solid var(--line);background:var(--surface);font-size:15px;font-weight:600;line-height:1.5;text-align:center}
+.btn-primary {background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-subtle {background:transparent;color:var(--muted)}
+.btn-small {font-size:13px;padding:7px 12px;min-height:38px}
+.shell {display:grid;grid-template-columns:218px minmax(0,1fr);max-width:1580px;margin:auto}
+.sidebar {padding:36px 22px 26px 28px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:29px}
+.course-name span {font-size:13px;color:var(--muted)}
+.course-name strong {display:block;font-size:22px;line-height:1.5;font-weight:650;margin-top:8px;letter-spacing:-.03em}
+.lesson-nav {display:flex;flex-direction:column;gap:9px}
+.lesson-nav a {position:relative;display:flex;gap:13px;align-items:center;min-height:48px;padding:10px 12px;text-decoration:none;color:var(--muted);font-size:16px;border-radius:7px}
+.lesson-nav a[aria-current=page] {background:var(--selected);color:var(--accent);font-weight:700}
+.nav-index {font:500 13px/1 var(--mono);opacity:.8}
+.nav-done {margin-left:auto;font-size:14px;color:var(--accent)}
+.sidebar-bottom {margin-top:auto;padding-top:36px;color:var(--muted);font-size:13px}
+.progress-note {display:block;margin-top:12px;font-size:12px}
+.lesson {min-width:0;padding:31px 34px 38px}
+.lesson-heading {display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}
+.source-tag {color:var(--muted);font-size:13px;margin-bottom:7px}
+h1 {font-size:32px;line-height:1.35;font-weight:750;letter-spacing:-.035em}
+.lesson-question {font-size:17px;line-height:1.7;color:var(--muted);margin-top:10px;max-width:800px}
+.lesson-heading>.btn {flex-shrink:0;margin-top:7px}
+.workbench {display:grid;grid-template-columns:minmax(225px,.72fr) minmax(0,2.4fr);gap:20px;align-items:stretch}
+.control-panel {display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);padding:22px;border-radius:var(--radius);min-width:0}
+.visual-panel {min-width:0;display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:25px 25px 22px}
+.control-label {display:block;font-size:14px;font-weight:700;line-height:1.5;margin-bottom:8px}
+.hint {font-size:13px;color:var(--muted);line-height:1.75}
+.field-row {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.field-row label {font-size:13px;display:flex;flex-direction:column;gap:5px;color:var(--muted)}
+.field-row input {width:100%;min-height:46px;border:1px solid var(--line);background:var(--soft);font-family:var(--mono);font-size:18px;padding:7px 9px;color:var(--ink)}
+.single-field input,.single-field select,.control-panel select,.control-panel>input {width:100%;min-height:46px;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.segmented {display:flex;gap:5px;flex-wrap:wrap}
+.segmented button {min-height:42px;padding:8px 12px;flex:1 0 auto;background:var(--soft);border:1px solid var(--line);font-size:14px;line-height:1.4}
+.segmented button[aria-pressed=true],.segmented .is-active,.segmented .active {color:var(--accent);border-color:var(--accent);background:var(--selected);font-weight:700}
+.action-stack {display:flex;flex-direction:column;gap:8px}
+.action-stack .btn {width:100%;justify-content:flex-start;font-size:14px}
+.action-stack .btn[aria-pressed=true] {color:var(--accent);border-color:var(--accent);background:var(--selected)}
+.preset-row {display:flex;gap:6px;flex-wrap:wrap}
+.preset-row button {border:1px solid var(--line);background:var(--surface);padding:6px 10px;min-height:38px;font-size:13px}
+.preset-row button:hover {border-color:var(--accent)}
+.control-panel hr {border:0;border-top:1px solid var(--line);margin:0}
+.visual-header {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.visual-header h2 {font-size:17px;font-weight:650;line-height:1.4}
+.visual-header code {font-size:17px;font-weight:650}
+.pill {font-size:12px;line-height:1.4;padding:5px 8px;border-radius:5px;background:var(--soft);color:var(--muted)}
+.pill.changed {background:var(--changed-bg);color:var(--changed)}
+.rail-scroll {overflow-x:auto;padding:6px 2px 7px;max-width:100%}
+.list-rail {display:flex;gap:8px;align-items:stretch;min-width:min-content;padding:8px 0}
+.list-tile {display:flex;flex:1 0 90px;min-width:0;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:var(--tile-radius);background:var(--soft);position:relative;text-align:center;overflow:hidden}
+.pos-index,.neg-index {font-family:var(--mono);font-size:13px;line-height:1.4;padding:7px 7px 6px;color:var(--muted);width:100%;background:var(--surface)}
+.pos-index {border-bottom:1px solid var(--line)}
+.neg-index {border-top:1px solid var(--line)}
+.tile-value {display:flex;align-items:center;justify-content:center;flex:1;padding:17px 9px;min-height:70px;font-size:17px;font-weight:650;white-space:nowrap}
+.list-tile.selected {border:2px solid var(--accent);background:var(--selected)}
+.list-tile.selected .pos-index,.list-tile.selected .neg-index {background:var(--selected);color:var(--accent)}
+.list-tile.changed {border-color:var(--changed);background:var(--changed-bg)}
+.list-tile.changed .pos-index {background:var(--changed-bg);color:var(--changed)}
+.list-tile.stop {border-style:dashed;border-color:var(--muted)}
+.take-order {font-size:11px;font-weight:650;color:var(--accent);padding:3px 5px 5px}
+.stop-flag {font-size:11px;padding:3px 5px 5px;color:var(--muted)}
+.list-legend {display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px}
+.list-legend span {display:flex;gap:6px;align-items:center}
+.legend-swatch {display:inline-block;width:11px;height:11px;border:1px solid var(--accent);background:var(--selected)}
+.sublist {display:flex;gap:5px;align-items:center;padding:0 5px;font-size:14px;font-family:var(--mono)}
+.sublist-item {padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:4px;white-space:nowrap;font-family:var(--font)}
+.list-tile.nested {min-width:180px;flex:1.5 0 180px}
+.empty-list {font:22px/1.5 var(--mono);padding:20px;color:var(--muted);background:var(--soft);border:1px dashed var(--line);border-radius:var(--radius);width:100%}
+.selection-result {border-top:1px solid var(--line);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.result-title {font-size:14px;color:var(--muted);font-weight:500}
+.result-value {font-size:18px;line-height:1.6;color:var(--accent);overflow-wrap:anywhere}
+.path {display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.path b {border:1px solid var(--line);border-radius:5px;min-width:28px;padding:1px 6px;text-align:center;background:var(--surface);color:var(--accent)}
+.result-pair {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.result-cell {min-width:0;padding:15px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);font-size:14px}
+.result-cell h3,.result-cell strong {font-size:14px;display:block;margin-bottom:7px}
+.result-cell code,.result-cell pre {display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin:0}
+.compare-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.comparison {min-width:0;display:flex;flex-direction:column;gap:12px}
+.comparison+ .comparison {border-left:1px solid var(--line);padding-left:20px}
+.comparison h3 {font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)}
+.comparison .list-tile {flex-basis:65px}
+.comparison .tile-value {font-size:15px;min-height:62px;padding:12px 7px}
+.comparison .list-rail {gap:5px}
+.return-line {display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;border-top:1px solid var(--line);padding-top:10px;color:var(--muted)}
+.return-line code {color:var(--ink);font-size:16px;font-weight:650;white-space:pre-wrap;overflow-wrap:anywhere}
+.evidence {display:grid;grid-template-columns:minmax(230px,.9fr) minmax(0,1.5fr);gap:20px;margin-top:20px;align-items:start}
+.rule-panel {padding:6px 2px;min-width:0;font-size:16px;line-height:1.85}
+.rule-panel p+p {margin-top:11px}
+.rule-note {line-height:1.8}
+.rule-note strong {color:var(--accent)}
+.rule-note .hint {display:block;margin-top:9px}
+.code-panel {min-width:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--code-bg)}
+.code-toolbar {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 15px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.code-toolbar .btn {min-height:31px;font-size:12px;padding:4px 9px}
+.code-panel pre {font-size:15px;line-height:1.8;color:var(--code-ink);padding:16px 18px;margin:0;overflow-x:auto}
+.code-line {display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;min-height:1.8em}
+.line-no {color:var(--muted);font-size:11px;user-select:none;line-height:2.4}
+.line-text {white-space:pre-wrap;overflow-wrap:anywhere}
+.token-str {color:var(--token-str)}.token-kw {color:var(--token-kw)}.token-num {color:var(--token-num)}.token-comment {color:var(--muted)}
+.error-message {padding:14px 17px;border-radius:var(--radius);background:var(--error-bg);color:var(--error);line-height:1.7;font-size:14px;border:1px solid currentColor}
+.status-note {font-size:14px;line-height:1.7;color:var(--muted)}
+.notice {padding:11px 14px;background:var(--changed-bg);color:var(--changed);border-radius:var(--radius);font-size:14px;line-height:1.7}
+.try-next {display:flex;gap:12px;font-size:14px;color:var(--muted);padding:20px 0 16px;border-bottom:1px solid var(--line);margin-top:2px}
+.try-next strong {flex-shrink:0;color:var(--ink);font-size:14px}
+.check-panel {margin-top:17px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.check-panel summary {cursor:pointer;padding:15px 20px;font-size:15px;font-weight:650}
+.check-content {padding:0 20px 20px}
+.check-question {font-size:17px;line-height:1.7;margin:8px 0 12px}
+.quiz-code {white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.8 var(--mono);padding:12px 15px;background:var(--soft);border-radius:7px;margin:0 0 14px;color:var(--muted)}
+.quiz-options {display:grid;gap:9px}
+.quiz-option {display:flex;gap:12px;text-align:left;align-items:flex-start;padding:12px 14px;background:var(--surface);border:1px solid var(--line);min-height:46px;font-size:14px;line-height:1.65}
+.quiz-letter {font-family:var(--mono);font-size:12px;flex-shrink:0;padding-top:2px;color:var(--muted)}
+.quiz-option[aria-pressed=true] {border-color:var(--accent);background:var(--selected)}
+.quiz-feedback {margin-top:13px;padding:12px 15px;line-height:1.8;font-size:14px;background:var(--selected);border-radius:var(--radius)}
+.quiz-feedback.incorrect {background:var(--changed-bg);color:var(--changed)}
+.chart-bars {display:flex;flex-direction:column;gap:10px;padding:8px 0}
+.bar-line {display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center}
+.bar-index {font:11px/1 var(--mono);color:var(--muted);text-align:right}
+.bar-track {position:relative;min-height:31px;display:flex;align-items:center;background:var(--soft)}
+.bar-fill {position:absolute;left:0;top:0;bottom:0;background:var(--selected);border-left:2px solid var(--accent)}
+.bar-label {position:relative;padding:2px 9px;font-size:13px;font-family:var(--mono);color:var(--ink);white-space:nowrap}
+.bar-scale {display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-left:40px;border-top:1px solid var(--line);padding-top:2px}
+.raw-value {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+.sort-trap {margin-top:8px;border-top:1px solid var(--line);padding-top:15px}
+.sort-trap summary {font-size:14px;color:var(--muted);cursor:pointer}
+.sort-trap .notice {margin-top:12px}
+.copy-graph {width:100%;height:auto;display:block}
+.copy-graph text {font-family:var(--font)}
+.memory-graph {width:100%;overflow-x:auto}
+.data-table {width:100%;border-collapse:separate;border-spacing:0;font-size:16px}
+.data-table th {font-size:12px;font-weight:500;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+.data-table td {padding:0;border-bottom:1px solid var(--line);background:var(--surface)}
+.data-table td:first-child {padding:10px 12px;color:var(--muted);font-family:var(--mono);font-size:13px;width:55px}
+.data-table button {width:100%;min-height:56px;display:block;text-align:left;padding:12px;border:2px solid transparent;background:transparent;border-radius:0;font-size:16px}
+.data-table tr.selected-row td,.data-table tr.is-row td {background:var(--soft)}
+.data-table button.selected,.data-table button[aria-pressed=true],.data-table .is-cell button {background:var(--selected);border-color:var(--accent);color:var(--accent);font-weight:700}
+.table-wrap {overflow-x:auto;width:100%}
+.table-scroll {overflow-x:auto;width:100%}
+.table-edit-row {display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}
+.table-edit-row input {min-height:46px;min-width:100px;flex:1;width:100%;padding:8px 11px;border:1px solid var(--line);background:var(--soft)}
+.table-edit-controls>.control-label {margin-top:12px}
+.table-lookup-results {margin-top:24px}
+.table-lookup-results .python-value {margin:12px 0 4px;overflow-wrap:anywhere;font-family:var(--mono);font-size:17px}
+.data-table .is-selected-row td {background:var(--soft)}
+.data-table tbody th {border-bottom:1px solid var(--line)}
+.data-table .is-selected-row th {background:var(--soft)}
+.practice-actions {display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.practice-step-title {font-size:17px}
+.practice-panel summary>.hint {display:block;margin-top:4px}
+.practice-data-table {min-width:265px}
+.practice-data-table td {padding:8px;font-size:12px}
+.practice-data-table th {font-size:10px;padding:7px}
+.practice-comparison h4 {font-size:14px;margin:0 0 10px}
+.practice-statistics .result-cell>strong {font-size:28px;color:var(--accent)}
+.sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.copy-diagram {overflow-x:auto;width:100%}
+.table-path {font-size:22px;font-family:var(--mono);padding:12px 0;color:var(--accent)}
+.table-reading {display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.practice-panel {margin-top:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.practice-panel summary {padding:13px 16px;cursor:pointer;font-weight:650;font-size:15px}
+.practice-body {padding:0 16px 18px;font-size:14px}
+.practice-body p {margin:8px 0}
+.practice-body pre {font:13px/1.8 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;background:var(--code-bg);padding:12px;margin:12px 0;border-radius:7px}
+.practice-controls {display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.practice-panel .result-pair {grid-template-columns:repeat(2,minmax(0,1fr))}
+.site-footer {display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-top:1px solid var(--line);max-width:1580px;margin:auto;padding:20px 36px;font-size:12px;color:var(--muted)}
+.site-guide {max-width:680px;min-width:160px}
+.site-guide summary {cursor:pointer;text-align:right;color:var(--muted)}
+.site-guide>div {padding:18px 0;font-size:14px}
+.site-guide p+p {margin-top:12px}
+.site-guide .btn {margin-top:14px}
+.toast {position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:8px;font-size:14px;z-index:40;pointer-events:none;opacity:0;transition:opacity .15s}
+.toast.visible {opacity:1}
+.noscript {padding:30px;background:var(--error-bg);color:var(--error)}
+
+/* A: the list is the main blackboard; the controls sit directly below it. */
+body[data-theme=whiteboard] .workbench {grid-template-columns:1fr}
+body[data-theme=whiteboard] .visual-panel {grid-row:1}
+body[data-theme=whiteboard] .control-panel {display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;padding:18px 22px}
+body[data-theme=whiteboard] .control-panel>div {flex:1 1 160px}
+body[data-theme=whiteboard] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=whiteboard] .control-panel>.btn {flex:0 0 auto}
+body[data-theme=whiteboard] .control-panel hr {display:none}
+body[data-theme=whiteboard] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=whiteboard] .action-stack .btn {width:auto;justify-content:center;flex:1 1 auto}
+body[data-theme=whiteboard] .list-tile {flex-basis:85px}
+body[data-theme=whiteboard] .tile-value {font-size:21px;min-height:74px}
+
+/* B: a green business desk with horizontal navigation and a task column. */
+body[data-theme=workbench] {--bg:#ecf3f0;--surface:#fff;--ink:#173c36;--muted:#4d6860;--accent:#086a5b;--accent-ink:#fff;--selected:#dcefe8;--line:#ccdcd5;--soft:#f3f8f5;--changed:#745200;--changed-bg:#fcedbc;--code-bg:#edf4f0;--code-ink:#193f35;--token-str:#236242;--token-kw:#7b4283;--token-num:#91501c;--radius:4px;--tile-radius:4px}
+body[data-theme=workbench] .shell {grid-template-columns:1fr}
+body[data-theme=workbench] .sidebar {padding:14px 36px;border-right:0;border-bottom:1px solid var(--line);flex-direction:row;align-items:center;gap:30px;background:var(--surface)}
+body[data-theme=workbench] .course-name,body[data-theme=workbench] .sidebar-bottom {display:none}
+body[data-theme=workbench] .lesson-nav {flex-direction:row;flex-wrap:wrap;gap:9px;width:100%}
+body[data-theme=workbench] .lesson-nav a {flex:1;justify-content:center;font-size:15px;border-radius:3px;min-height:43px;white-space:nowrap}
+body[data-theme=workbench] .nav-done {margin-left:0}
+body[data-theme=workbench] .lesson {padding:28px 44px 40px}
+body[data-theme=workbench] .workbench {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .control-panel {border-top:3px solid var(--accent)}
+body[data-theme=workbench] .evidence {grid-template-columns:270px minmax(0,1fr);gap:24px}
+body[data-theme=workbench] .brand-mark {border-radius:4px}
+body[data-theme=workbench] .comparison h3 {font-size:22px}
+
+/* C: an object diagram on a deep-blue laboratory bench. */
+body[data-theme=blueprint] {--bg:#101b2d;--surface:#17253a;--ink:#f0f5fc;--muted:#b4c5db;--accent:#83d8f3;--accent-ink:#112339;--selected:#263f5a;--line:#38516c;--soft:#1d2e46;--changed:#f3c97f;--changed-bg:#3c3324;--error:#ffb4bb;--error-bg:#482b37;--code-bg:#132136;--code-ink:#dce8f8;--token-str:#a4dbc0;--token-kw:#d4b9f4;--token-num:#f3c97f;--radius:7px;--tile-radius:3px;color-scheme:dark}
+body[data-theme=blueprint] .topbar {border-bottom-color:var(--line)}
+body[data-theme=blueprint] .sidebar {background:#101b2d}
+body[data-theme=blueprint] .brand-mark {background:transparent;border:1px solid var(--accent);border-radius:3px}
+body[data-theme=blueprint] .workbench {grid-template-columns:1fr}
+body[data-theme=blueprint] .visual-panel {grid-row:1;border:1px solid var(--line);border-top:3px solid var(--accent)}
+body[data-theme=blueprint] .control-panel {flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:18px 24px;background:var(--soft)}
+body[data-theme=blueprint] .control-panel>div {flex:1 1 170px}
+body[data-theme=blueprint] .control-panel>.hint {flex:1 1 180px}
+body[data-theme=blueprint] .control-panel hr {display:none}
+body[data-theme=blueprint] .action-stack {flex-direction:row;flex-wrap:wrap}
+body[data-theme=blueprint] .action-stack .btn {width:auto;flex:1 1 auto;justify-content:center}
+body[data-theme=blueprint] .list-tile {border-width:1px}
+body[data-theme=blueprint] .list-tile.selected {border-width:2px}
+body[data-theme=blueprint] .pos-index {background:var(--selected)}
+body[data-theme=blueprint] .tile-value {font-size:21px}
+body[data-theme=blueprint] .evidence {grid-template-columns:minmax(230px,1fr) minmax(0,1.6fr)}
+
+/* Projection raises teaching text sizes without scaling the whole page. */
+body.projecting {font-size:20px}
+body.projecting .theme-options,body.projecting .course-name,body.projecting .sidebar-bottom,body.projecting .check-panel,body.projecting .site-footer {display:none}
+body.projecting .shell {grid-template-columns:185px minmax(0,1fr)}
+body.projecting .sidebar {padding:25px 15px}
+body.projecting .lesson {padding:26px}
+body.projecting .lesson-nav a {font-size:16px}
+body.projecting h1 {font-size:38px}
+body.projecting .lesson-question,body.projecting .rule-panel {font-size:20px}
+body.projecting .tile-value {font-size:25px;min-height:84px}
+body.projecting .code-panel pre {font-size:20px}
+body.projecting .hint,body.projecting .control-label,body.projecting .btn,body.projecting .status-note,body.projecting .result-title {font-size:17px}
+body.projecting .result-value {font-size:22px}
+body.projecting[data-theme=workbench] .shell {grid-template-columns:1fr}
+body.projecting[data-theme=workbench] .sidebar {padding:10px 26px}
+
+@media (max-width:1150px) {
+  .topbar {padding:16px 24px;gap:18px}.top-actions {gap:10px}.theme-options button {font-size:12px;padding:7px 9px}.brand {font-size:19px}
+  .shell {grid-template-columns:185px minmax(0,1fr)}.sidebar {padding:28px 15px 25px 20px}.lesson {padding:27px 25px}.lesson-nav a {font-size:14px;padding:10px}
+  .course-name strong {font-size:20px}.workbench {grid-template-columns:220px minmax(0,1fr)}.visual-panel {padding:22px 20px}.control-panel {padding:20px}
+  body[data-theme=workbench] .lesson {padding:25px 30px}.theme-dot {width:8px;height:8px}.theme-options {gap:2px}
+}
+@media (max-width:900px) {
+  .topbar {flex-wrap:wrap;gap:14px;min-height:unset;padding:16px 22px}.top-actions {flex:1}.theme-options button {font-size:12px}.brand {font-size:18px}.projection-button {font-size:12px;padding:8px 12px}
+  .shell,.projecting .shell {grid-template-columns:1fr!important}.sidebar {padding:12px 20px;border-right:0;border-bottom:1px solid var(--line);background:var(--surface)}
+  .course-name,.sidebar-bottom {display:none}.lesson-nav {flex-direction:row;flex-wrap:wrap;gap:5px}.lesson-nav a {padding:7px 10px;min-height:38px;font-size:13px}.nav-index {font-size:11px}.nav-done {margin-left:3px}
+  .lesson {padding:24px}.workbench,body[data-theme=workbench] .workbench {grid-template-columns:1fr}.control-panel {flex-direction:row;flex-wrap:wrap}.control-panel>div {flex:1 1 180px}.control-panel>.hint {flex:1 1 180px}
+  .visual-panel {grid-row:1}.evidence,body[data-theme=workbench] .evidence,body[data-theme=blueprint] .evidence {grid-template-columns:1fr}.evidence {gap:14px}.rule-panel {padding:2px}
+  body[data-theme=workbench] .sidebar {padding:12px 20px}.site-footer {padding:20px 24px}.control-panel hr {display:none}.action-stack {flex-direction:row;flex-wrap:wrap}.action-stack .btn {width:auto;flex:1;justify-content:center}
+  h1 {font-size:29px}.lesson-question {font-size:15px}.lesson-heading>.btn {font-size:12px;padding:8px 10px}.source-tag {font-size:12px}
+}
+@media (max-width:600px) {
+  .topbar {padding:14px 16px}.brand-mark {width:38px;height:38px;font-size:29px}.brand {font-size:17px}.brand small {font-size:10px}
+  .top-actions {display:contents}.theme-options {order:3;width:100%;justify-content:space-between}.theme-options button {flex:1;justify-content:center;padding:8px 3px;font-size:11px;gap:5px;min-height:40px}.projection-button {margin-left:auto;font-size:12px}
+  .sidebar,body[data-theme=workbench] .sidebar {padding:10px 12px}.lesson-nav {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:3px}.lesson-nav a,body[data-theme=workbench] .lesson-nav a {font-size:12px;padding:8px 5px;gap:7px;justify-content:center}.nav-done {display:none}
+  .lesson,body[data-theme=workbench] .lesson,body.projecting .lesson {padding:20px 14px}.lesson-heading {gap:10px;margin-bottom:18px}.source-tag {font-size:11px}h1 {font-size:26px}.lesson-question {font-size:14px}.lesson-heading>.btn {font-size:11px;padding:7px 10px;min-height:38px}
+  .visual-panel {padding:18px 14px;gap:14px}.control-panel,body[data-theme=whiteboard] .control-panel,body[data-theme=blueprint] .control-panel {padding:16px 14px;gap:14px;flex-direction:column;align-items:stretch}
+  .control-panel>div,.control-panel>.hint,body[data-theme=whiteboard] .control-panel>div,body[data-theme=blueprint] .control-panel>div,body[data-theme=whiteboard] .control-panel>.hint,body[data-theme=blueprint] .control-panel>.hint {flex:initial}
+  .list-tile,body[data-theme=whiteboard] .list-tile {flex-basis:82px}.tile-value,body[data-theme=whiteboard] .tile-value,body[data-theme=blueprint] .tile-value {font-size:16px;min-height:62px}.pos-index,.neg-index {font-size:12px}
+  .compare-grid {grid-template-columns:1fr;gap:20px}.comparison+.comparison {border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px}.result-pair {grid-template-columns:1fr}.result-value {font-size:16px}.visual-header h2 {font-size:15px}
+  .rule-panel {font-size:15px}.code-panel pre {font-size:13px;padding:14px 12px}.code-line {gap:7px;grid-template-columns:18px minmax(0,1fr)}.try-next {font-size:13px;gap:9px;flex-direction:column}.try-next strong {font-size:13px}
+  .site-footer {padding:18px 16px;flex-direction:column;font-size:11px}.site-guide {min-width:0;max-width:100%}.site-guide summary {text-align:left}.data-table button {font-size:14px;padding:9px;min-height:52px}.data-table th {padding:8px;font-size:11px}.data-table td:first-child {width:35px;padding:8px}
+  .check-panel summary {padding:14px}.check-content {padding:0 14px 16px}.quiz-code {font-size:11px}.quiz-option {font-size:12px}.check-question {font-size:15px}.table-path {font-size:18px}.memory-graph svg,.copy-diagram svg {min-width:650px}
+  .practice-panel .result-pair {grid-template-columns:1fr}.btn,.segmented button,.theme-options button,.lesson-nav a,.preset-row button,.code-toolbar .btn {min-height:44px}
+  body.projecting h1 {font-size:30px}body.projecting .code-panel pre {font-size:16px}
+}
+@media (prefers-reduced-motion:reduce) {*,*:before,*:after {transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media print {.top-actions,.sidebar,.control-panel,.check-panel,.site-footer,.try-next,.toast {display:none!important}.shell {display:block}.lesson {padding:0}.code-panel,.visual-panel {break-inside:avoid}body {background:#fff;color:#17283d}.workbench,.evidence {display:block}.rule-panel {padding:16px 0}}
+
+/* Sixth lecture: execution state, not object references. */
+textarea {font:inherit;color:inherit}
+textarea:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
+.flow-wide {flex:1 1 100%!important;min-width:0}
+.control-panel .single-field {min-width:160px}
+.preset-row button[aria-pressed=true] {background:var(--selected);color:var(--accent);border-color:var(--accent);font-weight:650}
+.flow-branches {display:grid;gap:10px}
+.flow-branch {display:grid;grid-template-columns:38px 1fr;gap:12px;padding:15px 18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft)}
+.flow-branch.is-selected {border-color:var(--accent);background:var(--selected)}
+.flow-branch.is-false {background:var(--surface);color:var(--muted)}
+.flow-branch-number {font:13px/1.8 var(--mono);padding-top:1px;color:var(--muted)}
+.flow-branch code {font-size:14px;overflow-wrap:anywhere}
+.flow-branch h3 {font-size:18px;line-height:1.5;margin-top:3px}
+.flow-branch p {font-size:13px;color:var(--muted);margin-top:3px}
+.flow-branch>div:last-child {display:grid;grid-template-columns:minmax(170px,1fr) minmax(100px,.7fr) minmax(180px,1.2fr);gap:14px;align-items:center;min-width:0}
+.flow-branch h3,.flow-branch p {margin-top:0}
+.flow-branch.is-selected p {color:var(--accent)}
+.flow-decision-result,.flow-outside {display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 16px;background:var(--selected);border-radius:var(--radius)}
+.flow-decision-result span,.flow-outside span {color:var(--muted);font:14px var(--mono)}
+.flow-decision-result strong {font-size:23px;color:var(--accent)}
+.flow-outside code {font-size:14px}
+.flow-outside strong {font-size:14px}
+.flow-metrics {display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.flow-metric {display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;min-width:0}
+.flow-metric span {font-size:13px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+.flow-metric strong {font-size:25px;line-height:1.3;color:var(--accent);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.flow-metric small {font-size:12px;color:var(--muted)}
+.flow-four-metrics {grid-template-columns:repeat(4,minmax(0,1fr))}
+.flow-four-metrics strong {font-size:22px}
+.flow-table-wrap {overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:var(--radius)}
+.flow-table {width:100%;border-collapse:collapse;text-align:left;font-size:14px;white-space:normal}
+.flow-table th,.flow-table td {padding:11px 13px;border-bottom:1px solid var(--line);line-height:1.5}
+.flow-table thead {background:var(--soft);font-size:13px;color:var(--muted)}
+.flow-table tbody tr:last-child th,.flow-table tbody tr:last-child td {border-bottom:0}
+.flow-table tbody th {font-weight:650}
+.flow-current-row {background:var(--changed-bg)}
+.flow-current-row th:first-child {box-shadow:inset 3px 0 var(--changed)}
+.flow-selected-row {background:var(--selected)}
+.flow-order-status {font:12px var(--mono);color:var(--muted)}
+.flow-order-status.is-paid {color:var(--accent)}
+.flow-current-item {display:flex;flex-direction:column;gap:6px;border-left:3px solid var(--accent);padding:10px 14px;background:var(--soft)}
+.flow-current-item span {font-size:13px;color:var(--muted)}
+.flow-current-item code {font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.flow-banner {display:flex;justify-content:space-between;gap:16px;align-items:center;border:1px solid var(--line);padding:10px 14px;border-radius:var(--radius)}
+.flow-banner code {font-size:14px;overflow-wrap:anywhere}
+.flow-banner strong {color:var(--accent)}
+.flow-execution {border-top:1px solid var(--line);padding-top:18px;display:grid;gap:14px}
+.flow-stepper {display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flow-stepper .btn {font-size:14px;min-height:40px;padding:7px 12px}
+.flow-step-count {margin-left:auto;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.flow-step-note {padding:11px 14px;background:var(--selected);border-left:3px solid var(--accent);border-radius:4px;min-height:56px;font-size:14px;line-height:1.65}
+.flow-step-note>strong {font-weight:550}
+.flow-current-code {display:flex;gap:13px;margin-top:7px;align-items:baseline;min-width:0}
+.flow-current-code span {font:11px var(--mono);white-space:nowrap;color:var(--muted)}
+.flow-current-code code {font:13px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.flow-output {display:grid;grid-template-columns:80px minmax(0,1fr);gap:12px;padding:12px 14px;background:var(--soft);border-radius:var(--radius)}
+.flow-output>span {font-size:12px;color:var(--muted)}
+.flow-output pre {margin:0;font:14px/1.7 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;max-height:185px;overflow-y:auto}
+.flow-muted {color:var(--muted);font-size:13px}
+.flow-error-text {color:var(--error)}
+.code-line.is-current {background:var(--selected);box-shadow:inset 3px 0 var(--accent)}
+.code-line.is-current .line-no {color:var(--accent);font-weight:700}
+.code-line {padding:0 4px}
+.flow-edit-table input,.flow-edit-table select {min-width:0;width:100%;min-height:40px;padding:5px 8px;border:1px solid var(--line);background:var(--surface);border-radius:5px;font-size:14px}
+.flow-edit-table th:first-child {width:17%}
+.flow-edit-table td:nth-child(2) {width:30%}
+.flow-edit-table td:nth-child(3) {width:53%}
+body.projecting .flow-step-note,body.projecting .flow-current-code code,body.projecting .flow-table,body.projecting .flow-output pre {font-size:18px}
+body.projecting .flow-branch h3 {font-size:22px}
+body.projecting .flow-metric strong {font-size:28px}
+@media(max-width:1100px) {.flow-four-metrics {grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1100px) and (min-width:901px) {.flow-branch>div:last-child {grid-template-columns:minmax(140px,1fr) minmax(90px,.7fr)}.flow-branch p {grid-column:1/-1}}
+@media(max-width:600px) {
+  .flow-branch {grid-template-columns:25px 1fr;gap:8px;padding:12px}
+  .flow-branch>div:last-child {display:block}.flow-branch h3,.flow-branch p {margin-top:3px}
+  .flow-branch code {font-size:12px}.flow-branch h3 {font-size:17px}
+  .flow-metrics {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .flow-metric {padding:11px 12px}.flow-metric strong {font-size:21px}
+  .flow-table {font-size:12px}.flow-table th,.flow-table td {padding:9px 7px}
+  .flow-order-status {font-size:10px}
+  .flow-stepper .btn {font-size:12px;padding:7px 10px;flex:1 1 38%}
+  .flow-step-count {margin-left:0;flex-basis:100%;text-align:center}
+  .flow-output {grid-template-columns:1fr;gap:6px}
+  .flow-output pre {font-size:12px}
+  .flow-current-code {display:block}.flow-current-code span {display:block;margin-bottom:5px}
+  .flow-edit-table input,.flow-edit-table select {font-size:12px;padding:5px}
+  body[data-theme=whiteboard] .control-panel>.flow-wide,body[data-theme=whiteboard] .control-panel>.flow-cv-wide {flex:initial!important}
+}
+
+/* Flow-control views: compatible with the fixed classroom whiteboard A shell. */
+body[data-theme=whiteboard] .control-panel>.flow-cv-wide {flex-basis:100%;min-width:0}
+.flow-cv-wide textarea {display:block;width:100%;min-height:124px;resize:vertical;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft);color:var(--ink);font:15px/1.65 var(--mono)}
+.flow-cv-wide textarea:focus-visible {outline:3px solid var(--accent);outline-offset:3px}
+.flow-cv-wide>.hint {margin-top:7px}
+.flow-cv-stock-track {position:relative;height:22px;border:1px solid var(--line);border-radius:6px;background:var(--soft);margin-top:5px;overflow:visible}
+.flow-cv-stock-fill {height:100%;background:var(--selected);border-right:2px solid var(--accent);border-radius:5px 0 0 5px}
+.flow-cv-stock-target {position:absolute;top:-7px;bottom:-7px;border-left:2px dashed var(--muted);transform:translateX(-1px)}
+.flow-cv-stock-scale {display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--muted);margin-top:-11px}
+.flow-cv-check {display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:13px 16px;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius)}
+.flow-cv-check>span {font-size:13px;color:var(--muted)}
+.flow-cv-check>code {font-size:17px}
+.flow-cv-check>strong {margin-left:auto;color:var(--accent);font:700 20px/1.4 var(--mono)}
+.flow-cv-history {display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted)}
+.flow-cv-history>div {display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.flow-cv-history code {padding:5px 11px;border:1px solid var(--line);border-radius:6px;background:var(--soft);color:var(--ink);font-size:16px}
+.flow-cv-history code.flow-cv-latest {border-color:var(--accent);background:var(--selected);color:var(--accent);font-weight:700}
+.flow-cv-order-line {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.flow-cv-order-card {display:flex;flex-direction:column;gap:8px;padding:15px 13px;min-width:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft)}
+.flow-cv-order-card>span {font-size:12px;color:var(--muted)}
+.flow-cv-order-card>strong {font-size:26px;color:var(--ink);line-height:1.3}
+.flow-cv-order-card small {font-size:12px;font-weight:500;color:var(--muted)}
+.flow-cv-current {outline:2px solid var(--accent);outline-offset:-2px;background:var(--selected)!important}
+.flow-cv-selected {background:var(--changed-bg)!important}
+.flow-cv-order-card.flow-cv-selected>span:last-child {color:var(--changed);font-weight:650}
+.flow-cv-visited {background:var(--soft)}
+.flow-table tr.flow-cv-current>* {background:var(--selected)}
+.flow-table tr.flow-cv-selected>* {background:var(--changed-bg)}
+.flow-cv-input-table td code {white-space:pre-wrap;overflow-wrap:anywhere}
+.flow-cv-tests {display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:14px;align-items:stretch}
+.flow-cv-test {display:flex;flex-direction:column;gap:13px;padding:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--soft);min-width:0}
+.flow-cv-test h3 {font-size:13px;color:var(--muted);font-weight:500}
+.flow-cv-test>code {font-size:17px;line-height:1.7;overflow-wrap:anywhere}
+.flow-cv-test>strong {margin-top:auto;font:700 23px/1.4 var(--mono);overflow-wrap:anywhere}
+.flow-cv-and {display:flex;align-items:center;justify-content:center;font:700 16px/1.4 var(--mono);color:var(--muted)}
+.flow-cv-test-true {border-color:var(--accent);background:var(--selected);color:var(--accent)}
+.flow-cv-test-false {border-color:var(--changed);background:var(--changed-bg);color:var(--changed)}
+.flow-cv-test-error {border-color:var(--error)!important;background:var(--error-bg)!important;color:var(--error)}
+.flow-cv-test-pending {border-style:dashed;color:var(--muted)}
+.flow-cv-condition-result {display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;border:1px solid var(--line);border-radius:var(--radius);padding:13px 16px;background:var(--soft)}
+.flow-cv-condition-result>span {font-size:13px;color:var(--muted)}
+.flow-cv-condition-result>strong {font-size:18px}
+body.projecting .flow-cv-test>code,body.projecting .flow-cv-check>code {font-size:20px}
+body.projecting .flow-cv-order-card>strong {font-size:30px}
+@media (max-width:600px) {
+  body[data-theme=whiteboard] .control-panel>.flow-cv-wide {flex-basis:auto}
+  .flow-cv-order-line {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .flow-cv-order-card {padding:12px;gap:7px}
+  .flow-cv-order-card>strong {font-size:23px}
+  .flow-cv-check {padding:11px 12px;gap:9px}
+  .flow-cv-check>span {flex-basis:100%}
+  .flow-cv-tests {grid-template-columns:1fr;gap:9px}
+  .flow-cv-test {padding:14px;gap:10px}
+  .flow-cv-test>code {font-size:15px}
+  .flow-cv-and {font-size:14px}
+  .flow-cv-test>strong {font-size:21px}
+  .flow-cv-condition-result {padding:11px 12px}
+}
+</style>
+</head>
+<body data-theme="whiteboard">
+  <a class="skip-link" href="#lesson-title">跳到当前实验</a>
+  <header class="topbar">
+    <a class="brand" href="#conditions" aria-label="流程控制实验室首页"><span class="brand-mark" aria-hidden="true">↳</span><span>流程控制实验室<small>Python 第六讲</small></span></a>
+    <div class="top-actions"><button type="button" class="btn btn-subtle projection-button" id="projection-toggle" aria-pressed="false">投影模式</button></div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="course-name"><span>这一讲</span><strong>按规则选择，<br>让处理重复。</strong></div>
+      <nav class="lesson-nav" id="lesson-nav" aria-label="知识点目录"></nav>
+      <div class="sidebar-bottom"><p>先预测下一步，<br>再观察程序。</p><span id="quiz-progress" class="progress-note">6 个动手实验</span></div>
+    </aside>
+    <main id="lesson" class="lesson"></main>
+  </div>
+  <footer class="site-footer">
+    <span>课件案例：订单处理与库存补货</span>
+    <details class="site-guide"><summary>使用说明与来源</summary><div>
+      <p>选择知识点后，先预测，再点击“下一步”观察执行。可以退回、运行到最后或从头演示；改变参数会重新开始当前实验。投影模式增大字号，按 Esc 退出。</p>
+      <p>采用课堂白板 A 统一模板，依据 slide-6.pdf 第六讲“流程控制”。一份 HTML 集中展示课件中的 6 组精选知识点，页码见各模块。</p>
+      <p>页面模拟指定场景中的 Python 执行过程，不执行任意代码。样式与脚本均已内嵌，操作无需联网。对应代码可复制到 Python 环境复现；自动复制受限时，可手动选中复制。</p>
+      <p>一个“步骤”可以对应一条语句、一次条件求值或循环控制。蓝色代码行表示刚执行的位置；初始化数据会合并展示。各级代码缩进使用 2 个空格，并保持同层一致。</p>
+      <p>数值范围属于本实验的界面限制。补货量为 0 且库存未达标时，只演示有限轮次；程序本身不会因此结束。输入验证明确限定普通数字 0–9，展示代码使用 isascii() 与 isdigit() 配合检查。</p>
+      <p>本页只在当前浏览器保存最近打开的模块和练习选择，不上传学生数据。刷新后，实验参数恢复初始值。</p>
+      <p><a href="https://docs.python.org/3/tutorial/controlflow.html" target="_blank" rel="noopener noreferrer">Python 官方：流程控制</a> · <a href="https://docs.python.org/3/library/stdtypes.html#boolean-operations-and-or-not" target="_blank" rel="noopener noreferrer">布尔运算与短路</a></p>
+      <button type="button" class="btn btn-subtle" data-action="reset-quizzes">清除本讲练习记录</button>
+    </div></details>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">请在浏览器中启用 JavaScript 后使用交互实验。页面不需要联网。</p></noscript>
+  <script>/* Teaching content grounded in slide-6.pdf, pages 5–23. */
+window.FlowLabContent = {
+  modules: [
+    {
+      id: 'conditions',
+      title: '条件与分支',
+      question: '同一笔订单，金额或状态变了，程序会走哪条处理路线？',
+      pages: '课件 6–9 页',
+      try: '先比较 499.99 与 500；再用 1200 元比较“先判断 1000”和“先判断 500”的结果。',
+      quiz: {
+        prompt: '这段代码会把 1200 元订单归为哪一类？',
+        code: "amount = 1200\nif amount >= 500:\n  order_level = '高价值订单'\nelif amount >= 1000:\n  order_level = '重点订单'\nelse:\n  order_level = '普通订单'\nprint(order_level)",
+        options: [
+          {
+            label: '普通订单',
+            explanation: '1200 满足第一项 amount >= 500，所以不会进入 else。'
+          },
+          {
+            label: '高价值订单',
+            explanation: '第一个条件已经成立，程序执行该分支后，不再判断后面的 elif。要让 1200 归为重点订单，应先检查 amount >= 1000。'
+          },
+          {
+            label: '重点订单',
+            explanation: '1200 虽然也满足 amount >= 1000，但前面的条件已成立，后面的 elif 不会再接受判断。'
+          }
+        ],
+        answer: 1
+      }
+    },
+    {
+      id: 'forloop',
+      title: '逐条与累计',
+      question: '同一批订单，为什么“全部记录金额”和“已支付金额”不同？',
+      pages: '课件 10–13 页',
+      try: '逐轮处理三条订单，比较遇到 O002 时，“全部记录”与“仅已支付”两种口径的累计值。',
+      quiz: {
+        prompt: '循环结束后，paid_total 的值是多少？',
+        code: "orders = [\n  {'id': 'O001', 'amount': 299, 'status': 'PAID'},\n  {'id': 'O002', 'amount': 120, 'status': 'CANCELLED'},\n  {'id': 'O003', 'amount': 680, 'status': 'PAID'}\n]\npaid_total = 0\nfor order in orders:\n  if order['status'] == 'PAID':\n    paid_total += order['amount']\nprint(paid_total)",
+        options: [
+          {
+            label: '979',
+            explanation: 'O001 的 299 与 O003 的 680 被计入，得到 979。O002 的状态是 CANCELLED，不满足条件。'
+          },
+          {
+            label: '1099',
+            explanation: '1099 是三条订单的记录金额总和。本题只累计 PAID，取消订单的 120 不计入。'
+          },
+          {
+            label: '680',
+            explanation: '累计变量在循环前初始化，前一轮的 299 会保留下来，再加上最后一条的 680。'
+          }
+        ],
+        answer: 0
+      }
+    },
+    {
+      id: 'whileloop',
+      title: '条件成立就重复',
+      question: '库存要补到安全线，程序什么时候继续，什么时候停止？',
+      pages: '课件 14–15 页',
+      try: '先把初始库存设为安全线，再恢复较低库存并将每次补货量设为 0，观察两种情况的区别。',
+      quiz: {
+        prompt: '下面的循环体会执行几次？',
+        code: "stock = 30\nsafe_stock = 30\nwhile stock < safe_stock:\n  stock += 5\n  print(stock)\nprint('库存检查完成')",
+        options: [
+          {
+            label: '1 次',
+            explanation: 'while 在执行循环体之前先判断条件。这里第一次判断就是 False，因此不会先执行一轮。'
+          },
+          {
+            label: '4 次',
+            explanation: '从 12 开始、每次增加 5 才需要 4 轮。本题一开始已经等于安全线 30。'
+          },
+          {
+            label: '0 次',
+            explanation: '30 < 30 为 False，循环体一次也不执行。循环后的“库存检查完成”仍会输出。'
+          }
+        ],
+        answer: 2
+      }
+    },
+    {
+      id: 'control',
+      title: '停止还是跳过',
+      question: '碰到不需要处理的订单，是结束整次查找，还是只跳过这一条？',
+      pages: '课件 16–17 页',
+      try: '在跳过未支付订单的实验中，比较使用 continue 与 break 后，O003 是否还会被检查。',
+      quiz: {
+        prompt: '遇到取消订单后，还要继续检查后面的订单，应把空缺处换成什么？',
+        code: "paid_amount = 0\nfor order in orders:\n  if order['status'] != 'PAID':\n    # 在这里选择一条语句\n  paid_amount += order['amount']",
+        options: [
+          {
+            label: 'continue',
+            explanation: 'continue 跳过本轮剩余的金额累计，随后进入下一轮，后面的订单仍会接受检查。'
+          },
+          {
+            label: 'break',
+            explanation: 'break 会结束当前循环，后面的订单不再接受检查，因此会遗漏后续的已支付订单。'
+          },
+          {
+            label: 'paid_amount = 0',
+            explanation: '归零会丢掉已经累计的金额，而且不会跳过本轮后面的语句，取消订单的金额仍会被加上。'
+          }
+        ],
+        answer: 0
+      }
+    },
+    {
+      id: 'practice',
+      title: '订单处理工坊',
+      question: '把筛选、累计和判断连起来，能否得到一份可信的订单报告？',
+      pages: '课件 18–22 页',
+      try: '先把所有订单状态改为 CANCELLED；再恢复初始数据，比较筛查阈值 500 与 2000 的结果。',
+      quiz: {
+        prompt: '五条订单全部改为 CANCELLED 后，本讲汇总程序会输出什么？',
+        code: "# 循环只统计 PAID 订单\n# 循环结束后按下面的规则计算平均金额\nif paid_count == 0:\n  average_amount = 0\nelse:\n  average_amount = paid_amount / paid_count",
+        options: [
+          {
+            label: '计算平均值时出现除零错误',
+            explanation: '当 paid_count 为 0，程序直接把 average_amount 设为 0，不会执行 else 中的除法。'
+          },
+          {
+            label: '订单数为 5，实收为 2687 元',
+            explanation: '2687 是全部五条记录的金额总和。当前只统计 PAID，取消订单不进入实收统计。'
+          },
+          {
+            label: '已支付订单数、实收和平均金额都为 0',
+            explanation: '所有订单都被跳过，已支付数量与金额保持 0。平均金额为 0 是这份报告在没有已支付订单时采用的输出约定。'
+          }
+        ],
+        answer: 2
+      }
+    },
+    {
+      id: 'shortcircuit',
+      title: '短路与安全判断',
+      question: '优惠券数量为 0，怎样避免计算每张券的平均优惠时除以零？',
+      pages: '课件 23 页',
+      try: '先把优惠券数量设为 0，再交换两个条件的顺序；然后用数量 2 比较总优惠 100 与 101。',
+      quiz: {
+        prompt: '执行下面的判断时，and 右侧处于什么状态？',
+        code: "coupon_count = 0\ndiscount_total = 0\nif coupon_count > 0 and discount_total / coupon_count > 50:\n  print('需要检查优惠成本')",
+        options: [
+          {
+            label: '已经计算，结果为 False',
+            explanation: '右侧没有被计算。整个条件为 False，是因为左侧 coupon_count > 0 已经为 False。'
+          },
+          {
+            label: '没有执行',
+            explanation: 'and 左侧为 False 时会短路，右侧除法不会执行，所以这里不会出现除零错误。'
+          },
+          {
+            label: '已经执行，并触发除零错误',
+            explanation: '当前顺序先检查数量是否大于 0。只有通过这个检查才执行除法，因此数量为 0 时右侧被跳过。'
+          }
+        ],
+        answer: 1
+      }
+    }
+  ]
+};
+</script>
+  <script>/* Slide 6: deterministic models for the displayed Python teaching programs.
+ * No eval, interpreter, network, or mutation of caller inputs.
+ * trace[0] is before execution; each later snapshot follows the marked lines.
+ */
+(function (root, factory) {
+  'use strict';
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.FlowLabEngine = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const clone = value => JSON.parse(JSON.stringify(value));
+  const BASE_ORDERS = [
+    {id:'O001', amount:299, status:'PAID'},
+    {id:'O002', amount:120, status:'CANCELLED'},
+    {id:'O003', amount:680, status:'PAID'}
+  ];
+  const FULL_ORDERS = BASE_ORDERS.concat([{id:'O004',amount:1500,status:'PAID'},{id:'O005',amount:88,status:'REFUNDED'}]);
+  const MARKET_SALES = { '泰国':128, '越南':98, '印尼':76 };
+  const AMOUNTS = [299,1500,680,2300];
+  function repr(value) {
+    if (value === null) return 'None';
+    if (value === true) return 'True';
+    if (value === false) return 'False';
+    if (typeof value === 'number') {
+      if (!Number.isFinite(value)) throw new TypeError('只支持有限数值。');
+      return Object.is(value,-0) ? '-0.0' : String(value);
+    }
+    if (typeof value === 'string') return "'" + Array.from(value).map(ch => {
+      if (ch === '\\') return '\\\\';
+      if (ch === "'") return "\\'";
+      if (ch === '\n') return '\\n';
+      if (ch === '\r') return '\\r';
+      if (ch === '\t') return '\\t';
+      const n = ch.codePointAt(0);
+      return n < 32 || (n >= 127 && n <= 160) ? '\\x' + n.toString(16).padStart(2,'0') : ch;
+    }).join('') + "'";
+    if (Array.isArray(value)) return '[' + value.map(repr).join(', ') + ']';
+    if (value && typeof value === 'object') return '{' + Object.keys(value).map(key => repr(key) + ': ' + repr(value[key])).join(', ') + '}';
+    throw new TypeError('不支持的教学数据类型。');
+  }
+  function money(value, precision = 2) {
+    if (!Number.isFinite(value) || !Number.isInteger(precision) || precision < 0 || precision > 6) throw new RangeError('格式化参数无效。');
+    const negative = value < 0 || Object.is(value,-0);
+    const view = new DataView(new ArrayBuffer(8));
+    view.setFloat64(0,Math.abs(value),false);
+    const high = view.getUint32(0,false), low = view.getUint32(4,false), exponent = (high >>> 20) & 2047;
+    let mantissa = (BigInt(high & 1048575) << 32n) + BigInt(low), shift;
+    if (exponent === 0) shift = -1074;
+    else { mantissa += 1n << 52n; shift = exponent - 1023 - 52; }
+    let numerator = mantissa * (10n ** BigInt(precision)), denominator = 1n;
+    if (shift >= 0) numerator <<= BigInt(shift); else denominator <<= BigInt(-shift);
+    let quotient = numerator / denominator;
+    const remainder = numerator % denominator;
+    if (remainder * 2n > denominator || (remainder * 2n === denominator && quotient % 2n === 1n)) quotient += 1n;
+    let digits = quotient.toString().padStart(precision+1,'0');
+    if (precision) digits = digits.slice(0,-precision)+'.'+digits.slice(-precision);
+    return (negative ? '-' : '') + digits;
+  }
+  function numeric(value,min,max,label,decimal=false) {
+    const raw = String(value).trim();
+    const valid = decimal ? /^(?:\d+(?:\.\d{1,2})?|\.\d{1,2})$/.test(raw) : /^\d+$/.test(raw);
+    const n = Number(raw);
+    if (!valid || !Number.isFinite(n) || n < min || n > max || (!decimal && !Number.isSafeInteger(n))) throw new RangeError(label+'请填写 '+min+'～'+max+(decimal?' 的数值，最多两位小数。':' 的整数。'));
+    return n;
+  }
+  function ordersOf(value,fallback=BASE_ORDERS) {
+    const list = value === undefined ? fallback : value;
+    if (!Array.isArray(list) || list.length > 8) throw new RangeError('订单列表最多包含 8 条记录。');
+    return list.map((o,i) => {
+      if (!o || typeof o.id !== 'string' || !o.id || Array.from(o.id).length>30) throw new RangeError('第 '+(i+1)+' 条订单编号应为 1～30 个字符。');
+      if (!['PAID','CANCELLED','REFUNDED','PENDING'].includes(o.status)) throw new RangeError('订单状态必须是 PAID、CANCELLED、REFUNDED 或 PENDING。');
+      return {id:o.id,amount:numeric(o.amount,0,100000,'订单金额'),status:o.status};
+    });
+  }
+  function program() {
+    const lines=[];
+    return {lines,add(text){lines.push(text); return lines.length;}};
+  }
+  function runner(p,extra={}) {
+    const trace=[];
+    const state=Object.assign({kind:'ready',line:null,lines:[],note:'尚未执行。',vars:{},output:[],activeIndex:null,visited:[],selected:[],checks:[],condition:null,done:false,paused:false,error:null},clone(extra));
+    function emit(kind,lines,note,patch={}) {
+      Object.assign(state,patch,{kind,lines:Array.isArray(lines)?lines:(lines?[lines]:[]),note});
+      state.line=state.lines.length ? state.lines[0] : null;
+      trace.push(clone(state));
+      return state;
+    }
+    emit('ready',[],'尚未执行。');
+    return {state,trace,emit,finish(meta={}){return Object.assign({ok:true,error:null,code:p.lines.join('\n'),lines:p.lines.slice(),trace,outcome:clone(trace[trace.length-1])},meta);}};
+  }
+  function failure(message) {
+    const p=program(),r=runner(p);
+    r.trace[0].note=message;
+    return {ok:false,error:message,code:'',lines:[],trace:r.trace,outcome:clone(r.trace[0])};
+  }
+  function safe(fn) { return function(config={}){try{return fn(config||{});}catch(error){return failure(error.message);}}; }
+  function end(r,note='程序执行结束。') {r.emit('done',[],note,{done:true,activeIndex:null,condition:null});}
+  function check(r,index,result,line,expression,branch) {
+    r.state.checks[index]={line,expression,result,branch,chosen:result===true};
+    r.emit('check',line,expression+' → '+repr(result),{condition:{expression,result}});
+  }
+  function stateAt(model,cursor=0) {
+    const n=Number.isFinite(Number(cursor))?Math.floor(Number(cursor)):0;
+    return model.trace[Math.max(0,Math.min(model.trace.length-1,n))];
+  }
+  const conditions=safe(c=>{
+    const mode=c.mode||'levels',p=program();
+    if (!['if','else','levels'].includes(mode)) throw new RangeError('未知条件实验。');
+    const amount=mode==='else'?680:numeric(c.amount===undefined?680:c.amount,0,10000,'订单金额',true);
+    const inclusive=c.inclusive!==false && c.inclusive!=='false';
+    const op=inclusive?'>=':'>';
+    const status=c.status||'PAID';
+    if (mode==='else'&&!['PAID','CANCELLED','REFUNDED','PENDING'].includes(status)) throw new RangeError('订单状态无效。');
+    const compare=t=>inclusive?amount>=t:amount>t;
+    if(mode==='if') {
+      const a=p.add('amount = '+repr(amount)), id=p.add("order_id = 'O003'"), cond=p.add('if amount '+op+' 500:'), yes=p.add('  print(f"{order_id}是高价值订单")'), after=p.add('print("订单检查完成")');
+      const r=runner(p,{checks:[{line:cond,expression:'amount '+op+' 500',result:null,branch:'if',chosen:false}]});
+      Object.assign(r.state.vars,{amount,order_id:'O003'});r.emit('assign',[a,id],'读取订单金额与编号。');
+      check(r,0,compare(500),cond,'amount '+op+' 500','if');
+      if(compare(500)){r.state.output.push('O003是高价值订单');r.emit('print',yes,'条件成立，执行缩进内的输出。');}
+      r.state.output.push('订单检查完成');r.emit('print',after,'这一行不属于 if；两种情况都会执行。');end(r);
+      return r.finish({mode,branches:[{label:'高价值订单',expression:'amount '+op+' 500',line:cond}]});
+    }
+    if(mode==='else') {
+      const init=p.add('status = '+repr(status)),cond=p.add('if status == "PAID":'),yes=p.add('  action = "进入发货流程"'),els=p.add('else:'),no=p.add('  action = "暂不发货"'),print=p.add('print(action)');
+      const r=runner(p,{checks:[{line:cond,expression:'status == "PAID"',result:null,branch:'if',chosen:false}]});
+      r.state.vars.status=status;r.emit('assign',init,'读取订单状态。');
+      const passed=status==='PAID';check(r,0,passed,cond,'status == "PAID"','if');
+      r.state.vars.action=passed?'进入发货流程':'暂不发货';r.emit('assign',passed?yes:[els,no],passed?'只执行 if 分支。':'只执行 else 分支。',{branch:passed?'if':'else'});
+      r.state.output.push(r.state.vars.action);r.emit('print',print,'输出选中的处理方式。');end(r);
+      return r.finish({mode,branches:[{label:'进入发货流程',expression:'status == "PAID"',line:cond},{label:'暂不发货',expression:'else',line:els}]});
+    }
+    const loose=c.order==='loose'||c.order==='ascending';
+    const thresholds=loose?[500,1000]:[1000,500],labels=thresholds.map(t=>t===1000?'重点订单':'高价值订单');
+    const init=p.add('amount = '+repr(amount)),c1=p.add('if amount '+op+' '+thresholds[0]+':'),a1=p.add('  order_level = '+repr(labels[0])),c2=p.add('elif amount '+op+' '+thresholds[1]+':'),a2=p.add('  order_level = '+repr(labels[1])),els=p.add('else:'),a3=p.add('  order_level = "普通订单"'),print=p.add('print(order_level)');
+    const expressions=thresholds.map(t=>'amount '+op+' '+t);
+    const r=runner(p,{checks:[{line:c1,expression:expressions[0],result:null,branch:'if',chosen:false},{line:c2,expression:expressions[1],result:null,branch:'elif',chosen:false}]});
+    r.state.vars.amount=amount;r.emit('assign',init,'读取订单金额。');
+    check(r,0,compare(thresholds[0]),c1,expressions[0],'if');
+    let chosen;
+    if(compare(thresholds[0]))chosen=0;
+    else {check(r,1,compare(thresholds[1]),c2,expressions[1],'elif');chosen=compare(thresholds[1])?1:2;}
+    r.state.vars.order_level=chosen<2?labels[chosen]:'普通订单';
+    r.emit('assign',chosen===0?a1:chosen===1?a2:[els,a3],chosen<2?'执行第一个条件成立的分支，后面的条件不再求值。':'前两个条件都不成立，执行 else。',{branch:['if','elif','else'][chosen]});
+    r.state.output.push(r.state.vars.order_level);r.emit('print',print,'输出订单等级。');end(r);
+    return r.finish({mode,branches:[{label:labels[0],expression:expressions[0],line:c1},{label:labels[1],expression:expressions[1],line:c2},{label:'普通订单',expression:'else',line:els}]});
+  });
+  const forloop=safe(c=>{
+    const mode=c.mode||'paid',p=program();
+    if (!['orders','markets','all','paid'].includes(mode))throw new RangeError('未知 for 实验。');
+    if(mode==='markets') {
+      const data=c.marketSales===undefined?clone(MARKET_SALES):clone(c.marketSales);
+      if(!data||Array.isArray(data)||typeof data!=='object'||Object.keys(data).length>8)throw new RangeError('市场字典最多包含 8 个市场。');
+      Object.keys(data).forEach(k=>{if(!k||Array.from(k).length>20)throw new RangeError('市场名应为1～20字符。');data[k]=numeric(data[k],0,100000,'市场销售额');});
+      const init=p.add('market_sales = '+repr(data)),loop=p.add('for market, sales in market_sales.items():'),print=p.add('  print(f"{market}市场：{sales}万元")');
+      const r=runner(p);r.state.vars.market_sales=data;r.emit('assign',init,'准备市场销售额字典。');
+      Object.entries(data).forEach(([market,sales],i)=>{Object.assign(r.state.vars,{market,sales});r.state.visited.push(i);r.emit('take',loop,'取得一组键和值。',{activeIndex:i});r.state.output.push(market+'市场：'+sales+'万元');r.state.selected.push(i);r.emit('print',print,'使用这一轮的 market 与 sales 输出信息。');});
+      end(r,'所有键值对都已遍历，循环自然结束。');return r.finish({mode,data});
+    }
+    const data=ordersOf(c.orders),init=p.add('orders = '+repr(data));
+    if(mode==='orders'){
+      const loop=p.add('for order in orders:'),print=p.add('  print(order["id"], order["amount"])');
+      const r=runner(p);r.state.vars.orders=data;r.emit('assign',init,'准备订单列表。');
+      data.forEach((order,i)=>{r.state.vars.order=order;r.state.visited.push(i);r.emit('take',loop,'循环变量 order 取得下一条订单。',{activeIndex:i});r.state.output.push(order.id+' '+order.amount);r.state.selected.push(i);r.emit('print',print,'输出当前订单的编号和金额。');});end(r,'订单列表已遍历完，循环自然结束。');return r.finish({mode,data});
+    }
+    const paid=mode==='paid',totalName=paid?'paid_total':'total_amount',countName=paid?'paid_count':'order_count';
+    const initTotal=p.add(totalName+' = 0'),initCount=p.add(countName+' = 0'),loop=p.add('for order in orders:');
+    const cond=paid?p.add('  if order["status"] == "PAID":'):null;
+    const pad=paid?'    ':'  ',total=p.add(pad+totalName+' += order["amount"]'),count=p.add(pad+countName+' += 1');
+    let average=null;
+    if(!paid)average=p.add('average_amount = total_amount / order_count');
+    const print1=p.add('print(f"'+(paid?'已支付订单数量':'订单数量')+'：{'+countName+'}")'),print2=p.add('print(f"'+(paid?'已支付金额合计':'金额合计')+'：{'+totalName+'}元")'),print3=paid?null:p.add('print(f"平均金额：{average_amount:.2f}元")');
+    const r=runner(p);r.state.vars.orders=data;r.state.vars[totalName]=0;r.state.vars[countName]=0;r.emit('assign',[init,initTotal,initCount],'循环开始前，累计金额与订单数都设为 0。');
+    data.forEach((order,i)=>{
+      r.state.vars.order=order;r.state.visited.push(i);r.emit('take',loop,'取得第 '+(i+1)+' 条订单。',{activeIndex:i,condition:null});
+      if(paid){const result=order.status==='PAID';r.emit('check',cond,'检查当前订单是否已支付。',{condition:{expression:'order["status"] == "PAID"',result}});if(!result)return;}
+      r.state.vars[totalName]+=order.amount;r.state.vars[countName]+=1;r.state.selected.push(i);r.emit('update',[total,count],'将本条金额加入累计值，数量加 1。');
+    });
+    if(!paid){if(!data.length){r.emit('error',average,'订单数为 0，原示例直接做除法会引发异常。',{done:true,activeIndex:null,error:{type:'ZeroDivisionError',message:'division by zero'}});return r.finish({mode,data});}r.state.vars.average_amount=r.state.vars.total_amount/r.state.vars.order_count;r.emit('assign',average,'循环结束后计算平均金额。',{activeIndex:null});}
+    r.state.output.push((paid?'已支付订单数量':'订单数量')+'：'+r.state.vars[countName]);r.state.output.push((paid?'已支付金额合计':'金额合计')+'：'+r.state.vars[totalName]+'元');
+    if(!paid)r.state.output.push('平均金额：'+money(r.state.vars.average_amount)+'元');
+    r.emit('print',[print1,print2].concat(print3?[print3]:[]),'输出循环结束后的统计值。',{activeIndex:null});end(r);return r.finish({mode,data});
+  });
+  function pyStrip(text){return text.replace(/^[\x09-\x0d\x1c-\x20\x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+|[\x09-\x0d\x1c-\x20\x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+$/g,'');}
+  const whileloop=safe(c=>{
+    const mode=c.mode||'stock',p=program();
+    if(mode==='stock'){
+      const stock=numeric(c.stock===undefined?12:c.stock,0,100,'初始库存'),safeStock=numeric(c.safeStock===undefined?30:c.safeStock,0,100,'安全库存'),increment=numeric(c.increment===undefined?5:c.increment,0,50,'每次补货');
+      const init1=p.add('stock = '+stock),init2=p.add('safe_stock = '+safeStock),cond=p.add('while stock < safe_stock:'),update=p.add('  stock += '+increment),print=p.add('  print(f"当前库存：{stock}")'),after=p.add('print("库存已达到安全水平")');
+      const r=runner(p,{iteration:0,checkCount:0});Object.assign(r.state.vars,{stock,safe_stock:safeStock});r.emit('assign',[init1,init2],'设置当前库存与安全库存。');
+      while(true){const result=r.state.vars.stock<safeStock;r.state.checkCount+=1;r.emit('check',cond,'先判断库存是否仍低于安全水平。',{condition:{expression:'stock < safe_stock',result}});if(!result)break;
+        if(increment===0&&r.state.iteration>=3){r.emit('paused',[],'演示已暂停：连续 3 次补货都未改变库存，条件仍为 True；实际 Python 循环不会自行结束。',{paused:true,done:false,pauseReason:'nonterminating'});return r.finish({mode,increment});}
+        r.state.vars.stock+=increment;r.state.iteration+=1;r.emit('update',update,'执行第 '+r.state.iteration+' 次补货。');r.state.output.push('当前库存：'+r.state.vars.stock);r.emit('print',print,'输出本次补货后的库存。');
+      }
+      r.state.output.push('库存已达到安全水平');r.emit('print',after,'条件为 False，离开循环后才输出完成提示。');end(r);return r.finish({mode,increment});
+    }
+    if(mode!=='input')throw new RangeError('未知 while 实验。');
+    const inputs=c.inputs===undefined?['abc','-2','8']:c.inputs;
+    if(!Array.isArray(inputs)||inputs.length>8||inputs.some(x=>typeof x!=='string'||Array.from(x).length>12)||inputs.join('\n').length>104)throw new RangeError('本演示最多 8 次输入，每次最多 12 个字符，总长度不超过 104。');
+    p.add('# 可按此顺序输入：'+repr(inputs));
+    const loop=p.add('while True:'),input=p.add('  user_input = input("请输入商品数量：")'),strip=p.add('  quantity_text = user_input.strip()'),cond=p.add('  if quantity_text.isascii() and quantity_text.isdigit():'),assign=p.add('    quantity = int(quantity_text)'),brk=p.add('    break'),invalid=p.add('  print("输入无效，请输入非负整数。")'),after=p.add('print(f"商品数量：{quantity}")');
+    const r=runner(p,{iteration:0});
+    for(let i=0;i<inputs.length;i++){
+      r.state.iteration=i+1;r.emit('check',loop,'while True 继续进入下一轮。',{condition:{expression:'True',result:true},activeIndex:i});
+      r.state.vars.user_input=inputs[i];r.state.visited.push(i);r.emit('input',input,'接收第 '+(i+1)+' 次输入。');r.state.vars.quantity_text=pyStrip(inputs[i]);r.emit('assign',strip,'去掉文本两端的空白。');
+      const valid=/^[0-9]+$/.test(r.state.vars.quantity_text);r.emit('check',cond,'检查是否为非空的半角数字文本。',{condition:{expression:'quantity_text.isascii() and quantity_text.isdigit()',result:valid}});
+      if(valid){r.state.vars.quantity=Number(r.state.vars.quantity_text);r.state.selected.push(i);r.emit('assign',assign,'检查通过，将文本转换成整数。');r.emit('break',brk,'break 结束当前 while 循环。');r.state.output.push('商品数量：'+r.state.vars.quantity);r.emit('print',after,'循环结束后使用有效数量。');end(r);return r.finish({mode,inputs:inputs.slice()});}
+      r.state.output.push('输入无效，请输入非负整数。');r.emit('print',invalid,'输入无效，提示后继续下一轮。');
+    }
+    r.emit('paused',input,'当前输入序列尚无有效数量；程序仍在等待下一次输入。',{paused:true,done:false,activeIndex:null,pauseReason:'input'});return r.finish({mode,inputs:inputs.slice()});
+  });
+  const control=safe(c=>{
+    const mode=c.mode||'break',p=program();
+    if(mode==='break'){
+      const data=c.amounts===undefined?AMOUNTS.slice():c.amounts;
+      if(!Array.isArray(data)||data.length>8)throw new RangeError('最多演示 8 笔金额。');
+      const amounts=data.map(x=>numeric(x,0,100000,'订单金额')),threshold=numeric(c.threshold===undefined?1000:c.threshold,0,100000,'大额阈值');
+      const init=p.add('order_amounts = '+repr(amounts)),loop=p.add('for amount in order_amounts:'),cond=p.add('  if amount >= '+threshold+':'),print=p.add('    print(f"发现第一笔大额订单：{amount}元")'),brk=p.add('    break');
+      const r=runner(p);r.state.vars.order_amounts=amounts;r.emit('assign',init,'准备待检查的金额列表。');let found=false;
+      for(let i=0;i<amounts.length;i++){r.state.vars.amount=amounts[i];r.state.visited.push(i);r.emit('take',loop,'取得第 '+(i+1)+' 笔金额。',{activeIndex:i,condition:null});const result=amounts[i]>=threshold;r.emit('check',cond,'检查是否达到大额阈值。',{condition:{expression:'amount >= '+threshold,result}});if(result){r.state.selected.push(i);r.state.output.push('发现第一笔大额订单：'+amounts[i]+'元');r.emit('print',print,'找到第一笔符合条件的订单。');r.emit('break',brk,'立即结束当前循环；后面的金额不再检查。');found=true;break;}}
+      end(r,found?'break 已结束循环。':'未发现符合条件的金额，循环自然结束。');return r.finish({mode,data:amounts,threshold});
+    }
+    if(mode!=='continue')throw new RangeError('未知循环控制实验。');
+    const data=ordersOf(c.orders),statement=c.statement==='break'?'break':'continue';
+    const init=p.add('orders = '+repr(data)),zero=p.add('paid_amount = 0'),loop=p.add('for order in orders:'),cond=p.add('  if order["status"] != "PAID":'),jump=p.add('    '+statement),add=p.add('  paid_amount += order["amount"]'),print=p.add('print(f"实收金额：{paid_amount}元")');
+    const r=runner(p);Object.assign(r.state.vars,{orders:data,paid_amount:0});r.emit('assign',[init,zero],'实收金额从 0 开始累计。');let stopped=false;
+    for(let i=0;i<data.length;i++){const order=data[i];r.state.vars.order=order;r.state.visited.push(i);r.emit('take',loop,'取得第 '+(i+1)+' 条订单。',{activeIndex:i,condition:null});const result=order.status!=='PAID';r.emit('check',cond,'判断当前订单是否不是 PAID。',{condition:{expression:'order["status"] != "PAID"',result}});if(result){r.emit(statement,jump,statement==='continue'?'跳过本轮后面的累计；继续取得下一条订单。':'结束整个当前循环，后面的订单不再检查。');if(statement==='break'){stopped=true;break;}continue;}r.state.vars.paid_amount+=order.amount;r.state.selected.push(i);r.emit('update',add,'这笔订单已支付，计入实收金额。');}
+    r.state.output.push('实收金额：'+r.state.vars.paid_amount+'元');r.emit('print',print,'离开循环后输出累计值。',{activeIndex:null});end(r,stopped?'break 提前结束了循环。':'订单遍历结束。');return r.finish({mode,data,statement});
+  });
+  const practice=safe(c=>{
+    const mode=c.mode||'summary';if(!['summary','report'].includes(mode))throw new RangeError('未知综合实验。');
+    const data=ordersOf(c.orders,FULL_ORDERS),p=program(),threshold=numeric(c.threshold===undefined?(mode==='summary'?1000:500):c.threshold,0,100000,'金额阈值');
+    const init=p.add('orders = '+repr(data)),thresholdLine=p.add('threshold = '+threshold);
+    if(mode==='report'){
+      const zero1=p.add('matched_count = 0'),zero2=p.add('matched_amount = 0'),loop=p.add('for order in orders:'),paid=p.add('  if order["status"] != "PAID":'),skip=p.add('    continue'),high=p.add('  if order["amount"] >= threshold:'),print=p.add('    print(order["id"], order["amount"])'),count=p.add('    matched_count += 1'),amount=p.add('    matched_amount += order["amount"]'),print1=p.add('print(f"符合条件订单数：{matched_count}")'),print2=p.add('print(f"金额合计：{matched_amount:.2f}元")');
+      const r=runner(p);Object.assign(r.state.vars,{orders:data,threshold,matched_count:0,matched_amount:0});r.emit('assign',[init,thresholdLine,zero1,zero2],'阈值已提供，筛查计数与金额从 0 开始。');
+      data.forEach((order,i)=>{r.state.vars.order=order;r.state.visited.push(i);r.emit('take',loop,'取得第 '+(i+1)+' 条订单。',{activeIndex:i,condition:null});const unpaid=order.status!=='PAID';r.emit('check',paid,'先排除未支付订单。',{condition:{expression:'order["status"] != "PAID"',result:unpaid}});if(unpaid){r.emit('continue',skip,'跳过当前未支付订单。');return;}const passed=order.amount>=threshold;r.emit('check',high,'只对已支付订单检查金额阈值。',{condition:{expression:'order["amount"] >= threshold',result:passed}});if(passed){r.state.output.push(order.id+' '+order.amount);r.emit('print',print,'输出符合条件的订单。');r.state.vars.matched_count++;r.state.vars.matched_amount+=order.amount;r.state.selected.push(i);r.emit('update',[count,amount],'累计筛查结果的数量和金额。');}});
+      r.state.output.push('符合条件订单数：'+r.state.vars.matched_count);r.state.output.push('金额合计：'+money(r.state.vars.matched_amount)+'元');r.emit('print',[print1,print2],'订单遍历完成，输出筛查汇总。',{activeIndex:null});end(r);return r.finish({mode,data,threshold});
+    }
+    const zero1=p.add('paid_count = 0'),zero2=p.add('paid_amount = 0'),zero3=p.add('high_value_count = 0'),loop=p.add('for order in orders:'),paid=p.add('  if order["status"] != "PAID":'),skip=p.add('    continue'),count=p.add('  paid_count += 1'),amount=p.add('  paid_amount += order["amount"]'),high=p.add('  if order["amount"] >= threshold:'),highAdd=p.add('    high_value_count += 1'),empty=p.add('if paid_count == 0:'),emptyAvg=p.add('  average_amount = 0'),els=p.add('else:'),avg=p.add('  average_amount = paid_amount / paid_count'),print1=p.add('print(f"已支付订单数：{paid_count}")'),print2=p.add('print(f"实收金额：{paid_amount:.2f}元")'),print3=p.add('print(f"大额订单数：{high_value_count}")'),print4=p.add('print(f"平均订单金额：{average_amount:.2f}元")');
+    const r=runner(p,{highSelected:[]});Object.assign(r.state.vars,{orders:data,threshold,paid_count:0,paid_amount:0,high_value_count:0});r.emit('assign',[init,thresholdLine,zero1,zero2,zero3],'设置输入与阈值，并初始化三个累计变量。');
+    data.forEach((order,i)=>{r.state.vars.order=order;r.state.visited.push(i);r.emit('take',loop,'取得第 '+(i+1)+' 条订单。',{activeIndex:i,condition:null});const unpaid=order.status!=='PAID';r.emit('check',paid,'检查是否需要跳过这笔订单。',{condition:{expression:'order["status"] != "PAID"',result:unpaid}});if(unpaid){r.emit('continue',skip,'不是已支付订单，跳过本轮后面的所有统计。');return;}r.state.vars.paid_count++;r.state.vars.paid_amount+=order.amount;r.state.selected.push(i);r.emit('update',[count,amount],'已支付数量加 1，实收金额加入这一笔。');const passed=order.amount>=threshold;r.emit('check',high,'在已支付订单中检查是否达到大额阈值。',{condition:{expression:'order["amount"] >= threshold',result:passed}});if(passed){r.state.vars.high_value_count++;r.state.highSelected.push(i);r.emit('update',highAdd,'大额已支付订单数加 1。');}});
+    const isEmpty=r.state.vars.paid_count===0;r.emit('check',empty,'循环结束后，先检查分母是否为 0。',{activeIndex:null,condition:{expression:'paid_count == 0',result:isEmpty}});r.state.vars.average_amount=isEmpty?0:r.state.vars.paid_amount/r.state.vars.paid_count;r.emit('assign',isEmpty?emptyAvg:[els,avg],isEmpty?'无已支付订单；按本报告约定把平均金额显示为 0，避免除以零。':'用实收金额除以已支付订单数。');
+    r.state.output.push('已支付订单数：'+r.state.vars.paid_count,'实收金额：'+money(r.state.vars.paid_amount)+'元','大额订单数：'+r.state.vars.high_value_count,'平均订单金额：'+money(r.state.vars.average_amount)+'元');r.emit('print',[print1,print2,print3,print4],'输出四项最终指标。');end(r);return r.finish({mode,data,threshold});
+  });
+  const shortcircuit=safe(c=>{
+    const couponCount=numeric(c.couponCount===undefined?0:c.couponCount,0,100,'优惠券数量'),discountTotal=numeric(c.discountTotal===undefined?0:c.discountTotal,0,100000,'优惠总额'),reverse=c.order==='reverse',p=program();
+    const expressions=reverse?['discount_total / coupon_count > 50','coupon_count > 0']:['coupon_count > 0','discount_total / coupon_count > 50'];
+    const init1=p.add('coupon_count = '+couponCount),init2=p.add('discount_total = '+discountTotal),cond=p.add('if '+expressions.join(' and ')+':'),print=p.add('  print("需要检查优惠成本")');
+    const r=runner(p,{tests:[null,null],result:null,checks:expressions.map((expression,i)=>({line:cond,expression,result:null,branch:i===0?'left':'right',chosen:false}))});Object.assign(r.state.vars,{coupon_count:couponCount,discount_total:discountTotal});r.emit('assign',[init1,init2],'设置优惠券数量与优惠总额。');
+    let result=true;
+    for(let i=0;i<2;i++){
+      const division=expressions[i].startsWith('discount_total');
+      if(division&&couponCount===0){r.state.tests[i]='error';r.state.checks[i].result='error';r.emit('error',cond,'除法先被执行，但分母为 0，程序发生异常。',{result:'error',condition:{expression:expressions[i],result:'error'},done:true,error:{type:'ZeroDivisionError',message:'division by zero'}});return r.finish({expressions,order:reverse?'reverse':'safe'});}
+      const passed=division?discountTotal/couponCount>50:couponCount>0;r.state.tests[i]=passed;r.state.checks[i].result=passed;r.state.checks[i].chosen=passed;r.emit('check',cond,(i===0?'先求值左侧条件。':'左侧为 True，再求值右侧条件。'),{condition:{expression:expressions[i],result:passed}});
+      if(!passed){result=false;break;}
+    }
+    r.emit('result',cond,result?'整体条件为 True，进入 if 代码块。':'整体条件为 False，不执行 if 代码块。',{result,condition:{expression:expressions.join(' and '),result}});
+    if(result){r.state.output.push('需要检查优惠成本');r.emit('print',print,'执行优惠成本检查提示。');}end(r);return r.finish({expressions,order:reverse?'reverse':'safe'});
+  });
+  return {repr,money,formatFixed:money,stateAt,conditions,forloop,whileloop,control,practice,shortcircuit,defaults:{orders:clone(BASE_ORDERS),fullOrders:clone(FULL_ORDERS),marketSales:clone(MARKET_SALES),amounts:AMOUNTS.slice()}};
+});
+</script>
+  <script>(function (root) {
+  'use strict';
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const button = (action,value,label,active,key) => '<button type="button" data-action="'+esc(action)+'" data-value="'+esc(value)+'"'+(key?' data-key="'+esc(key)+'"':'')+' aria-pressed="'+!!active+'">'+esc(label)+'</button>';
+  const tabs = (items,current,action,key) => '<div class="segmented">'+items.map(x=>button(action||'set-mode',x[0],x[1],current===x[0],key)).join('')+'</div>';
+  const field = (id,key,label,value,hint) => '<div class="single-field"><label class="control-label" for="'+id+'-'+key+'">'+esc(label)+'</label><input id="'+id+'-'+key+'" type="text" inputmode="decimal" data-field="'+id+'.'+key+'" value="'+esc(value)+'" maxlength="14">'+(hint?'<p class="hint">'+esc(hint)+'</p>':'')+'</div>';
+  const errorText = error => typeof error==='string'?error:error?((error.type||error.name||'')+(error.message?': '+error.message:'')):'请检查输入。';
+  const invalid = model => '<div class="error-message" role="status"><strong>'+esc(errorText(model.error))+'</strong><p>参数尚未通过界面检查，请修改输入后再执行。</p></div>';
+  const metric = (label,value,foot) => '<div class="flow-metric"><span>'+esc(label)+'</span><strong>'+esc(value===undefined?'—':value)+'</strong>'+(foot?'<small>'+esc(foot)+'</small>':'')+'</div>';
+  const value = (frame,key,format) => Object.prototype.hasOwnProperty.call(frame.vars||{},key) ? (format?format(frame.vars[key]):frame.vars[key]) : undefined;
+  const empty = {vars:{},output:[],visited:[],selected:[],activeIndex:null,done:false,paused:false};
+  const frame = (model,cursor) => model.ok ? root.FlowLabEngine.stateAt(model,cursor) : empty;
+  function ordersTable(orders,f,options) {
+    const o=options||{}, selected=f.selected||[], visited=f.visited||[];
+    return '<div class="flow-table-wrap"><table class="flow-table"><thead><tr><th>订单</th><th>金额 / 元</th><th>状态</th><th>执行记录</th></tr></thead><tbody>'+
+      orders.map((row,i)=>{
+        const active=f.activeIndex===i, hit=selected.includes(i), seen=visited.includes(i);
+        const status=active?'当前订单':hit?(o.hitLabel||'已计入'):seen?'已检查':'尚未取得';
+        return '<tr class="'+(active?'flow-current-row':hit?'flow-selected-row':'')+'"><th scope="row">'+esc(row.id)+'</th><td>'+esc(row.amount)+'</td><td><span class="flow-order-status '+(row.status==='PAID'?'is-paid':'')+'">'+esc(row.status)+'</span></td><td>'+esc(status)+(active&&hit?' · '+esc(o.hitLabel||'已计入'):'')+'</td></tr>';
+      }).join('')+(orders.length?'':'<tr><td colspan="4" class="flow-muted">空订单列表：没有可供循环取得的记录。</td></tr>')+'</tbody></table></div>';
+  }
+  root.FlowLabUI={esc,button,tabs,field,invalid,metric,value,frame,ordersTable,errorText};
+})(window);
+</script>
+  <script>(function (root) {
+  'use strict';
+  const V=root.FlowLabViews=root.FlowLabViews||{}, U=root.FlowLabUI, E=root.FlowLabEngine;
+  const esc=U.esc, has=(o,k)=>Object.prototype.hasOwnProperty.call(o||{},k);
+  const clone=value=>JSON.parse(JSON.stringify(value));
+  const caption=text=>'<span class="control-label">'+text+'</span>';
+  const money=x=>E.money(x)+' 元';
+  const conditionNote=f=>f.condition?'<div class="flow-banner"><code>'+esc(f.condition.expression)+'</code><strong>'+esc(f.condition.result===true?'True':f.condition.result===false?'False':f.condition.result)+'</strong></div>':'';
+  function finish(model,s,controls,visual,summary) {
+    return {model,frame:U.frame(model,s.cursor),controls,visual:model.ok?visual:U.invalid(model),summary,code:model.code||'# 请先修改实验参数。'};
+  }
+
+  V.conditions=function(s) {
+    const model=E.conditions(s), f=U.frame(model,s.cursor);
+    let controls='<div class="flow-wide">'+caption('选择结构')+U.tabs([['if','if：满足才执行'],['else','if / else：二选一'],['levels','if / elif / else：多档规则']],s.mode)+'</div>';
+    if(s.mode==='else') {
+      controls+='<div class="single-field"><label class="control-label" for="conditions-status">订单状态 status</label><select id="conditions-status" data-field="conditions.status">'+[['PAID','PAID · 已支付'],['CANCELLED','CANCELLED · 已取消'],['PENDING','PENDING · 待支付']].map(x=>'<option value="'+x[0]+'"'+(s.status===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></div>';
+    } else {
+      controls+=U.field('conditions','amount','订单金额（元）',s.amount,'0–10000，最多两位小数。')+
+        '<div>'+caption('比较方式')+U.tabs([['true','≥ 包含边界'],['false','> 不含边界']],String(s.inclusive),'set-option','inclusive')+'</div>';
+      if(s.mode==='levels')controls+='<div>'+caption('判断顺序')+U.tabs([['strict','先检查 1000'],['loose','先检查 500']],s.order,'set-option','order')+'</div>';
+      controls+='<div class="flow-wide">'+caption('比较边界值')+'<div class="preset-row">'+['499.99','500','999.99','1000','1200'].map(x=>U.button('preset',x,x+' 元',s.amount===x)).join('')+'</div></div>';
+    }
+    const currentResult=has(f.vars,'order_level')?f.vars.order_level:has(f.vars,'action')?f.vars.action:undefined;
+    let visual='';
+    if(model.ok) {
+      const checks=f.checks||[], resultCreated=currentResult!==undefined;
+      const cards=model.branches.map((b,i)=>{
+        const c=checks.find(x=>x.line===b.line), isElse=b.expression==='else', selected=resultCreated&&currentResult===b.label;
+        let status;
+        if(isElse)status=selected?'执行 else':resultCreated?'不执行':'前面条件均为 False 时进入';
+        else if(c&&c.result!==null)status=c.result?'True · 进入此分支':'False · 继续往下';
+        else status=resultCreated||f.done?'未再求值':'尚未求值';
+        const isActive=selected||(c&&c.result===true);
+        return '<section class="flow-branch '+(isActive?'is-selected':c&&c.result===false?'is-false':'')+'"><div class="flow-branch-number">'+String(i+1).padStart(2,'0')+'</div><div><code>'+esc(b.expression)+'</code><h3>'+esc(b.label)+'</h3><p>'+esc(status)+'</p></div></section>';
+      }).join('');
+      visual='<div class="visual-header"><h2>'+(s.mode==='levels'?'从上到下，遇到第一个成立的条件就选定':s.mode==='else'?'一次判断，只选择一个处理分支':'缩进内的输出，只有条件成立才执行')+'</h2><span class="pill">'+(s.mode==='else'?'状态 '+esc(s.status):'金额 '+esc(s.amount)+' 元')+'</span></div>'+
+        '<div class="flow-branches">'+cards+'</div>';
+      if(s.mode==='if')visual+='<div class="flow-outside"><span>if 代码块之后</span><code>print("订单检查完成")</code><strong>'+(f.output.includes('订单检查完成')?'已执行':'等待执行')+'</strong></div>';
+      else visual+='<div class="flow-decision-result"><span>'+(s.mode==='else'?'action':'order_level')+'</span><strong>'+esc(currentResult===undefined?'尚未赋值':currentResult)+'</strong></div>';
+    }
+    const summary='<div class="rule-note"><strong>'+(s.mode==='levels'?'先后顺序就是规则的一部分。':s.mode==='else'?'if 与 else 覆盖两种处理结果。':'缩进决定一行代码属于哪个代码块。')+'</strong>'+
+      (s.mode==='levels'?'<p>程序先检查 <code>if</code>，不成立才继续检查 <code>elif</code>。遇到第一个成立的条件便执行该分支；后面的条件不会再求值。前面都不成立，才进入 <code>else</code>。</p><p>要把金额分成“至少 1000”“至少 500”“其他”三档，应先检查较高门槛。把较低门槛放在前面，1200 元会提前进入“高价值订单”。</p>':
+      s.mode==='else'?'<p>条件为 <code>True</code> 时执行 if；为 <code>False</code> 时执行 else。随后都回到分支之后的 <code>print(action)</code>。</p><p>本例只把 <code>PAID</code> 视为可发货状态；取消和待支付订单都进入“暂不发货”。</p>':
+      '<p><code>if</code> 后面缩进的输出属于条件代码块；最后一行没有缩进，不属于 if，因此在两种金额情形下都会执行。</p><p><code>&gt;= 500</code> 包含恰好 500；改为 <code>&gt; 500</code> 后，500 不满足条件。请在边界两侧各试一次。</p>')+'</div>';
+    return finish(model,s,controls,visual,summary);
+  };
+
+  V.forloop=function(s) {
+    let orders=clone(E.defaults.orders), marketSales=clone(E.defaults.marketSales);
+    if(s.preset==='empty'){orders=[];marketSales={};}
+    if(s.preset==='cancelled')orders.forEach(o=>o.status='CANCELLED');
+    const model=E.forloop({mode:s.mode,orders,marketSales}),f=U.frame(model,s.cursor);
+    let controls='<div class="flow-wide">'+caption('选择遍历任务')+U.tabs([['orders','逐条取得订单'],['markets','字典键值配对'],['all','累计全部记录'],['paid','只累计已支付']],s.mode)+'</div>'+
+      '<div class="flow-wide">'+caption('换组数据')+'<div class="preset-row">'+U.button('preset','default','课件数据',s.preset==='default')+U.button('preset','empty','空数据',s.preset==='empty')+(s.mode!=='markets'?U.button('preset','cancelled','全部取消',s.preset==='cancelled'):'')+'</div></div>';
+    let visual='<div class="visual-header"><h2>'+(s.mode==='markets'?'每轮同时取得一个键和对应的值':s.mode==='paid'?'先判断状态，再决定是否累计':s.mode==='all'?'每条记录都计入，包括取消订单':'order 每轮绑定当前的一条订单')+'</h2><span class="pill">for · 逐项遍历</span></div>';
+    if(s.mode==='markets') {
+      const entries=Object.entries(marketSales);
+      visual+='<div class="flow-table-wrap"><table class="flow-table"><thead><tr><th>市场 market</th><th>销售额 sales / 万元</th><th>执行记录</th></tr></thead><tbody>'+entries.map(([k,v],i)=>'<tr class="'+(f.activeIndex===i?'flow-current-row':f.selected.includes(i)?'flow-selected-row':'')+'"><th scope="row">'+esc(k)+'</th><td>'+v+'</td><td>'+(f.activeIndex===i?'当前键值对':f.selected.includes(i)?'已输出':'尚未取得')+'</td></tr>').join('')+(entries.length?'':'<tr><td colspan="3">空字典：没有键值对。</td></tr>')+'</tbody></table></div>'+
+        '<div class="flow-metrics">'+U.metric('循环变量 market',U.value(f,'market'))+U.metric('循环变量 sales',U.value(f,'sales'))+'</div>';
+    } else {
+      visual+=U.ordersTable(orders,f,{hitLabel:s.mode==='orders'?'已输出':'已计入'});
+      const current=f.vars.order;
+      visual+='<div class="flow-current-item"><span>循环变量 order</span><code>'+esc(current?E.repr(current):'尚未赋值')+'</code></div>';
+      if(s.mode==='all')visual+='<div class="flow-metrics">'+U.metric('order_count',U.value(f,'order_count'))+U.metric('total_amount',U.value(f,'total_amount',money))+U.metric('average_amount',U.value(f,'average_amount',money),'循环后才计算')+'</div>';
+      if(s.mode==='paid')visual+='<div class="flow-metrics">'+U.metric('paid_count',U.value(f,'paid_count'))+U.metric('paid_total',U.value(f,'paid_total',money))+'</div>'+conditionNote(f);
+    }
+    const summary='<div class="rule-note"><strong>'+(s.mode==='markets'?'items() 让键与对应的值一起进入循环。':s.mode==='orders'?'for 负责取下一项，缩进的代码负责处理这一项。':'累计变量在循环前初始化，在循环中逐次更新。')+'</strong>'+
+      (s.mode==='markets'?'<p>每一轮，<code>market</code> 接收市场名，<code>sales</code> 接收对应销售额。两个变量来自同一组键值对，并不是各取一组互不相关的数据。</p>':
+      s.mode==='orders'?'<p>循环变量 <code>order</code> 依次绑定列表中的订单。每次执行同一条 print，但读取的是当前订单的编号和金额。</p><p>所有记录取得完毕后，for 自然结束。空列表没有可取的记录，循环体执行 0 次。</p>':
+      '<p><code>+=</code> 在原累计值上继续增加；如果把初始化放进循环体，前面累计的结果就会被重置。</p><p>“全部记录”计算所有订单的记录金额；“仅已支付”先检查状态，再累计。两者回答的业务问题不同。</p>')+
+      (s.mode==='all'?'<p>本模式保留课件第 12 页的直接除法。空列表会让分母为 0，从而产生 <code>ZeroDivisionError</code>。在“订单处理工坊”中，可以观察先检查数量再求平均的处理方式。</p>':'')+'</div>';
+    return finish(model,s,controls,visual,summary);
+  };
+
+  V.practice=function(s) {
+    const report=s.mode==='report';
+    const model=E.practice({mode:s.mode,orders:s.orders,threshold:report?s.threshold:1000}),f=U.frame(model,s.cursor);
+    let controls='<div class="flow-wide">'+caption('选择任务')+U.tabs([['summary','已支付订单汇总'],['report','按阈值生成筛查报告']],s.mode)+'</div>';
+    if(report)controls+=U.field('practice','threshold','筛查金额阈值（元）',s.threshold,'0–100000 的整数；包含阈值本身。')+'<div><div class="preset-row">'+U.button('preset','500','阈值 500')+U.button('preset','2000','阈值 2000')+'</div></div>';
+    controls+='<div class="flow-wide">'+caption('订单输入')+'<div class="flow-table-wrap"><table class="flow-table flow-edit-table"><thead><tr><th>订单</th><th>金额 / 元</th><th>状态</th></tr></thead><tbody>'+s.orders.map((o,i)=>'<tr><th scope="row">'+esc(o.id)+'</th><td><input type="text" inputmode="numeric" maxlength="6" aria-label="'+esc(o.id)+' 金额" data-field="practice.orders.'+i+'.amount" value="'+esc(o.amount)+'"></td><td><select aria-label="'+esc(o.id)+' 状态" data-field="practice.orders.'+i+'.status">'+[['PAID','已支付 PAID'],['CANCELLED','已取消 CANCELLED'],['REFUNDED','已退款 REFUNDED'],['PENDING','待支付 PENDING']].map(x=>'<option value="'+x[0]+'"'+(o.status===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></td></tr>').join('')+(s.orders.length?'':'<tr><td colspan="3">当前输入为空列表。</td></tr>')+'</tbody></table></div><p class="hint">金额为 0–100000 的整数。每次改动会从头开始演示。</p></div>'+
+      '<div class="flow-wide"><div class="preset-row">'+U.button('preset','default','恢复课件订单')+U.button('preset','cancelled','全部改为取消')+U.button('preset','empty','空订单列表')+'</div></div>';
+    let visual='<div class="visual-header"><h2>'+(report?'已支付，而且金额达到阈值，才进入报告':'按同一统计口径，逐条筛选与累计')+'</h2><span class="pill">'+(report?'金额 ≥ '+esc(s.threshold)+' 元':'大额：金额 ≥ 1000 元')+'</span></div>'+
+      U.ordersTable(s.orders,f,{hitLabel:report?'已计入报告':'已计入实收'});
+    if(report)visual+='<div class="flow-metrics">'+U.metric('符合条件订单数',U.value(f,'matched_count'))+U.metric('符合条件金额',U.value(f,'matched_amount',money))+'</div>';
+    else visual+='<div class="flow-metrics flow-four-metrics">'+U.metric('已支付订单数',U.value(f,'paid_count'))+U.metric('实收金额',U.value(f,'paid_amount',money))+U.metric('大额订单数',U.value(f,'high_value_count'))+U.metric('平均订单金额',U.value(f,'average_amount',money),'循环后才计算')+'</div>';
+    visual+=conditionNote(f);
+    if(!report&&has(f.vars,'average_amount')&&f.vars.paid_count===0)visual+='<div class="notice">没有已支付订单。本报告按课件约定将平均金额显示为 0；这不表示计算了 0 ÷ 0。</div>';
+    const summary='<div class="rule-note"><strong>先确定统计口径，再决定哪些语句应当执行。</strong><p>本实验只计入状态为 <code>PAID</code> 的订单。取消、退款和待支付订单遇到 <code>continue</code> 后，跳过本轮后续统计。</p>'+
+      (report?'<p>通过状态筛选以后，再判断金额是否达到阈值。只有两个要求都满足，才输出订单并增加报告的数量与金额。</p><p>金额阈值由本页控件提供；第三个模块演示怎样用 while 反复验证输入。这里展示的是阈值有效之后的订单筛查代码。</p>':
+      '<p>实收金额与已支付数量逐轮累计；大额数量只在已支付订单中增加。循环结束后，先检查数量，再计算平均金额，避免除以零。</p><p>可以把所有状态改为 CANCELLED，或使用空列表，观察四个结果如何得到 0。</p>')+'</div>';
+    return finish(model,s,controls,visual,summary);
+  };
+})(window);
+</script>
+  <script>/* Classroom whiteboard A: while, loop control, and short-circuit experiments. */
+(function (root) {
+  'use strict';
+  const V = root.FlowLabViews = root.FlowLabViews || {};
+  const esc = value => String(value === undefined ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const E = () => root.FlowLabEngine;
+  const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj || {}, key);
+  const pyString = value => "'" + String(value).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/\r/g,'\\r').replace(/\t/g,'\\t') + "'";
+  const btn = (action, value, label, active, key) => '<button type="button" data-action="' + esc(action) + '" data-value="' + esc(value) + '"' + (key ? ' data-key="' + esc(key) + '"' : '') + (active === undefined ? '' : ' aria-pressed="' + !!active + '"') + '>' + esc(label) + '</button>';
+  const input = (id, label, field, value, maxLength) => '<div class="single-field"><label class="control-label" for="' + id + '">' + label + '</label><input id="' + id + '" type="text" inputmode="numeric" data-field="' + field + '" value="' + esc(value) + '" maxlength="' + (maxLength || 6) + '"></div>';
+  const metric = (label, value, note) => '<div class="flow-metric"><span>' + label + '</span><strong>' + esc(value) + '</strong>' + (note ? '<small>' + note + '</small>' : '') + '</div>';
+  const errorVisual = model => '<div class="error-message" role="status"><strong>' + esc(model.error || '请检查输入参数。') + '</strong><p>参数检查通过后才能开始这次演示。</p></div>';
+  function current(model, s) {return model.ok ? E().stateAt(model, s.cursor) : null;}
+  function previous(model, s) {return model.trace.slice(0, Math.max(0,Math.min(model.trace.length - 1,Number(s.cursor)||0)) + 1);}
+  function stateLabel(frame, i, selectedText) {
+    if ((frame.selected || []).includes(i)) return selectedText;
+    if (frame.activeIndex === i) return '当前记录';
+    if ((frame.visited || []).includes(i)) return '已访问';
+    return '尚未访问';
+  }
+  function rowClass(frame, i) {
+    return (frame.activeIndex === i ? 'flow-cv-current ' : '') + ((frame.selected || []).includes(i) ? 'flow-cv-selected' : (frame.visited || []).includes(i) ? 'flow-cv-visited' : '');
+  }
+
+  V.whileloop = function (state) {
+    const s = Object.assign({mode:'stock',stock:'12',safeStock:'30',increment:'5',inputText:'abc\n-2\n8',cursor:0},state);
+    const mode = s.mode === 'input' ? 'input' : 'stock';
+    const inputs = String(s.inputText).split('\n');
+    const model = E().whileloop(Object.assign({},s,{mode,inputs}));
+    const frame = current(model,s);
+    let controls = '<div class="flow-cv-wide"><span class="control-label">选择实验</span><div class="segmented">' + btn('set-mode','stock','补货到安全线',mode === 'stock') + btn('set-mode','input','输入有效才停止',mode === 'input') + '</div></div>';
+    let summary, visual = '';
+    if (mode === 'stock') {
+      controls += input('while-stock','初始库存（0–100）','whileloop.stock',s.stock,3) + input('while-safe','安全库存（0–100）','whileloop.safeStock',s.safeStock,3) + input('while-increment','每轮补货（0–50）','whileloop.increment',s.increment,2) +
+        '<div class="flow-cv-wide"><span class="control-label">换组数据</span><div class="preset-row">' + btn('preset','default','课件示例') + btn('preset','ready','一开始就达标') + btn('preset','stalled','每轮补货为 0') + '</div></div>';
+      summary = '<div class="rule-note"><strong>while 每次先判断条件，成立才执行循环体。</strong><p>本例先比较 <code>stock &lt; safe_stock</code>，再补货并输出。补货后回到条件处，重新判断；初始库存已经达标时，循环体一次也不执行。</p><p>如果每轮补货为 <code>0</code>，且初始库存仍低于安全线，条件会一直为 <code>True</code>。页面只演示三轮后暂停，Python 代码本身仍会继续循环；这个暂停不是程序中的 <code>break</code>。</p></div>';
+      if (frame) {
+        const frames = previous(model,s), vars = frame.vars || {};
+        const stock = has(vars,'stock') ? vars.stock : null;
+        const target = Number(s.safeStock);
+        const history = [];
+        frames.forEach(f => {if (has(f.vars,'stock') && (history.length === 0 || history[history.length - 1] !== f.vars.stock)) history.push(f.vars.stock);});
+        const checkFrames = frames.filter(f => f.kind === 'check' && has(f.vars,'stock'));
+        const lastCheck = checkFrames.length ? checkFrames[checkFrames.length - 1] : null;
+        const checkedExpression = lastCheck ? lastCheck.vars.stock + ' < ' + lastCheck.vars.safe_stock : '尚未判断';
+        const checkedValue = lastCheck ? lastCheck.vars.stock < lastCheck.vars.safe_stock ? 'True' : 'False' : '—';
+        const currentStock = stock === null ? '尚未赋值' : stock;
+        const scale = Math.max(100,stock === null ? 0 : stock,target);
+        const fill = stock === null ? 0 : 100 * stock / scale;
+        const marker = 100 * target / scale;
+        visual = '<div class="visual-header"><h2>先判断，再补货，再回到判断</h2><span class="pill">每轮增加 ' + esc(s.increment) + '</span></div>' +
+          '<div class="flow-metrics">' + metric('当前 stock',currentStock) + metric('安全线 safe_stock',target) + metric('已补货次数',frame.iteration || 0) + '</div>' +
+          '<div class="flow-cv-stock-track" aria-label="当前库存与安全线"><div class="flow-cv-stock-fill" style="width:' + fill.toFixed(3) + '%"></div><div class="flow-cv-stock-target" style="left:' + marker.toFixed(3) + '%"></div></div><div class="flow-cv-stock-scale"><span>0</span><span>虚线：安全线 ' + esc(target) + '</span><span>' + scale + '</span></div>' +
+          '<div class="flow-cv-check"><span>最近一次条件判断</span><code>' + esc(checkedExpression) + '</code><strong>' + checkedValue + '</strong></div>' +
+          '<div class="flow-cv-history"><span>已经出现的库存值</span><div>' + (history.length ? history.map((n,i) => '<code class="' + (i === history.length-1 ? 'flow-cv-latest' : '') + '">' + n + '</code>').join('<span aria-hidden="true">→</span>') : '<span class="flow-muted">初始化后开始记录。</span>') + '</div></div>' +
+          (Number(s.increment) === 0 && stock !== null && stock < target ? '<p class="hint">补货执行后，stock 仍是 ' + esc(stock) + '；条件没有向 False 接近。</p>' : '');
+      }
+    } else {
+      controls += '<div class="single-field flow-cv-wide"><label class="control-label" for="while-inputs">模拟依次输入的文本（每行一次）</label><textarea id="while-inputs" data-field="whileloop.inputText" rows="4" maxlength="104" spellcheck="false">' + esc(s.inputText) + '</textarea><p class="hint">最多 8 次输入，每次 12 个字符；空行也算一次。只接受半角数字 0–9，首尾空格先由 strip() 去掉。</p></div>' +
+        '<div class="flow-cv-wide"><span class="control-label">换组输入</span><div class="preset-row">' + btn('preset','default','先无效，再输入 8') + btn('preset','invalid','全部无效') + btn('preset','first','第一次就有效') + btn('preset','space','带首尾空格') + '</div></div>';
+      summary = '<div class="rule-note"><strong>while True 持续重复，合法输入触发 break。</strong><p>每轮读取一段文本，先用 <code>strip()</code> 去掉首尾空白，再检查格式。检查通过后才执行 <code>int()</code>，随后用 <code>break</code> 结束当前循环。</p><p>本例在课件的 <code>isdigit()</code> 前增加 <code>isascii()</code>，限定为半角数字，避免把某些不能直接转换的特殊数字字符也当作有效输入。负号与小数点均不符合这里的数量格式。</p><p>如果准备的输入全部无效，程序会等待下一次输入。页面显示“等待输入”，不能把它理解成循环已经结束。</p></div>';
+      if (frame) {
+        const vars=frame.vars||{};
+        const frames=previous(model,s);
+        const accepted = frames.filter(f => f.kind === 'break').map(f => f.activeIndex);
+        const rows = inputs.map((text,i) => {
+          let label=stateLabel(frame,i,'已接受');
+          if(accepted.includes(i)) label='已接受，停止读取';
+          else if((frame.visited || []).includes(i) && frame.activeIndex !== i) label='检查后未通过';
+          return '<tr class="' + rowClass(frame,i) + '"><th scope="row">第 ' + (i+1) + ' 次</th><td><code>' + esc(pyString(text)) + '</code></td><td>' + label + '</td></tr>';
+        }).join('');
+        visual = '<div class="visual-header"><h2>每次输入，都重新检查</h2><span class="pill">预备 ' + inputs.length + ' 次输入</span></div><div class="flow-table-wrap"><table class="flow-table flow-cv-input-table"><thead><tr><th scope="col">轮次</th><th scope="col">输入文本</th><th scope="col">当前状态</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+          '<div class="flow-metrics">' + metric('当前 quantity_text',has(vars,'quantity_text') ? pyString(vars.quantity_text) : '尚未执行') + metric('转换后的 quantity',has(vars,'quantity') ? vars.quantity : '尚未赋值') + '</div>';
+      }
+    }
+    return {controls,visual:model.ok ? visual : errorVisual(model),summary,code:model.code || '# 请先检查实验参数。',model,frame};
+  };
+
+  V.control = function (state) {
+    const s=Object.assign({mode:'break',threshold:'1000',statement:'continue',preset:'default',cursor:0},state);
+    const mode=s.mode === 'continue' ? 'continue' : 'break';
+    const presets={default:[299,1500,680,2300],none:[299,680,999],first:[1500,299,2300]};
+    const amounts=presets[s.preset] || presets.default;
+    const orders=[{id:'O001',amount:299,status:'PAID'},{id:'O002',amount:120,status:'CANCELLED'},{id:'O003',amount:680,status:'PAID'}];
+    const model=E().control(Object.assign({},s,{mode,amounts,orders}));
+    const frame=current(model,s);
+    let controls='<div class="flow-cv-wide"><span class="control-label">选择任务</span><div class="segmented">' + btn('set-mode','break','找到第一笔大额订单',mode==='break') + btn('set-mode','continue','跳过未支付订单',mode==='continue') + '</div></div>';
+    let summary, visual='';
+    if(mode === 'break') {
+      controls += input('control-threshold','大额订单门槛（元）','control.threshold',s.threshold,6) + '<div class="flow-cv-wide"><span class="control-label">订单金额列表</span><div class="segmented">' + [['default','课件示例'],['none','都低于 1000'],['first','第一笔就超过 1000']].map(p=>btn('set-option',p[0],p[1],s.preset===p[0],'preset')).join('') + '</div></div>';
+      summary='<div class="rule-note"><strong>break 结束当前循环，后面的记录不再检查。</strong><p>本任务只找第一笔达到门槛的订单。每次取出金额后进行判断，命中便输出结果并执行 <code>break</code>。如果没有命中，循环会自然遍历完列表。</p><p>如果任务要求找到所有大额订单，就不能在第一次找到时结束循环。<code>break</code> 只作用于它所在的当前循环。</p></div>';
+      if(frame) {
+        visual='<div class="visual-header"><h2>命中后，后续订单还会被检查吗？</h2><span class="pill">amount ≥ ' + esc(s.threshold) + '</span></div><div class="flow-cv-order-line">' + amounts.map((n,i)=>'<div class="flow-cv-order-card ' + rowClass(frame,i) + '"><span>第 ' + (i+1) + ' 笔</span><strong>' + n + '<small> 元</small></strong><span>' + stateLabel(frame,i,'已命中') + '</span></div>').join('') + '</div><div class="flow-metrics">' + metric('已经访问', (frame.visited || []).length + ' / ' + amounts.length) + metric('循环变量 amount',has(frame.vars,'amount') ? frame.vars.amount : '尚未赋值') + '</div>';
+      }
+    } else {
+      controls += '<div class="flow-cv-wide"><span class="control-label">遇到未支付订单时</span><div class="segmented">' + btn('set-option','continue','continue：跳过本轮',s.statement==='continue','statement') + btn('set-option','break','换成 break 比较',s.statement==='break','statement') + '</div></div>';
+      summary='<div class="rule-note"><strong>continue 只跳过本轮剩余语句，下一轮仍会继续。</strong><p>状态不是 <code>PAID</code> 时，<code>continue</code> 跳过本轮的金额累计；下一条订单仍会进入判断。已支付订单则继续执行 <code>paid_amount += order["amount"]</code>。</p><p>切换为 <code>break</code>，观察遇到 O002 之后的 O003 是否还能接受检查。两条语句控制的范围不同，不能互相替换。</p></div>';
+      if(frame) {
+        const past=previous(model,s);
+        const skipped=past.filter(f=>f.kind==='continue').map(f=>f.activeIndex);
+        const stopped=past.filter(f=>f.kind==='break').map(f=>f.activeIndex);
+        const progress=i=>skipped.includes(i)?'已跳过':stopped.includes(i)?'触发停止':stateLabel(frame,i,'已计入');
+        visual='<div class="visual-header"><h2>同一批订单，比较 continue 与 break</h2><span class="pill">当前使用 ' + esc(s.statement) + '</span></div><div class="flow-table-wrap"><table class="flow-table"><thead><tr><th scope="col">订单</th><th scope="col">金额</th><th scope="col">状态</th><th scope="col">执行情况</th></tr></thead><tbody>' + orders.map((o,i)=>'<tr class="' + rowClass(frame,i) + '"><th scope="row">' + o.id + '</th><td>' + o.amount + ' 元</td><td><code>' + o.status + '</code></td><td>' + progress(i) + '</td></tr>').join('') + '</tbody></table></div><div class="flow-metrics">' + metric('当前累计 paid_amount',has(frame.vars,'paid_amount') ? frame.vars.paid_amount + ' 元' : '尚未赋值') + metric('已经访问',(frame.visited || []).length + ' / ' + orders.length) + '</div>';
+      }
+    }
+    return {controls,visual:model.ok ? visual : errorVisual(model),summary,code:model.code || '# 请先检查实验参数。',model,frame};
+  };
+
+  V.shortcircuit = function (state) {
+    const s=Object.assign({couponCount:'0',discountTotal:'0',order:'safe',cursor:0},state);
+    const model=E().shortcircuit(s),frame=current(model,s);
+    const safe=s.order !== 'reverse';
+    const controls=input('short-count','优惠券数量 coupon_count','shortcircuit.couponCount',s.couponCount,6) + input('short-total','优惠总额 discount_total（元）','shortcircuit.discountTotal',s.discountTotal,6) +
+      '<div class="flow-cv-wide"><span class="control-label">两个条件的顺序</span><div class="segmented">' + btn('set-option','safe','先判断数量是否大于 0',safe,'order') + btn('set-option','reverse','先计算平均优惠金额',!safe,'order') + '</div></div>' +
+      '<div class="flow-cv-wide"><span class="control-label">换组数据</span><div class="preset-row">' + btn('preset','zero','0 张券，0 元') + btn('preset','boundary','2 张券，100 元') + btn('preset','high','2 张券，120 元') + '</div></div>';
+    const summary='<div class="rule-note"><strong>and 从左向右计算；左侧为 False，右侧就不再求值。</strong><p>先判断优惠券数量是否大于 <code>0</code>，数量为零时便跳过除法。这里的“未求值”与“计算后得到 False”是不同状态。</p><p>交换顺序后，除法会先发生。数量为零时已经产生 <code>ZeroDivisionError</code>，后面的数量检查来不及阻止它。数量大于零时，两个条件都满足才会输出“需要检查优惠成本”。</p><p>本例的两个子表达式都是比较，结果为布尔值；一般情况下，Python 的 <code>and</code> 返回选中的操作数，不保证总是布尔值。</p></div>';
+    let visual='';
+    if(frame) {
+      const expressions=safe ? ['coupon_count > 0','discount_total / coupon_count > 50'] : ['discount_total / coupon_count > 50','coupon_count > 0'];
+      const tests=frame.tests || [null,null];
+      const label=t=>t==='error'?'ZeroDivisionError':t===true?'True':t===false?'False':'未求值';
+      const kind=t=>t==='error'?'flow-cv-test-error':t===true?'flow-cv-test-true':t===false?'flow-cv-test-false':'flow-cv-test-pending';
+      const result=frame.result;
+      const resultLabel=result === 'error' ? '异常中断，没有判断结果' : result === true ? 'True' : result === false ? 'False' : '尚未完成判断';
+      visual='<div class="visual-header"><h2>右侧条件是否真的执行了？</h2><span class="pill">and：从左向右</span></div><div class="flow-metrics">' + metric('coupon_count',has(frame.vars,'coupon_count') ? frame.vars.coupon_count : '尚未赋值') + metric('discount_total',has(frame.vars,'discount_total') ? frame.vars.discount_total + ' 元' : '尚未赋值') + '</div>' +
+        '<div class="flow-cv-tests">' + expressions.map((expr,i)=>'<section class="flow-cv-test ' + kind(tests[i]) + '"><h3>第 ' + (i+1) + ' 个条件</h3><code>' + esc(expr) + '</code><strong>' + label(tests[i]) + '</strong></section>').join('<div class="flow-cv-and">and</div>') + '</div>' +
+        '<div class="flow-cv-condition-result' + (result === 'error' ? ' flow-cv-test-error' : '') + '"><span>整个条件</span><strong>' + resultLabel + '</strong></div>';
+    }
+    return {controls,visual:model.ok ? visual : errorVisual(model),summary,code:model.code || '# 请先检查实验参数。',model,frame};
+  };
+})(window);
+</script>
+  <script>(function () {
+  'use strict';
+  const C = window.FlowLabContent;
+  const E = window.FlowLabEngine;
+  const V = window.FlowLabViews;
+  const STORAGE = 'classroom-whiteboard-slide6-v1';
+  let saved = {};
+  try {saved = JSON.parse(localStorage.getItem(STORAGE) || '{}') || {};} catch (_) {}
+  const known = id => C.modules.some(m => m.id === id);
+  const route = () => location.hash.slice(1).split('?')[0];
+  let current = known(route()) ? route() : known(saved.lastLesson) ? saved.lastLesson : C.modules[0].id;
+  const answers = {};
+  C.modules.forEach(m => {
+    const v = saved.answers && saved.answers[m.id];
+    if (Number.isInteger(v) && v >= 0 && v < m.quiz.options.length) answers[m.id] = v;
+  });
+  function initial(id) {
+    return {
+      conditions:{mode:'levels',amount:'680',status:'PAID',order:'strict',inclusive:true,cursor:0},
+      forloop:{mode:'orders',preset:'default',cursor:0},
+      whileloop:{mode:'stock',stock:'12',safeStock:'30',increment:'5',inputText:'abc\n-2\n8',cursor:0},
+      control:{mode:'break',threshold:'1000',statement:'continue',preset:'default',cursor:0},
+      practice:{mode:'summary',threshold:'500',orders:[
+        {id:'O001',amount:299,status:'PAID'},
+        {id:'O002',amount:120,status:'CANCELLED'},
+        {id:'O003',amount:680,status:'PAID'},
+        {id:'O004',amount:1500,status:'PAID'},
+        {id:'O005',amount:88,status:'REFUNDED'}
+      ],cursor:0},
+      shortcircuit:{couponCount:'0',discountTotal:'0',order:'safe',cursor:0}
+    }[id];
+  }
+  const states = Object.fromEntries(C.modules.map(m => [m.id, initial(m.id)]));
+  const openedQuizzes = new Set();
+  const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  let activeCode = '', activeModel = null, toastTimer, projecting = false;
+  function save() {
+    try {localStorage.setItem(STORAGE, JSON.stringify({lastLesson:current,answers}));} catch (_) {}
+  }
+  function toast(message) {
+    const node = document.getElementById('toast');
+    node.textContent = message;
+    node.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => node.classList.remove('visible'), 2400);
+  }
+  function preserveFocus(callback) {
+    const active = document.activeElement;
+    let selector = '', range;
+    if (active && active.dataset.field) selector = '[data-field="' + active.dataset.field + '"]';
+    else if (active && active.dataset.action) {
+      selector = '[data-action="' + active.dataset.action + '"]';
+      if (active.dataset.value !== undefined) selector += '[data-value="' + CSS.escape(active.dataset.value) + '"]';
+    }
+    try {if (active && active.selectionStart !== null) range = [active.selectionStart,active.selectionEnd];} catch (_) {}
+    callback();
+    const next = selector && document.querySelector(selector);
+    if (next && !next.disabled) {
+      next.focus({preventScroll:true});
+      if (range) {try {next.setSelectionRange(range[0],range[1]);} catch (_) {}}
+    }
+  }
+  function highlighted(code, activeLines) {
+    const active = activeLines || [];
+    function line(source) {
+      const pattern = /('[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"|#.*|\b(?:None|True|False|import|del|print|return|def|in|if|elif|else|for|while|break|continue|and|or|not)\b|\b\d+(?:\.\d+)?\b)/g;
+      let html = '', position = 0, match;
+      while ((match = pattern.exec(source))) {
+        html += esc(source.slice(position,match.index));
+        const token = match[0], type = token[0] === '#' ? 'comment' : /^['"]/.test(token) ? 'str' : /^\d/.test(token) ? 'num' : 'kw';
+        html += '<span class="token-' + type + '">' + esc(token) + '</span>';
+        position = match.index + token.length;
+      }
+      return html + esc(source.slice(position));
+    }
+    return code.split('\n').map((text,i) => '<span class="code-line'+(active.includes(i+1)?' is-current':'')+'"><span class="line-no" aria-hidden="true">' + (i+1) + '</span><span class="line-text">' + (line(text) || ' ') + '</span></span>').join('');
+  }
+  function quiz(module) {
+    const q = module.quiz, answer = answers[module.id], answered = Number.isInteger(answer), right = answer === q.answer;
+    return '<details class="check-panel" data-quiz-panel="' + module.id + '" ' + (openedQuizzes.has(module.id) ? 'open' : '') + '><summary>检验理解' +
+      (answered ? right ? ' · 已答对' : ' · 再想一想' : '') + '</summary><div class="check-content"><p class="check-question">' + esc(q.prompt) +
+      '</p>' + (q.code ? '<pre class="quiz-code">' + esc(q.code) + '</pre>' : '') + '<div class="quiz-options" role="group" aria-label="练习选项">' +
+      q.options.map((option,i) => '<button type="button" class="quiz-option" data-action="quiz-answer" data-value="' + i + '" aria-pressed="' + (answer === i) +
+        '"><span class="quiz-letter">' + String.fromCharCode(65+i) + '</span><span>' + esc(option.label) + '</span></button>').join('') +
+      '</div>' + (answered ? '<div class="quiz-feedback ' + (right ? '' : 'incorrect') + '" role="status"><strong>' + (right ? '判断正确。' : '再想一想。') + '</strong>' + esc(q.options[answer].explanation) + '</div>' : '') + '</div></details>';
+  }
+  function renderNav() {
+    document.getElementById('lesson-nav').innerHTML = C.modules.map((m,i) => '<a href="#' + m.id + '" ' + (m.id === current ? 'aria-current="page"' : '') + '><span class="nav-index">' +
+      String(i+1).padStart(2,'0') + '</span><span>' + esc(m.title) + '</span>' + (answers[m.id] === m.quiz.answer ? '<span class="nav-done" aria-label="练习已答对">✓</span>' : '') + '</a>').join('');
+    const count = C.modules.filter(m => answers[m.id] === m.quiz.answer).length;
+    document.getElementById('quiz-progress').textContent = count ? '练习答对 ' + count + ' / ' + C.modules.length : C.modules.length + ' 个动手实验';
+  }
+  function tracePanel(model,frame,state) {
+    if (!model || !model.ok || !model.trace || !model.trace.length) return '';
+    const end=model.trace.length-1, cursor=Math.max(0,Math.min(end,Number(state.cursor)||0));
+    const last=model.trace[end];
+    const stateName=frame.error?'异常终止':frame.paused?(frame.pauseReason==='input'?'等待输入':'演示暂停'):frame.done?'执行结束':cursor===0?'尚未开始':'执行中';
+    const line=Number(frame.line), currentLine=line>0?(model.lines||model.code.split('\n'))[line-1]:'';
+    return '<div class="flow-execution"><div class="flow-stepper" role="group" aria-label="逐步执行">'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-start" '+(cursor===0?'disabled':'')+'>从头演示</button>'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-back" '+(cursor===0?'disabled':'')+'>上一步</button>'+
+      '<button type="button" class="btn btn-primary" data-action="trace-next" '+(cursor===end?'disabled':'')+'>下一步 →</button>'+
+      '<button type="button" class="btn btn-subtle" data-action="trace-end" '+(cursor===end?'disabled':'')+'>'+(last.paused?'运行至暂停':'运行到最后')+'</button>'+
+      '<span class="flow-step-count">'+cursor+' / '+end+' 步 · '+stateName+'</span></div>'+
+      '<div class="flow-step-note" role="status" aria-live="polite"><strong>'+esc(frame.note||'先预测，再点击下一步。')+'</strong>'+
+      (currentLine?'<div class="flow-current-code"><span>第 '+line+' 行</span><code>'+esc(currentLine)+'</code></div>':'')+'</div>'+
+      '<div class="flow-output"><span>程序输出</span><pre>'+(frame.output&&frame.output.length?esc(frame.output.join('\n')):'<span class="flow-muted">尚未产生输出</span>')+
+      (frame.error?'\n<span class="flow-error-text">'+esc(FlowLabUI.errorText(frame.error))+'</span>':'')+'</pre></div></div>';
+  }
+  function renderLesson() {
+    const module=C.modules.find(m=>m.id===current), state=states[current], view=V[current](state);
+    activeCode=view.code||''; activeModel=view.model||null;
+    const frame=view.frame || (activeModel&&activeModel.ok?E.stateAt(activeModel,state.cursor):{});
+    const lines=frame.lines || (frame.line?[frame.line]:[]);
+    document.getElementById('lesson').innerHTML='<div class="lesson-heading"><div><p class="source-tag">'+esc(module.pages)+
+      '</p><h1 id="lesson-title" tabindex="-1">'+esc(module.title)+'</h1><p class="lesson-question">'+esc(module.question)+
+      '</p></div><button type="button" class="btn btn-subtle" data-action="reset-experiment">重置实验</button></div>'+
+      '<div class="workbench"><section class="control-panel" aria-label="实验操作">'+view.controls+'</section><section class="visual-panel" aria-label="可视化结果">'+view.visual+tracePanel(activeModel,frame,state)+'</section></div>'+
+      '<div class="evidence"><section class="rule-panel" aria-label="理解原理">'+view.summary+'</section><section class="code-panel" aria-label="对应的 Python 代码"><div class="code-toolbar"><span>对应的 Python · 蓝色行是当前位置</span><button type="button" class="btn btn-subtle" data-action="copy-code">复制代码</button></div><pre><code>'+highlighted(activeCode,lines)+'</code></pre></section></div>'+
+      '<div class="try-next"><strong>再试一步</strong><span>'+esc(module.try)+'</span></div>'+quiz(module);
+    const detail=document.querySelector('[data-quiz-panel]');
+    detail.addEventListener('toggle',()=>{if(detail.open)openedQuizzes.add(module.id);else openedQuizzes.delete(module.id);});
+  }
+  function setProjection(value) {
+    projecting = value;
+    document.body.classList.toggle('projecting',value);
+    const button = document.getElementById('projection-toggle');
+    button.textContent = value ? '退出投影' : '投影模式';
+    button.setAttribute('aria-pressed',String(value));
+  }
+  function navigate() {
+    if (!known(route())) return;
+    current = route();
+    renderNav(); renderLesson(); save();
+    document.getElementById('lesson-title').focus({preventScroll:true});
+    if (window.innerWidth < 901) document.getElementById('lesson').scrollIntoView({block:'start'});
+  }
+  async function copyCode() {
+    try {
+      if (!navigator.clipboard || !window.isSecureContext) throw Error('fallback');
+      await navigator.clipboard.writeText(activeCode); toast('Python 代码已复制');
+    } catch (_) {
+      const area = document.createElement('textarea');
+      area.value = activeCode; area.setAttribute('readonly',''); area.style.cssText = 'position:fixed;left:-9999px;top:0';
+      document.body.appendChild(area); area.select();
+      let success = false;
+      try {success = document.execCommand('copy');} catch (_) {}
+      area.remove();
+      toast(success ? 'Python 代码已复制' : '浏览器未允许自动复制，请选中代码后复制。');
+    }
+  }
+  function applyPreset(s,value) {
+    if(current==='conditions') {s.amount=value;}
+    else if(current==='forloop') {s.preset=value;}
+    else if(current==='whileloop') {
+      if(s.mode==='stock') {
+        const values={default:['12','30','5'],ready:['35','30','5'],stalled:['12','30','0']};
+        if(values[value]) [s.stock,s.safeStock,s.increment]=values[value];
+      } else {
+        const values={default:'abc\n-2\n8',invalid:'abc\n3.5\n-2',first:'8\nabc',space:'  8  ',unicode:'²\n８\n8'};
+        if(Object.prototype.hasOwnProperty.call(values,value))s.inputText=values[value];
+      }
+    } else if(current==='shortcircuit') {
+      const values={zero:['0','0'],boundary:['2','100'],high:['2','120']};
+      if(values[value]) [s.couponCount,s.discountTotal]=values[value];
+    } else if(current==='practice') {
+      if(value==='default')s.orders=initial('practice').orders;
+      if(value==='cancelled')s.orders=s.orders.map(x=>Object.assign({},x,{status:'CANCELLED'}));
+      if(value==='empty')s.orders=[];
+      if(value==='500'||value==='2000')s.threshold=value;
+    }
+    s.cursor=0;
+  }
+  document.addEventListener('click',event=>{
+    if(event.target.closest('#projection-toggle')){setProjection(!projecting);return;}
+    const button=event.target.closest('[data-action]');
+    if(!button||button.disabled)return;
+    const action=button.dataset.action,value=button.dataset.value;
+    if(action==='copy-code'){copyCode();return;}
+    preserveFocus(()=>{
+      const s=states[current];
+      switch(action){
+        case 'reset-experiment':states[current]=initial(current);break;
+        case 'set-mode':s.mode=value;s.cursor=0;break;
+        case 'set-option':
+          if(button.dataset.key==='inclusive')s.inclusive=value==='true';
+          else s[button.dataset.key]=value;
+          s.cursor=0;break;
+        case 'preset':applyPreset(s,value);break;
+        case 'trace-start':s.cursor=0;break;
+        case 'trace-back':s.cursor=Math.max(0,s.cursor-1);break;
+        case 'trace-next':if(activeModel&&activeModel.ok)s.cursor=Math.min(activeModel.trace.length-1,s.cursor+1);break;
+        case 'trace-end':if(activeModel&&activeModel.ok)s.cursor=activeModel.trace.length-1;break;
+        case 'quiz-answer':answers[current]=Number(value);openedQuizzes.add(current);save();renderNav();break;
+        case 'reset-quizzes':Object.keys(answers).forEach(key=>delete answers[key]);save();renderNav();toast('本讲练习记录已清除');break;
+        default:return;
+      }
+      renderLesson();
+    });
+  });
+  function updateField(event) {
+    const field=event.target.dataset.field;
+    if(!field)return;
+    const parts=field.split('.'),id=parts[0],key=parts[1];
+    if(!states[id])return;
+    preserveFocus(()=>{
+      if(id==='practice'&&key==='orders') {
+        const i=Number(parts[2]),prop=parts[3];
+        if(states[id].orders[i])states[id].orders[i][prop]=event.target.value;
+      } else states[id][key]=event.target.value;
+      states[id].cursor=0;
+      renderLesson();
+    });
+  }
+  document.addEventListener('input',event=>{if(event.target.tagName!=='SELECT')updateField(event);});
+  document.addEventListener('change',event=>{if(event.target.tagName==='SELECT')updateField(event);});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')setProjection(false);});
+  window.addEventListener('hashchange',navigate);
+  renderNav();renderLesson();save();
+})();
+</script>
+</body>
+</html>
