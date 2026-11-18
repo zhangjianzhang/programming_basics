@@ -1,861 +1,1606 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="./imgs/logo.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"/>
-    <title>Python程序设计-2026秋</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Python程序设计-2026秋</title>
+  <link href="./imgs/logo.ico" rel="shortcut icon" type="image/x-icon">
 
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="./files/bootstrap.min.css">
-    <link rel="stylesheet" href="./files/bootstrap-theme.min.css">
+  <!-- Google Fonts: Editorial Serif + Clean Sans + Monospace -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet">
 
-    <!-- Google fonts -->
-    <link href="./files/css" rel="stylesheet" type="text/css">
+  <style>
+    :root {
+      --bg-page: #f7f6f2;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f0efe9;
+      --bg-tint: #eef2f6;
+      --ink-primary: #141c28;
+      --ink-secondary: #3e4c5e;
+      --ink-muted: #6e7b8b;
+      --accent-navy: #183254;
+      --accent-navy-hover: #0f233c;
+      --accent-gold: #9a6b26;
+      --accent-gold-soft: #f5eedc;
+      --accent-teal: #0f6e66;
+      --accent-teal-soft: #e6f3f1;
+      --border-hairline: #e2dfd7;
+      --border-strong: #c8c4b8;
+      --shadow-card: 0 2px 10px rgba(20, 28, 40, 0.04);
+      --shadow-hover: 0 10px 28px rgba(20, 28, 40, 0.08);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 10px;
+      --font-serif: 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif;
+      --font-sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      --font-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
+    }
 
-    <!-- Google Analytics -->
-    <script async="" src="./files/analytics.js"></script>
-    <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-        ga('create', 'UA-46895817-2', 'auto');
-        ga('send', 'pageview');
-    </script>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    <link rel="stylesheet" type="text/css" href="./files/style.css">
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--ink-primary);
+      font-family: var(--font-sans);
+      font-size: 15.5px;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: clip;
+    }
+
+    a {
+      color: var(--accent-navy);
+      text-decoration: none;
+      transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    a:hover {
+      color: var(--accent-gold);
+    }
+
+    /* ==========================================
+       1. HERO HEADER (Unobstructed Banner Image)
+       ========================================== */
+    .hero-header {
+      position: relative;
+      /* Keep banner bright and clear; light local gradient only on the far left for text legibility, leaving center-bottom "杭州师范大学" completely uncovered */
+      background:
+        linear-gradient(90deg, rgba(10, 22, 42, 0.30) 0%, rgba(10, 22, 42, 0.12) 38%, rgba(10, 22, 42, 0.0) 62%),
+        url('./imgs/banner.jpg') center bottom / cover no-repeat;
+      color: #ffffff;
+      border-bottom: 3px solid var(--accent-gold);
+      overflow: hidden;
+    }
+
+    .hero-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 36px 32px 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 3px;
+      background: rgba(15, 30, 52, 0.48);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #f8fafc;
+      backdrop-filter: blur(4px);
+    }
+
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #f0c475;
+    }
+
+    .course-title {
+      font-family: var(--font-serif);
+      font-size: clamp(28px, 3.8vw, 44px);
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+      margin-bottom: 8px;
+      color: #ffffff;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.75);
+    }
+
+    .course-subtitle {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 500;
+      color: #f8fafc;
+      letter-spacing: 0.03em;
+      max-width: 620px;
+      margin-bottom: 18px;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.65), 0 1px 2px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Compact left-aligned stats so center-bottom "杭州师范大学" stone monument is 100% uncovered */
+    .header-stats {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.28);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .stat-num {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffda96;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+    }
+
+    .stat-label {
+      font-size: 12.5px;
+      color: #ffffff;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+    }
+
+    /* ==========================================
+       2. STICKY NAVIGATION BAR
+       ========================================== */
+    .sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: rgba(247, 246, 242, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-hairline);
+      box-shadow: 0 2px 10px rgba(20, 28, 40, 0.05);
+    }
+
+    .nav-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+    }
+
+    .nav-brand {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink-primary);
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .nav-brand-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-gold);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 13px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+    }
+
+    .nav-links a .nav-idx {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-navy);
+      background: var(--bg-subtle);
+    }
+
+    .nav-cta {
+      font-size: 12.5px !important;
+      font-weight: 600 !important;
+      color: var(--accent-navy) !important;
+      border: 1px solid var(--border-strong);
+      background: #ffffff;
+      margin-left: 6px;
+    }
+
+    .nav-cta:hover {
+      border-color: var(--accent-navy);
+      background: var(--accent-navy) !important;
+      color: #ffffff !important;
+    }
+
+    /* ==========================================
+       3. MAIN LAYOUT & SECTION HEADERS
+       ========================================== */
+    .main-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 44px 32px 80px;
+    }
+
+    .section-block {
+      margin-bottom: 56px;
+    }
+
+    section[id] {
+      scroll-margin-top: 64px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--ink-primary);
+      padding-bottom: 10px;
+      margin-bottom: 24px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-title-group {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .section-index {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 23px;
+      font-weight: 700;
+      color: var(--ink-primary);
+      letter-spacing: 0.01em;
+    }
+
+    .section-en {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ==========================================
+       4. SECTION 01: COURSE INTRODUCTION
+       ========================================== */
+    .intro-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 30px 34px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .intro-lead {
+      font-size: 15.5px;
+      color: var(--ink-secondary);
+      line-height: 1.9;
+      text-align: justify;
+    }
+
+    .intro-lead p + p {
+      margin-top: 14px;
+    }
+
+    .intro-callout {
+      margin-top: 20px;
+      padding: 14px 18px;
+      background: var(--bg-subtle);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 14px;
+      color: var(--ink-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .intro-callout a {
+      font-weight: 600;
+      color: var(--accent-navy);
+      border-bottom: 1px solid rgba(24, 50, 84, 0.35);
+    }
+
+    .intro-callout a:hover {
+      color: var(--accent-gold);
+      border-bottom-color: var(--accent-gold);
+    }
+
+    /* ==========================================
+       5. SECTION 02: COURSE INFORMATION (SYLLABUS GRID)
+       ========================================== */
+    .info-grid-top {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .info-grid-mid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 18px;
+    }
+
+    .info-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 22px 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .info-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .info-card-label {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+    }
+
+    .info-card-title {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink-primary);
+    }
+
+    .meta-dl {
+      display: grid;
+      grid-template-columns: 76px 1fr;
+      row-gap: 8px;
+      column-gap: 10px;
+      font-size: 14.5px;
+    }
+
+    .meta-dt {
+      color: var(--ink-muted);
+      font-weight: 500;
+    }
+
+    .meta-dd {
+      color: var(--ink-primary);
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    /* Grading Breakdown Bars */
+    .grade-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .grade-row {
+      display: grid;
+      grid-template-columns: 125px 1fr 48px;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .grade-name {
+      color: var(--ink-secondary);
+      font-weight: 500;
+    }
+
+    .grade-track {
+      height: 7px;
+      background: var(--bg-subtle);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .grade-fill {
+      height: 100%;
+      background: var(--accent-navy);
+      border-radius: 99px;
+    }
+
+    .grade-fill.gold {
+      background: var(--accent-gold);
+    }
+
+    .grade-fill.teal {
+      background: var(--accent-teal);
+    }
+
+    .grade-pct {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink-primary);
+      text-align: right;
+    }
+
+    /* Resource Chips */
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .resource-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--ink-primary);
+    }
+
+    .resource-chip:hover {
+      background: var(--accent-navy);
+      border-color: var(--accent-navy);
+      color: #ffffff;
+    }
+
+    .resource-chip.chip-highlight {
+      background: var(--accent-gold-soft);
+      border-color: #dec596;
+      color: #6e4811;
+      font-weight: 600;
+    }
+
+    .resource-chip.chip-highlight:hover {
+      background: var(--accent-gold);
+      border-color: var(--accent-gold);
+      color: #ffffff;
+    }
+
+    /* ==========================================
+       6. SECTION 03: COURSE SCHEDULE TABLE
+       ========================================== */
+    .table-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      overflow-x: auto;
+    }
+
+    .schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14.5px;
+    }
+
+    .schedule-table thead th {
+      background: #182638;
+      color: #f1f5f9;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      padding: 14px 20px;
+      border-bottom: 2px solid var(--accent-gold);
+      white-space: nowrap;
+    }
+
+    .schedule-table tbody tr {
+      border-bottom: 1px solid var(--border-hairline);
+      transition: background-color 0.15s ease;
+    }
+
+    .schedule-table tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .schedule-table tbody tr:hover {
+      background-color: #faf9f5;
+    }
+
+    .schedule-table td {
+      padding: 15px 20px;
+      vertical-align: middle;
+      color: var(--ink-secondary);
+    }
+
+    .col-lecture {
+      width: 15%;
+      white-space: nowrap;
+    }
+
+    .col-topic {
+      width: 25%;
+    }
+
+    .col-slides {
+      width: 30%;
+    }
+
+    .col-exercise {
+      width: 10%;
+    }
+
+    .col-materials {
+      width: 20%;
+    }
+
+    .lecture-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--accent-navy);
+      background: var(--bg-tint);
+      border: 1px solid #d5e0ec;
+      padding: 3px 10px;
+      border-radius: var(--radius-sm);
+    }
+
+    .lecture-badge.badge-special {
+      background: var(--accent-gold-soft);
+      border-color: #e2c999;
+      color: #784f14;
+    }
+
+    .topic-title {
+      font-weight: 600;
+      color: var(--ink-primary);
+      font-size: 15px;
+    }
+
+    .resource-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .doc-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid transparent;
+      transition: all 0.16s ease;
+    }
+
+    .doc-pill-pdf {
+      background: #fdf2f2;
+      color: #9b2c2c;
+      border-color: #f5c6cb;
+    }
+
+    .doc-pill-pdf:hover {
+      background: #9b2c2c;
+      color: #ffffff;
+      border-color: #9b2c2c;
+    }
+
+    .doc-pill-html {
+      background: var(--accent-teal-soft);
+      color: var(--accent-teal);
+      border-color: #bce3de;
+    }
+
+    .doc-pill-html:hover {
+      background: var(--accent-teal);
+      color: #ffffff;
+      border-color: var(--accent-teal);
+    }
+
+    .doc-type-tag {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      opacity: 0.85;
+    }
+
+    .note-muted {
+      color: var(--ink-muted);
+      font-size: 13.5px;
+    }
+
+    /* ==========================================
+       7. SECTION 04: AI TOOLS RECOMMENDATION
+       ========================================== */
+    .ai-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .ai-tool-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-top: 3px solid var(--accent-navy);
+      border-radius: var(--radius-md);
+      padding: 26px 28px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .ai-tool-card:nth-child(2) {
+      border-top-color: var(--accent-teal);
+    }
+
+    .ai-tool-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .ai-tool-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .ai-tool-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      object-fit: contain;
+      background: #ffffff;
+      border: 1px solid var(--border-hairline);
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    .ai-tool-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .ai-tool-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-gold);
+    }
+
+    .ai-tool-name {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink-primary);
+    }
+
+    .ai-tool-desc {
+      font-size: 14.5px;
+      color: var(--ink-secondary);
+      line-height: 1.78;
+      margin-bottom: 20px;
+    }
+
+    .ai-tool-footer {
+      padding-top: 14px;
+      border-top: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ai-tool-domain {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .ai-tool-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--accent-navy);
+      padding: 6px 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--bg-subtle);
+    }
+
+    .ai-tool-link:hover {
+      background: var(--accent-navy);
+      border-color: var(--accent-navy);
+      color: #ffffff;
+    }
+
+    /* ==========================================
+       8. SECTION 05: COURSE MATERIALS & TEXTBOOKS
+       ========================================== */
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .ref-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .ref-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .ref-type {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 9px;
+      border-radius: 3px;
+    }
+
+    .ref-type.handout {
+      background: var(--accent-gold-soft);
+      color: #7c5215;
+    }
+
+    .ref-type.textbook {
+      background: var(--bg-tint);
+      color: var(--accent-navy);
+    }
+
+    .ref-book-title {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink-primary);
+      line-height: 1.45;
+    }
+
+    .ref-book-meta {
+      font-size: 13.5px;
+      color: var(--ink-muted);
+    }
+
+    /* ==========================================
+       9. FOOTER
+       ========================================== */
+    .site-footer {
+      border-top: 1px solid var(--border-hairline);
+      background: var(--bg-subtle);
+      padding: 28px 32px;
+      font-size: 13.5px;
+      color: var(--ink-muted);
+    }
+
+    .footer-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* ==========================================
+       10. MOBILE & TABLET RESPONSIVENESS
+       ========================================== */
+    @media (max-width: 960px) {
+      .info-grid-top {
+        grid-template-columns: 1fr;
+      }
+      .info-grid-mid {
+        grid-template-columns: 1fr;
+      }
+      .ai-tools-grid {
+        grid-template-columns: 1fr;
+      }
+      .ref-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        font-size: 15px;
+      }
+
+      /* On mobile, keep top compact and reserve bottom space so center-bottom "杭州师范大学" monument is visible and uncovered */
+      .hero-header {
+        background:
+          linear-gradient(180deg, rgba(10, 22, 42, 0.25) 0%, rgba(10, 22, 42, 0.05) 55%, rgba(10, 22, 42, 0.0) 100%),
+          url('./imgs/banner.jpg') center bottom / cover no-repeat;
+      }
+
+      .hero-inner {
+        padding: 22px 20px 112px;
+      }
+
+      .course-title {
+        font-size: 26px;
+      }
+
+      .course-subtitle {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+
+      .header-stats {
+        gap: 16px;
+        padding-top: 8px;
+      }
+
+      .stat-num {
+        font-size: 15px;
+      }
+
+      .stat-label {
+        font-size: 11.5px;
+      }
+
+      /* Horizontal scrollable sticky nav on mobile */
+      .nav-container {
+        padding: 0 14px;
+        height: 48px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 8px;
+      }
+
+      .nav-container::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-brand {
+        font-size: 14px;
+        margin-right: 4px;
+      }
+
+      .nav-links a {
+        padding: 5px 9px;
+        font-size: 13px;
+      }
+
+      .nav-links a .nav-idx {
+        display: none;
+      }
+
+      .main-container {
+        padding: 28px 16px 56px;
+      }
+
+      .section-block {
+        margin-bottom: 40px;
+      }
+
+      .section-title {
+        font-size: 20px;
+      }
+
+      .section-en {
+        display: none;
+      }
+
+      .intro-panel {
+        padding: 20px 18px;
+      }
+
+      .intro-lead {
+        font-size: 14.5px;
+        text-align: left;
+      }
+
+      .info-card {
+        padding: 18px 16px;
+      }
+
+      .grade-row {
+        grid-template-columns: 110px 1fr 42px;
+        gap: 8px;
+        font-size: 13.5px;
+      }
+
+      /* Mobile Card-Style Schedule Table */
+      .schedule-table thead {
+        display: none;
+      }
+
+      .schedule-table,
+      .schedule-table tbody,
+      .schedule-table tr,
+      .schedule-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .schedule-table tbody tr {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border-hairline);
+      }
+
+      .schedule-table td {
+        padding: 4px 0;
+      }
+
+      .col-lecture,
+      .col-topic,
+      .col-slides,
+      .col-exercise,
+      .col-materials {
+        width: 100%;
+      }
+
+      .topic-title {
+        font-size: 15.5px;
+        margin: 4px 0 6px;
+      }
+
+      .ai-tool-card {
+        padding: 20px 18px;
+      }
+
+      .ai-tool-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .ai-tool-link {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .ref-card {
+        padding: 16px 18px;
+      }
+
+      .site-footer {
+        padding: 22px 16px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
+  <!-- ==========================================
+       HERO HEADER (Unobstructed Banner)
+       ========================================== -->
+  <header class="hero-header" id="top">
+    <div class="hero-inner">
+      <div class="hero-meta-bar">
+        <span class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          2026 秋季学期
+        </span>
+      </div>
 
+      <h1 class="course-title">Python程序设计</h1>
+      <p class="course-subtitle">Python Programming · 杭州师范大学阿里巴巴商学院</p>
 
-<div id="header">
-    <h1>《Python程序设计》课程网站</h1>
-    <div style="clear:both;"></div>
-</div>
-
-
-
-<div class="sechighlight">
-    <div class="container sec">
-
-        <h2>课程简介</h2>
-        <br>
-        <p style="text-indent:2em">
-        数字经济在人工智能和大数据的赋能下正实现跨越式发展，熟练掌握一门编程语言已成为商学院各专业学生必备的技能，为今后应用数据分析方法挖掘各类大数据中的商业价值奠定了关键技术基础。近年来，Python的流行度屡创新高，作为大数据和人工智能时代的必备语言，其具有语言简洁、开发效率高、可移植性强等优点，经过多年的生态建设，已有了大量的函数库，尤其在数据分析和科学计算领域。因此，本课程将基于Python编程语言讲授程序设计基础知识。</p>
-        
-        <p style="text-indent:2em;text-align:justify">
-        本课程涵盖了Python程序设计的重要方面：首先从Python的安装开始，随后介绍Python的基础知识和基本概念，包括列表、元组、字符串、字典以及各种语句；然后循序渐进地介绍一些相对高级的主题，包括抽象、异常、魔法方法、属性、迭代器；此后探讨如何将Python与数据库、网络、C语言等工具结合使用，从而发挥出Python的强大功能，同时介绍Python程序测试、打包、发布等知识。结合上述知识点，课程将按照实际项目开发的步骤介绍几个具有实际意义的Python项目开发过程。</p>
-        
-        <p style="text-indent:2em;text-align:justify">
-        阿里达摩院联手CCF开源发展委员会共同推出AI模型社区“魔搭”<a href="https://modelscope.cn" target="_blank">ModelScope</a>提供的免费在线Jupyter环境极大地便利了本课程的实验教学，在此向该网站表示诚挚的感谢！</p>
-
-        <p style="margin-top: 16px;">
-            <a class="btn btn-primary" href="./atlas/index.html" target="_blank" rel="noopener noreferrer">进入课程三维知识图谱 &rarr;</a>
-        </p>
-
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-num">16</span>
+          <span class="stat-label">教学周</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">10+</span>
+          <span class="stat-label">核心章节</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">100%</span>
+          <span class="stat-label">交互式课件</span>
+        </div>
+      </div>
     </div>
-</div>
+  </header>
 
-<div class="container sec">
-    <section id="information">
-        <h2>课程信息</h2>
-        <br>
-        <dl class="dl-horizontal">
-            <dt>授课教师</dt>
-            <dd>
-                <p>
-                    <strong>张建章</strong> 博士 <br>
-                    邮箱：jianzhang.zhang@foxmail.com <br>
-                    钉钉：张建章 <br>
-                    办公室：仓前恕园2号楼1009</p>
-            </dd>
-            
-            <dt>互动平台</dt>
-            <dd>
-                <p>
-                
-                AI助教 <a href="https://python.zjztutor.tech/2025" target="_blank"><img src="./imgs/chatbot.png" height="20" width="20" /></a>；课程钉钉群<img src="./imgs/dingding.png" height="20" width="20" />；课程讨论区 <a href="https://github.com/zhangjianzhang/programming_basics/issues" target="_blank"><img src="./imgs/github.png" height="20" width="20" /></a>；三维知识图谱 <a href="./atlas/index.html" target="_blank" rel="noopener noreferrer">点击进入</a>
-                
-                </p>
+  <!-- ==========================================
+       STICKY NAVIGATION
+       ========================================== -->
+  <nav class="sticky-nav" aria-label="课程导航">
+    <div class="nav-container">
+      <a href="#top" class="nav-brand">
+        <span class="nav-brand-dot"></span>
+        Python程序设计
+      </a>
+      <ul class="nav-links">
+        <li><a href="#intro"><span class="nav-idx">01</span>课程简介</a></li>
+        <li><a href="#info"><span class="nav-idx">02</span>课程信息</a></li>
+        <li><a href="#schedule"><span class="nav-idx">03</span>课程计划</a></li>
+        <li><a href="#aitools"><span class="nav-idx">04</span>AI工具</a></li>
+        <li><a href="#resources"><span class="nav-idx">05</span>课程资料</a></li>
+        <li><a href="./atlas/index.html" target="_blank" class="nav-cta">三维知识图谱 ↗</a></li>
+      </ul>
+    </div>
+  </nav>
 
+  <!-- ==========================================
+       MAIN CONTENT
+       ========================================== -->
+  <main class="main-container">
 
-            </dd>
+    <!-- 01. 课程简介 -->
+    <section id="intro" class="section-block">
+      <div class="section-header">
+        <div class="section-title-group">
+          <span class="section-index">01 / Overview</span>
+          <h2 class="section-title">课程简介</h2>
+        </div>
+        <span class="section-en">Course Description &amp; Pedagogical Vision</span>
+      </div>
 
-            <dt>授课对象</dt>
-            <dd>
-                <p>本科生：2026级商学院本科生</p>
-
-
-            </dd>
-
-
-            <dt>授课时间</dt>
-            <dd>
-                <p>
-                    周一/周三3-5节 [<a href="./files/materials/calendar.pdf", target="_blank">校历</a>]
-                    
-                </p>
-            </dd>
-
-            <dt>授课地点</dt>
-            <dd>
-                <p>
-                    周五, 下沙2号楼409/405
-                </p>
-
-
-            </dd>
-            <dt>课程资料</dt>
-            <dd>
-                
-                 <p>
-                    【讲义】《Python 程序设计讲义》张建章，刘润然 著，2024年，持续更新中 [<a href="./files/slides/book-sample.pdf", target="_blank">电子版</a>]
-                </p>
-                <p>
-                    【教材】《Python基础教程（第3版）》Magnus Lie Hetland 著，袁国忠 译，2018年，人民邮电出版社
-                </p>
-                
-                
-            </dd>
-            
-            <dt>常用工具</dt>
-            <dd>
-                <ul>
-                
-                <li>杭师大慕课/超星学习通[<a href="https://hznu.fanya.chaoxing.com/portal" target="_blank">电脑版网址</a>]</li>
-                <li>魔搭 [<a href="https://modelscope.cn/my/mynotebook", target="_blank"><img src="./imgs/model-scope.jpeg" height="20" width="20" /></a>]</li>
-                <li>Tabbit浏览器 [<a href="https://www.tabbit.com/?lang=zh", target="_blank">官网</a>] </li>
-                <li>Anaconda [<a href="https://www.anaconda.com/download/success?reg=skipped", target="_blank">官网下载地址</a>]
-                    </li>
-                <li>提问的艺术 [<a href="./files/materials/how-to-ask.pdf", target="_blank"><img src="./imgs/pdf.png" height="20" width="20" /></a>]
-               <li>Leetcode（力扣） [<a href="https://leetcode-cn.com/", target="_blank">官网</a>] </li>
-                <li>原神点名器 [<a href="https://genshin.jerryz.com.cn/", target="_blank">在线使用</a>, <a href="https://docs.tpsw.xyz/users/zai-ben-di-she-bei-shi-yong-ruan-jian-bao", target="_blank">下载地址</a>, <a href="https://docs.tpsw.xyz/users/configure", target="_blank">使用说明</a>] </li>
-                 <li>Python内存可视化 [<a href="https://modelscope.cn/notebook/share/ipynb/df195aed/memory_graph_usage_examples.ipynb", target="_blank"><img src="./imgs/jupyter.png" height="20" width="20" /></a>]</li>
-                
- 
-                </ul>
-            </dd>
-
-            <dt>成绩评定</dt>
-            <dd>
-                <p>本课程成绩主要由三部分组成，如下：</p>
-                <ul class="unstyled">
-                    
-                        <li>期末成绩-50%</li>
-                        <li>课程作业/测验-30%</li>
-                        <li>课堂表现-10%</li>
-                        <li>日常考勤-10%</li>
-                    
-                </ul>
-            </dd>
-
-        </dl>
+      <div class="intro-panel">
+        <div class="intro-lead">
+          <p>
+            数字经济在人工智能和大数据的赋能下正实现跨越式发展，熟练掌握一门编程语言已成为商学院各专业学生必备的技能，为今后应用数据分析方法挖掘各类大数据中的商业价值奠定了关键技术基础。近年来，Python的流行度屡创新高，作为大数据和人工智能时代的必备语言，其具有语言简洁、开发效率高、可移植性强等优点，经过多年的生态建设，已有了大量的函数库，尤其在数据分析和科学计算领域。因此，本课程将基于Python编程语言讲授程序设计基础知识。
+          </p>
+          <p>
+            本课程涵盖了Python程序设计的重要方面：首先从Python的安装开始，随后介绍Python的基础知识和基本概念，包括列表、元组、字符串、字典以及各种语句；然后循序渐进地介绍一些相对高级的主题，包括抽象、异常、魔法方法、属性、迭代器；此后探讨如何将Python与数据库、网络、C语言等工具结合使用，从而发挥出Python的强大功能，同时介绍Python程序测试、打包、发布等知识。结合上述知识点，课程将按照实际项目开发的步骤介绍几个具有实际意义的Python项目开发过程。
+          </p>
+        </div>
+        <div class="intro-callout">
+          <span>
+            阿里达摩院联手CCF开源发展委员会共同推出AI模型社区“魔搭” <a href="https://modelscope.cn" target="_blank">ModelScope</a> 提供的免费在线Jupyter环境极大地便利了本课程的实验教学，在此向该网站表示诚挚的感谢！
+          </span>
+        </div>
+      </div>
     </section>
-</div>
 
-<div class="container sec">
-    <h2>课程计划</h2>
-    <br>
-    <table class="table">
-        <tbody>
-        <tr class="info">
-            <th>章节</th>
-            <th>内容</th>
-            <th>练习</th>
-            <th>资料</th>
-        </tr>
-        <tr>
-            <td>
-            Lecture 1
-            </td>
-
-            
-
-            <td>
-
-              <li>课程绪论 <small>[<a href="./files/slides/slide-1.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-1.html" target="_blank">交互式课件</a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                -
-                
-            </td>
-        </tr>
-        
-        
-        
-        
-        
-        
-        <tr>
-            <td>
-            Lecture 2
-            </td>
-
-            
-
-            <td>
-
-              <li>变量、数据类型、表达式 <small>[<a href="./files/slides/slide-2.pdf" target="_blank">课件</a><a href="./files/interactive/slide-2.html" target="_blank">交互式课件</a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-               示例代码和练习题见课件内链接
-                
-            </td>
-        </tr>
-
-
-
-        
-
-        
-       
-        
-        <tr>
-            <td>
-            Lecture 3
-            </td>
-
-            
-
-            <td>
-
-              <li>列表 <small>[<a href="./files/slides/slide-3.pdf" target="_blank">课件</a>,<a href="./files/interactive/slide-3.html" target="_blank">交互式课件</a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                示例代码和练习题见课件内链接
-                
-            </td>
-        </tr>
-        
-       
-        
-        <tr>
-            <td>
-            Lecture 4
-            </td>
-
-            
-
-            <td>
-
-              <li>元组与字符串 <small>[<a href="./files/slides/slide-4.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-4.html" target="_blank">交互式课件</a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                示例代码和练习题见课件内链接
-                
-            </td>
-        </tr>
-        
-        
-        
-       
-        
-        <tr>
-            <td>
-            Lecture 5
-            </td>
-
-            
-
-            <td>
-
-              <li>集合与字典 <small>[<a href="./files/slides/slide-5.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-5.html" target="_blank">交互式课件</a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                示例代码和练习题见课件内链接
-                
-            </td>
-        </tr>
-
-
-        <tr>
-            <td>
-            Lecture 6
-            </td>
-
-            
-
-            <td>
-
-              <li>流程控制 <small>[<a href="./files/slides/slide-6.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-6.html" target="_blank">交互式课件</a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                示例代码和练习题见课件内链接
-                
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-            Lecture 7
-            </td>
-
-            
-
-            <td>
-
-              <li>函数 <small>[<a href="./files/slides/slide-7.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-7.html" target="_blank">交互式课件</a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                示例代码和练习题见课件内链接
-                
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-            Lecture 8
-            </td>
-
-            
-
-            <td>
-
-              <li>文件读写 <small>[<a href="./files/slides/slide-8.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-8.html" target="_blank">交互式课件</a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                示例代码和练习题见课件内链接
-                
-            </td>
-        </tr>
-        
-         <tr>
-            <td>
-            Lecture 9
-            </td>
-
-            
-
-            <td>
-
-              <li>异常处理 <small>[<a href="./files/slides/slide-9.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-9.html" target="_blank">交互式课件</a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                示例代码和练习题见课件内链接
-                
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-            Lecture 10
-            </td>
-
-            
-
-            <td>
-
-              <li>代码组织 <small>[<a href="./files/slides/slide-10.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-10.html" target="_blank">交互式课件</a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                示例代码和练习题见课件内链接
-                
-            </td>
-        </tr>
-        
-
-
-        <tr>
-            <td>
-            <strong>期末复习</strong>
-            </td>
-
-            
-
-            <td>
-
-              <li>2025年课件合订本 <small>[<a href="./files/slides/all-slides-2025.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
-              <li>2025年课件打印本 <small>[<a href="./files/slides/slides-printable-2025.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
-              
-           
-            </td>
-
-            <td>
-               
-                -
-            </td>
-
-            <td> 
-                
-                -
-                
-            </td>
-        </tr>
-        
-        <!-- 
-
-<li>2025年期末考试样题2套 <small>[<a href="https://hznu.fanya.chaoxing.com/portal" target="_blank">杭师大慕课平台</a>]</small></li>
-
-        <tr>
-       
-            <td><strong>作业1</strong></td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-                第一次作业题 <small>[<a href="./files/homework/homework_1.pdf" target="_blank">题目</a>]</small>
-               
-            </td>
-
-            <td>
-                
-                周一1-3节 [<a href="https://send2me.cn/EZOkPzcN/ThuJJnzotu95hA" target="_blank">提交链接</a>]<br>
-                周二3-5节 [<a href="https://send2me.cn/wtmHll60/RjKCjq20D7spfA" target="_blank">提交链接</a>]<br>
-                周二6-8节 [<a href="https://send2me.cn/rLWwfMZw/ThW_nbyVQBOc-A" target="_blank">提交链接</a>]
-                
-            </td>
-
-            <td> 
-                
-               <p style="color:#FF0000"><strong>DDL: 2023-10-31 23:59</strong></p> 
-
-            </td>
-            
-        </tr>
-        
-        <tr>
-            <td>
-            Lecture 2
-            </td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-              <li>Python序列 <small>[<a href="./files/slides/2-Sequence.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                课程代码1 [<a href="./files/codes/lecture_2/lecture_2_1.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 课程代码2 [<a href="./files/codes/lecture_2/lecture_2_2.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习 [<a href="./files/exercise/list-string-exercise.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>]
-                
-            </td>
-        </tr>
-        
-        <tr>
-       
-            <td><strong>作业2</strong></td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-                第二次作业题 <small>[<a href="http://i.mooc.chaoxing.com/space/index?t=1699610084559" target="_blank">慕课平台测试</a>]</small>
-               
-            </td>
-
-            <td>
-                
-                -
-                
-            </td>
-
-            <td> 
-                
-               <p style="color:#FF0000"><strong>DDL: 2023-11-15 15:00</strong></p> 
-
-            </td>
-            
-        </tr>
-        
-        <tr>
-       
-            <td><strong>作业3</strong></td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-                第三次作业题 <small>[<a href="http://i.mooc.chaoxing.com/space/index?t=1699610084559" target="_blank">慕课平台测试</a>]</small>
-               
-            </td>
-
-            <td>
-                
-                -
-                
-            </td>
-
-            <td> 
-                
-               <p style="color:#FF0000"><strong>DDL: 2023-11-21 20:30</strong></p> 
-
-            </td>
-            
-        </tr>
-        
-        <tr>
-            <td>
-            Lecture 3
-            </td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-              <li>集合和字典 <small>[<a href="./files/slides/3-Set-Dict.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                课程代码 [<a href="./files/codes/lecture_3/lecture_3.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 字典实例 [<a href="./files/codes/lecture_3/telegraph_example.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习 [<a href="./files/exercise/set-dict-exercise.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]
-                
-            </td>
-        </tr>
-        
-        <tr>
-       
-            <td><strong>作业4</strong></td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-                第四次作业题 <small>[<a href="./files/homework/homework_4.pdf" target="_blank">题目</a>，<a href="./files/homework/homework_4.zip" target="_blank">材料</a>, <a href="./files/homework/homework_4_ans.zip" target="_blank">参考答案</a>]</small>
-               
-            </td>
-
-
-            <td>
-                
-                周一1-3节 [<a href="https://send2me.cn/8L62u1-B/Rru-KntWvorv8w" target="_blank">提交链接</a>]<br>
-                周二3-5节 [<a href="https://send2me.cn/jlxi0jwm/TmuFqbpkMlKogA" target="_blank">提交链接</a>]<br>
-                周二6-8节 [<a href="https://send2me.cn/7w2I2Npf/RkCXOoinMHi7nA" target="_blank">提交链接</a>]
-                
-            </td>
-
-            <td> 
-                
-                <p style="color:#FF0000"><strong>DDL: 2023-12-03 23:59:59</strong></p>
-
-            </td>
-            
-        </tr>
-        
-        <tr>
-            <td>
-            Lecture 4
-            </td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-              <li>流程控制 <small>[<a href="./files/slides/4-Condition-Loop.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                课程代码 [<a href="./files/codes/lecture_4/lecture_4.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习1 [<a href="./files/exercise/if-elif-else-exercise.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习2 [<a href="./files/exercise/loop-exercise.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>]
-                
-            </td>
-        </tr>
-        
-        
-        <tr>
-            <td>
-            Lecture 5
-            </td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-              <li>函数 <small>[<a href="./files/slides/5-Function.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                课程代码 [<a href="./files/codes/lecture_5/lecture_5.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习1 [<a href="./files/exercise/func-exercise-1.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习2 [<a href="./files/exercise/func-exercise-2.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>]
-                
-            </td>
-        </tr>
-        
-        <tr>
-       
-            <td><strong>作业5</strong></td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-                第五次作业题 <small>[<a href="./files/homework/homework_5.pdf" target="_blank">题目</a>，<a href="./files/homework/homework_5.zip" target="_blank">材料</a>, <a href="./files/homework/homework_5_answer.ipynb" target="_blank">参考答案</a>]</small>
-               
-            </td>
-
-
-            <td>
-                
-                周一1-3节 [<a href="https://send2me.cn/-5h7TQjy/Tc6xko74O453jg" target="_blank">提交链接</a>]<br>
-                周二3-5节 [<a href="https://send2me.cn/FWw3X87M/SDiRxnzmhoCvhA" target="_blank">提交链接</a>]<br>
-                周二6-8节 [<a href="https://send2me.cn/-uaUwlK1/Tb6tLHHDEKYI2Q" target="_blank">提交链接</a>]
-                
-            </td>
-
-            <td> 
-                
-                <p style="color:#FF0000"><strong>DDL: 2023-12-30 20:00:00</strong></p>
-
-            </td>
-            
-        </tr>
-        
-        
-        
-        <tr>
-            <td>
-            Lecture 6
-            </td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-              <li>文件读写 <small>[<a href="./files/slides/6-Files.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                课程代码 [<a href="./files/codes/lecture_6.zip" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>]
-                
-            </td>
-        </tr>
-        
-         <tr>
-       
-            <td><strong>作业6</strong></td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-                第六次作业题 <small>[<a href="./files/homework/homework_6.pdf" target="_blank">题目</a>，<a href="./files/homework/homework_6.zip" target="_blank">材料</a>, <a href="./files/homework/homework_6_answer.ipynb" target="_blank">参考答案</a>]</small>
-               
-            </td>
-
-
-            <td>
-                
-                周一1-3节 [<a href="https://send2me.cn/i9Pt8-Ev/TI6Qobdy0eY8cQ" target="_blank">提交链接</a>]<br>
-                周二3-5节 [<a href="https://send2me.cn/PmypZmYW/RGi2ofcG4qLzHQ" target="_blank">提交链接</a>]<br>
-                周二6-8节 [<a href="https://send2me.cn/UFdgAj3q/RKytZYc5jS1uHw" target="_blank">提交链接</a>]
-                
-            </td>
-
-            <td> 
-                
-                <p style="color:#FF0000"><strong>DDL: 2024-01-17 12:00:00</strong></p>
-
-            </td>
-            
-        </tr>
-        
-        <tr>
-            <td>
-            Lecture 7
-            </td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-              <li>代码组织与异常处理 <small>[<a href="./files/slides/7-module_pkg_exception.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
-           
-            </td>
-
-            <td>
-                -
-            </td>
-
-            <td> 
-                
-                课程代码1 [<a href="./files/codes/lecture_7/lecture_7_1.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 课程代码2 [<a href="./files/codes/lecture_7/lecture_7_2.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] <a href="./files/codes/lecture_7/example_pkg.zip" target="_blank">自定义包toy</a>
-                
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-            <strong>期末复习</strong>
-            </td>
-
-            <td>
-            -
-            </td>
-
-            <td>
-
-              <li>讲义合订本 <small>[<a href="./files/slides/all_slides.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
-              <li>讲义打印本 <small>[<a href="./files/slides/slides_printable.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
-           
-            </td>
-
-            <td>
-                期末考试样题 <small>[<a href="http://i.mooc.chaoxing.com/space/index?t=1699610084559" target="_blank">慕课平台测试</a>]</small>
-            </td>
-
-            <td> 
-                
-                -
-                
-            </td>
-        </tr>
-        
-        -->
- 
-        
-
-                                                          <!-- ----------分割线---------- -->
-                                                                 
-                                                             
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th></th>
-
-
-        </tbody>
-    </table>
-</div>
-
-<!-- jQuery and Boostrap -->
-<script src="./files/jquery.min.js"></script>
-<script src="./files/bootstrap.min.js"></script>
-
+    <!-- 02. 课程信息 -->
+    <section id="info" class="section-block">
+      <div class="section-header">
+        <div class="section-title-group">
+          <span class="section-index">02 / Logistics</span>
+          <h2 class="section-title">课程信息</h2>
+        </div>
+        <span class="section-en">Syllabus, Assessment &amp; Academic Resources</span>
+      </div>
+
+      <div class="info-grid-top">
+        <!-- 授课教师 -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <span class="info-card-title">授课教师</span>
+            <span class="info-card-label">Instructor</span>
+          </div>
+          <dl class="meta-dl">
+            <dt class="meta-dt">主讲教师</dt>
+            <dd class="meta-dd">张建章 博士</dd>
+            <dt class="meta-dt">电子邮箱</dt>
+            <dd class="meta-dd"><a href="mailto:jianzhang.zhang@foxmail.com">jianzhang.zhang@foxmail.com</a></dd>
+            <dt class="meta-dt">钉钉联系</dt>
+            <dd class="meta-dd">张建章</dd>
+            <dt class="meta-dt">办公地点</dt>
+            <dd class="meta-dd">仓前恕园2号楼1009</dd>
+          </dl>
+        </div>
+
+        <!-- 时间与地点 -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <span class="info-card-title">授课时间与地点</span>
+            <span class="info-card-label">Schedule</span>
+          </div>
+          <dl class="meta-dl">
+            <dt class="meta-dt">授课时间</dt>
+            <dd class="meta-dd">
+              周一 / 周三 3-5节
+              <a href="./files/materials/calendar.pdf" target="_blank" style="font-size: 13px; margin-left: 6px; font-weight: 600;">[查看校历 ↗]</a>
+            </dd>
+            <dt class="meta-dt">授课地点</dt>
+            <dd class="meta-dd">周五，下沙2号楼 409 / 405</dd>
+          </dl>
+        </div>
+
+        <!-- 授课对象 -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <span class="info-card-title">授课对象</span>
+            <span class="info-card-label">Audience</span>
+          </div>
+          <dl class="meta-dl">
+            <dt class="meta-dt">本科生</dt>
+            <dd class="meta-dd">2026级商学院本科生</dd>
+            <dt class="meta-dt">培养目标</dt>
+            <dd class="meta-dd">数字经济与商业数据分析编程基础</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="info-grid-mid">
+        <!-- 成绩评定 -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <span class="info-card-title">成绩评定标准</span>
+            <span class="info-card-label">Assessment</span>
+          </div>
+          <div class="grade-list">
+            <div class="grade-row">
+              <span class="grade-name">期末成绩</span>
+              <div class="grade-track"><div class="grade-fill" style="width: 50%;"></div></div>
+              <span class="grade-pct">50%</span>
+            </div>
+            <div class="grade-row">
+              <span class="grade-name">课程作业 / 测验</span>
+              <div class="grade-track"><div class="grade-fill gold" style="width: 30%;"></div></div>
+              <span class="grade-pct">30%</span>
+            </div>
+            <div class="grade-row">
+              <span class="grade-name">课堂表现</span>
+              <div class="grade-track"><div class="grade-fill teal" style="width: 10%;"></div></div>
+              <span class="grade-pct">10%</span>
+            </div>
+            <div class="grade-row">
+              <span class="grade-name">日常考勤</span>
+              <div class="grade-track"><div class="grade-fill teal" style="width: 10%;"></div></div>
+              <span class="grade-pct">10%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 互动平台与常用工具 -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <span class="info-card-title">互动平台与常用工具</span>
+            <span class="info-card-label">Platforms &amp; Tools</span>
+          </div>
+          <p style="font-size: 13.5px; color: var(--ink-muted); margin-bottom: 10px;">
+            课程互动平台（AI 助教、钉钉群、讨论区与三维知识图谱）及实验常用工具：
+          </p>
+          <div class="chip-group">
+            <a href="./atlas/index.html" target="_blank" class="resource-chip chip-highlight">
+              ★ 三维知识图谱 ↗
+            </a>
+            <a href="https://www.workbuddy.cn/work/launch/?sharecode=6IUzvXmiT5KtTveLAuuMvXkL_Pgx9XUdJZSMloy4r-ix6YfBXvzDWahbUrvHCjld&amp;expertname=Python%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E5%9F%BA%E7%A1%80%E7%AD%94%E7%96%91&amp;buddy_type=workbuddy" target="_blank" class="resource-chip">
+              AI 助教 ↗
+            </a>
+            <a href="https://github.com/zhangjianzhang/programming_basics/issues" target="_blank" class="resource-chip">
+              课程讨论区 ↗
+            </a>
+            <span class="resource-chip" style="cursor: default;">
+              课程钉钉群
+            </span>
+            <a href="https://hznu.fanya.chaoxing.com/portal" target="_blank" class="resource-chip">
+              杭师大慕课 / 超星学习通 ↗
+            </a>
+            <a href="https://modelscope.cn/my/mynotebook" target="_blank" class="resource-chip">
+              魔搭 ModelScope ↗
+            </a>
+            <a href="https://www.anaconda.com/download/success?reg=skipped" target="_blank" class="resource-chip">
+              Anaconda ↗
+            </a>
+            <a href="./files/materials/how-to-ask.pdf" target="_blank" class="resource-chip">
+              提问的艺术 (PDF) ↗
+            </a>
+            <a href="https://modelscope.cn/notebook/share/ipynb/df195aed/memory_graph_usage_examples.ipynb" target="_blank" class="resource-chip">
+              Python内存可视化 ↗
+            </a>
+            <a href="https://genshin.jerryz.com.cn/" target="_blank" class="resource-chip">
+              原神点名器 (在线) ↗
+            </a>
+            <a href="https://docs.tpsw.xyz/users/zai-ben-di-she-bei-shi-yong-ruan-jian-bao" target="_blank" class="resource-chip">
+              点名器下载 ↗
+            </a>
+            <a href="https://docs.tpsw.xyz/users/configure" target="_blank" class="resource-chip">
+              点名器使用说明 ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03. 课程计划 -->
+    <section id="schedule" class="section-block">
+      <div class="section-header">
+        <div class="section-title-group">
+          <span class="section-index">03 / Curriculum</span>
+          <h2 class="section-title">课程计划</h2>
+        </div>
+        <span class="section-en">Lecture Modules, Interactive Slides &amp; Materials</span>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th class="col-lecture">模块 / 周次</th>
+              <th class="col-topic">教学内容</th>
+              <th class="col-slides">课程讲义</th>
+              <th class="col-exercise">练习</th>
+              <th class="col-materials">资料</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Lecture 1 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge">01 · Lecture 1</span></td>
+              <td class="col-topic"><span class="topic-title">课程绪论</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/slide-1.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 课件
+                  </a>
+                  <a href="./files/interactive/slide-1.html" target="_blank" class="doc-pill doc-pill-html">
+                    <span class="doc-type-tag">HTML</span> 交互式课件
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">—</span></td>
+            </tr>
+
+            <!-- Lecture 2 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge">02 · Lecture 2</span></td>
+              <td class="col-topic"><span class="topic-title">变量、数据类型、表达式</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/slide-2.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 课件
+                  </a>
+                  <a href="./files/interactive/slide-2.html" target="_blank" class="doc-pill doc-pill-html">
+                    <span class="doc-type-tag">HTML</span> 交互式课件
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">代码和练习题见课件内链接</span></td>
+            </tr>
+
+            <!-- Lecture 3 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge">03 · Lecture 3</span></td>
+              <td class="col-topic"><span class="topic-title">列表</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/slide-3.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 课件
+                  </a>
+                  <a href="./files/interactive/slide-3.html" target="_blank" class="doc-pill doc-pill-html">
+                    <span class="doc-type-tag">HTML</span> 交互式课件
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">代码和练习题见课件内链接</span></td>
+            </tr>
+
+            <!-- Lecture 4 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge">04 · Lecture 4</span></td>
+              <td class="col-topic"><span class="topic-title">元组与字符串</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/slide-4.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 课件
+                  </a>
+                  <a href="./files/interactive/slide-4.html" target="_blank" class="doc-pill doc-pill-html">
+                    <span class="doc-type-tag">HTML</span> 交互式课件
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">代码和练习题见课件内链接</span></td>
+            </tr>
+
+            <!-- Lecture 5 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge">05 · Lecture 5</span></td>
+              <td class="col-topic"><span class="topic-title">集合与字典</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/slide-5.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 课件
+                  </a>
+                  <a href="./files/interactive/slide-5.html" target="_blank" class="doc-pill doc-pill-html">
+                    <span class="doc-type-tag">HTML</span> 交互式课件
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">代码和练习题见课件内链接</span></td>
+            </tr>
+
+            <!-- Lecture 6 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge">06 · Lecture 6</span></td>
+              <td class="col-topic"><span class="topic-title">流程控制</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/slide-6.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 课件
+                  </a>
+                  <a href="./files/interactive/slide-6.html" target="_blank" class="doc-pill doc-pill-html">
+                    <span class="doc-type-tag">HTML</span> 交互式课件
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">代码和练习题见课件内链接</span></td>
+            </tr>
+
+            <!-- Lecture 7 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge">07 · Lecture 7</span></td>
+              <td class="col-topic"><span class="topic-title">函数</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/slide-7.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 课件
+                  </a>
+                  <a href="./files/interactive/slide-7.html" target="_blank" class="doc-pill doc-pill-html">
+                    <span class="doc-type-tag">HTML</span> 交互式课件
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">代码和练习题见课件内链接</span></td>
+            </tr>
+
+            <!-- Lecture 8 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge">08 · Lecture 8</span></td>
+              <td class="col-topic"><span class="topic-title">文件读写</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/slide-8.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 课件
+                  </a>
+                  <a href="./files/interactive/slide-8.html" target="_blank" class="doc-pill doc-pill-html">
+                    <span class="doc-type-tag">HTML</span> 交互式课件
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">代码和练习题见课件内链接</span></td>
+            </tr>
+
+            <!-- Lecture 9 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge">09 · Lecture 9</span></td>
+              <td class="col-topic"><span class="topic-title">异常处理</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/slide-9.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 课件
+                  </a>
+                  <a href="./files/interactive/slide-9.html" target="_blank" class="doc-pill doc-pill-html">
+                    <span class="doc-type-tag">HTML</span> 交互式课件
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">代码和练习题见课件内链接</span></td>
+            </tr>
+
+            <!-- Lecture 10 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge">10 · Lecture 10</span></td>
+              <td class="col-topic"><span class="topic-title">代码组织</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/slide-10.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 课件
+                  </a>
+                  <a href="./files/interactive/slide-10.html" target="_blank" class="doc-pill doc-pill-html">
+                    <span class="doc-type-tag">HTML</span> 交互式课件
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">代码和练习题见课件内链接</span></td>
+            </tr>
+
+            <!-- 期末复习 -->
+            <tr>
+              <td class="col-lecture"><span class="lecture-badge badge-special">Review · 期末复习</span></td>
+              <td class="col-topic"><span class="topic-title">课程总复习与合订讲义</span></td>
+              <td class="col-slides">
+                <div class="resource-links">
+                  <a href="./files/slides/all-slides-2025.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 2025年课件合订本
+                  </a>
+                  <a href="./files/slides/slides-printable-2025.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+                    <span class="doc-type-tag">PDF</span> 2025年课件打印本
+                  </a>
+                </div>
+              </td>
+              <td class="col-exercise"><span class="note-muted">—</span></td>
+              <td class="col-materials"><span class="note-muted">—</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 04. AI 工具推荐 -->
+    <section id="aitools" class="section-block">
+      <div class="section-header">
+        <div class="section-title-group">
+          <span class="section-index">04 / AI Toolkit</span>
+          <h2 class="section-title">AI 工具推荐</h2>
+        </div>
+        <span class="section-en">Next-Gen Agentic Workspaces &amp; Browsers</span>
+      </div>
+
+      <div class="ai-tools-grid">
+        <!-- WorkBuddy -->
+        <div class="ai-tool-card">
+          <div>
+            <div class="ai-tool-top">
+              <img src="./imgs/workbuddy.jpeg" alt="WorkBuddy" class="ai-tool-logo">
+              <div class="ai-tool-title-wrap">
+                <span class="ai-tool-tag">Desktop AI Agent</span>
+                <h3 class="ai-tool-name">WorkBuddy</h3>
+              </div>
+            </div>
+            <p class="ai-tool-desc">
+              腾讯出品的全场景职场 AI 智能体桌面工作台。支持本地文件读写、数据分析制图、小红书长图文生成及自动化办公任务，零门槛赋能日常教学科研与高效创作。
+            </p>
+          </div>
+          <div class="ai-tool-footer">
+            <span class="ai-tool-domain">workbuddy.cn</span>
+            <a href="https://www.workbuddy.cn/" target="_blank" class="ai-tool-link">
+              访问官网并下载 ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Tabbit 浏览器 -->
+        <div class="ai-tool-card">
+          <div>
+            <div class="ai-tool-top">
+              <img src="./imgs/tabbit.jpeg" alt="Tabbit 浏览器" class="ai-tool-logo">
+              <div class="ai-tool-title-wrap">
+                <span class="ai-tool-tag">AI Native Browser</span>
+                <h3 class="ai-tool-name">Tabbit 浏览器</h3>
+              </div>
+            </div>
+            <p class="ai-tool-desc">
+              美团光年之外团队打造的 AI 原生浏览器。进入智能浏览新时代，深度融合网页阅读、多源搜索、长文摘要与自动化办公辅助，让信息检索、文献研读与日常创作更加高效从容。
+            </p>
+          </div>
+          <div class="ai-tool-footer">
+            <span class="ai-tool-domain">tabbit-ai.com</span>
+            <a href="https://www.tabbit-ai.com/?lang=zh" target="_blank" class="ai-tool-link">
+              访问官网并下载 ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05. 课程资料 -->
+    <section id="resources" class="section-block" style="margin-bottom: 12px;">
+      <div class="section-header">
+        <div class="section-title-group">
+          <span class="section-index">05 / Bibliography</span>
+          <h2 class="section-title">课程资料</h2>
+        </div>
+        <span class="section-en">Course Handouts &amp; Reference Textbooks</span>
+      </div>
+
+      <div class="ref-grid">
+        <div class="ref-card">
+          <div class="ref-card-top">
+            <span class="ref-type handout">讲义 · HANDOUT</span>
+            <a href="./files/slides/book-sample.pdf" target="_blank" class="doc-pill doc-pill-pdf">
+              <span class="doc-type-tag">PDF</span> 电子版 ↗
+            </a>
+          </div>
+          <div class="ref-book-title">《Python 程序设计讲义》</div>
+          <div class="ref-book-meta">张建章，刘润然 著 · 2024年（持续更新中）</div>
+        </div>
+
+        <div class="ref-card">
+          <div class="ref-card-top">
+            <span class="ref-type textbook">教材 · TEXTBOOK</span>
+          </div>
+          <div class="ref-book-title">《Python基础教程（第3版）》</div>
+          <div class="ref-book-meta">Magnus Lie Hetland 著，袁国忠 译 · 2018年 · 人民邮电出版社</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       FOOTER
+       ========================================== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>《Python程序设计》 · 杭州师范大学阿里巴巴商学院 · 2026 秋季学期</span>
+      <span>授课教师：张建章</span>
+    </div>
+  </footer>
 
 </body>
 </html>

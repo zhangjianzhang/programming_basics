@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="./imgs/logo.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"/>
+    <title>Python程序设计-2026秋</title>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="./files/bootstrap.min.css">
+    <link rel="stylesheet" href="./files/bootstrap-theme.min.css">
+
+    <!-- Google fonts -->
+    <link href="./files/css" rel="stylesheet" type="text/css">
+
+    <!-- Google Analytics -->
+    <script async="" src="./files/analytics.js"></script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-46895817-2', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="./files/style.css">
+</head>
+
+<body>
+
+
+
+<div id="header">
+    <h1>《Python程序设计》课程网站</h1>
+    <div style="clear:both;"></div>
+</div>
+
+
+
+<div class="sechighlight">
+    <div class="container sec">
+
+        <h2>课程简介</h2>
+        <br>
+        <p style="text-indent:2em">
+        数字经济在人工智能和大数据的赋能下正实现跨越式发展，熟练掌握一门编程语言已成为商学院各专业学生必备的技能，为今后应用数据分析方法挖掘各类大数据中的商业价值奠定了关键技术基础。近年来，Python的流行度屡创新高，作为大数据和人工智能时代的必备语言，其具有语言简洁、开发效率高、可移植性强等优点，经过多年的生态建设，已有了大量的函数库，尤其在数据分析和科学计算领域。因此，本课程将基于Python编程语言讲授程序设计基础知识。</p>
+        
+        <p style="text-indent:2em;text-align:justify">
+        本课程涵盖了Python程序设计的重要方面：首先从Python的安装开始，随后介绍Python的基础知识和基本概念，包括列表、元组、字符串、字典以及各种语句；然后循序渐进地介绍一些相对高级的主题，包括抽象、异常、魔法方法、属性、迭代器；此后探讨如何将Python与数据库、网络、C语言等工具结合使用，从而发挥出Python的强大功能，同时介绍Python程序测试、打包、发布等知识。结合上述知识点，课程将按照实际项目开发的步骤介绍几个具有实际意义的Python项目开发过程。</p>
+        
+        <p style="text-indent:2em;text-align:justify">
+        阿里达摩院联手CCF开源发展委员会共同推出AI模型社区“魔搭”<a href="https://modelscope.cn" target="_blank">ModelScope</a>提供的免费在线Jupyter环境极大地便利了本课程的实验教学，在此向该网站表示诚挚的感谢！</p>
+
+        <p style="margin-top: 16px;">
+            <a class="btn btn-primary" href="./atlas/index.html" target="_blank" rel="noopener noreferrer">进入课程三维知识图谱 &rarr;</a>
+        </p>
+
+    </div>
+</div>
+
+<div class="container sec">
+    <section id="information">
+        <h2>课程信息</h2>
+        <br>
+        <dl class="dl-horizontal">
+            <dt>授课教师</dt>
+            <dd>
+                <p>
+                    <strong>张建章</strong> 博士 <br>
+                    邮箱：jianzhang.zhang@foxmail.com <br>
+                    钉钉：张建章 <br>
+                    办公室：仓前恕园2号楼1009</p>
+            </dd>
+            
+            <dt>互动平台</dt>
+            <dd>
+                <p>
+                
+                AI助教 <a href="https://python.zjztutor.tech/2025" target="_blank"><img src="./imgs/chatbot.png" height="20" width="20" /></a>；课程钉钉群<img src="./imgs/dingding.png" height="20" width="20" />；课程讨论区 <a href="https://github.com/zhangjianzhang/programming_basics/issues" target="_blank"><img src="./imgs/github.png" height="20" width="20" /></a>；三维知识图谱 <a href="./atlas/index.html" target="_blank" rel="noopener noreferrer">点击进入</a>
+                
+                </p>
+
+
+            </dd>
+
+            <dt>授课对象</dt>
+            <dd>
+                <p>本科生：2026级商学院本科生</p>
+
+
+            </dd>
+
+
+            <dt>授课时间</dt>
+            <dd>
+                <p>
+                    周一/周三3-5节 [<a href="./files/materials/calendar.pdf", target="_blank">校历</a>]
+                    
+                </p>
+            </dd>
+
+            <dt>授课地点</dt>
+            <dd>
+                <p>
+                    周五, 下沙2号楼409/405
+                </p>
+
+
+            </dd>
+            <dt>课程资料</dt>
+            <dd>
+                
+                 <p>
+                    【讲义】《Python 程序设计讲义》张建章，刘润然 著，2024年，持续更新中 [<a href="./files/slides/book-sample.pdf", target="_blank">电子版</a>]
+                </p>
+                <p>
+                    【教材】《Python基础教程（第3版）》Magnus Lie Hetland 著，袁国忠 译，2018年，人民邮电出版社
+                </p>
+                
+                
+            </dd>
+            
+            <dt>常用工具</dt>
+            <dd>
+                <ul>
+                
+                <li>杭师大慕课/超星学习通[<a href="https://hznu.fanya.chaoxing.com/portal" target="_blank">电脑版网址</a>]</li>
+                <li>魔搭 [<a href="https://modelscope.cn/my/mynotebook", target="_blank"><img src="./imgs/model-scope.jpeg" height="20" width="20" /></a>]</li>
+                <li>Tabbit浏览器 [<a href="https://www.tabbit.com/?lang=zh", target="_blank">官网</a>] </li>
+                <li>Anaconda [<a href="https://www.anaconda.com/download/success?reg=skipped", target="_blank">官网下载地址</a>]
+                    </li>
+                <li>提问的艺术 [<a href="./files/materials/how-to-ask.pdf", target="_blank"><img src="./imgs/pdf.png" height="20" width="20" /></a>]
+               <li>Leetcode（力扣） [<a href="https://leetcode-cn.com/", target="_blank">官网</a>] </li>
+                <li>原神点名器 [<a href="https://genshin.jerryz.com.cn/", target="_blank">在线使用</a>, <a href="https://docs.tpsw.xyz/users/zai-ben-di-she-bei-shi-yong-ruan-jian-bao", target="_blank">下载地址</a>, <a href="https://docs.tpsw.xyz/users/configure", target="_blank">使用说明</a>] </li>
+                 <li>Python内存可视化 [<a href="https://modelscope.cn/notebook/share/ipynb/df195aed/memory_graph_usage_examples.ipynb", target="_blank"><img src="./imgs/jupyter.png" height="20" width="20" /></a>]</li>
+                
+ 
+                </ul>
+            </dd>
+
+            <dt>成绩评定</dt>
+            <dd>
+                <p>本课程成绩主要由三部分组成，如下：</p>
+                <ul class="unstyled">
+                    
+                        <li>期末成绩-50%</li>
+                        <li>课程作业/测验-30%</li>
+                        <li>课堂表现-10%</li>
+                        <li>日常考勤-10%</li>
+                    
+                </ul>
+            </dd>
+
+        </dl>
+    </section>
+</div>
+
+<div class="container sec">
+    <h2>课程计划</h2>
+    <br>
+    <table class="table">
+        <tbody>
+        <tr class="info">
+            <th>章节</th>
+            <th>内容</th>
+            <th>练习</th>
+            <th>资料</th>
+        </tr>
+        <tr>
+            <td>
+            Lecture 1
+            </td>
+
+            
+
+            <td>
+
+              <li>课程绪论 <small>[<a href="./files/slides/slide-1.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-1.html" target="_blank">交互式课件</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                -
+                
+            </td>
+        </tr>
+        
+        
+        
+        
+        
+        
+        <tr>
+            <td>
+            Lecture 2
+            </td>
+
+            
+
+            <td>
+
+              <li>变量、数据类型、表达式 <small>[<a href="./files/slides/slide-2.pdf" target="_blank">课件</a><a href="./files/interactive/slide-2.html" target="_blank">交互式课件</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+               示例代码和练习题见课件内链接
+                
+            </td>
+        </tr>
+
+
+
+        
+
+        
+       
+        
+        <tr>
+            <td>
+            Lecture 3
+            </td>
+
+            
+
+            <td>
+
+              <li>列表 <small>[<a href="./files/slides/slide-3.pdf" target="_blank">课件</a>,<a href="./files/interactive/slide-3.html" target="_blank">交互式课件</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                示例代码和练习题见课件内链接
+                
+            </td>
+        </tr>
+        
+       
+        
+        <tr>
+            <td>
+            Lecture 4
+            </td>
+
+            
+
+            <td>
+
+              <li>元组与字符串 <small>[<a href="./files/slides/slide-4.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-4.html" target="_blank">交互式课件</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                示例代码和练习题见课件内链接
+                
+            </td>
+        </tr>
+        
+        
+        
+       
+        
+        <tr>
+            <td>
+            Lecture 5
+            </td>
+
+            
+
+            <td>
+
+              <li>集合与字典 <small>[<a href="./files/slides/slide-5.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-5.html" target="_blank">交互式课件</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                示例代码和练习题见课件内链接
+                
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>
+            Lecture 6
+            </td>
+
+            
+
+            <td>
+
+              <li>流程控制 <small>[<a href="./files/slides/slide-6.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-6.html" target="_blank">交互式课件</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                示例代码和练习题见课件内链接
+                
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+            Lecture 7
+            </td>
+
+            
+
+            <td>
+
+              <li>函数 <small>[<a href="./files/slides/slide-7.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-7.html" target="_blank">交互式课件</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                示例代码和练习题见课件内链接
+                
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+            Lecture 8
+            </td>
+
+            
+
+            <td>
+
+              <li>文件读写 <small>[<a href="./files/slides/slide-8.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-8.html" target="_blank">交互式课件</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                示例代码和练习题见课件内链接
+                
+            </td>
+        </tr>
+        
+         <tr>
+            <td>
+            Lecture 9
+            </td>
+
+            
+
+            <td>
+
+              <li>异常处理 <small>[<a href="./files/slides/slide-9.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-9.html" target="_blank">交互式课件</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                示例代码和练习题见课件内链接
+                
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+            Lecture 10
+            </td>
+
+            
+
+            <td>
+
+              <li>代码组织 <small>[<a href="./files/slides/slide-10.pdf" target="_blank">课件</a>，<a href="./files/interactive/slide-10.html" target="_blank">交互式课件</a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                示例代码和练习题见课件内链接
+                
+            </td>
+        </tr>
+        
+
+
+        <tr>
+            <td>
+            <strong>期末复习</strong>
+            </td>
+
+            
+
+            <td>
+
+              <li>2025年课件合订本 <small>[<a href="./files/slides/all-slides-2025.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
+              <li>2025年课件打印本 <small>[<a href="./files/slides/slides-printable-2025.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
+              
+           
+            </td>
+
+            <td>
+               
+                -
+            </td>
+
+            <td> 
+                
+                -
+                
+            </td>
+        </tr>
+        
+        <!-- 
+
+<li>2025年期末考试样题2套 <small>[<a href="https://hznu.fanya.chaoxing.com/portal" target="_blank">杭师大慕课平台</a>]</small></li>
+
+        <tr>
+       
+            <td><strong>作业1</strong></td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+                第一次作业题 <small>[<a href="./files/homework/homework_1.pdf" target="_blank">题目</a>]</small>
+               
+            </td>
+
+            <td>
+                
+                周一1-3节 [<a href="https://send2me.cn/EZOkPzcN/ThuJJnzotu95hA" target="_blank">提交链接</a>]<br>
+                周二3-5节 [<a href="https://send2me.cn/wtmHll60/RjKCjq20D7spfA" target="_blank">提交链接</a>]<br>
+                周二6-8节 [<a href="https://send2me.cn/rLWwfMZw/ThW_nbyVQBOc-A" target="_blank">提交链接</a>]
+                
+            </td>
+
+            <td> 
+                
+               <p style="color:#FF0000"><strong>DDL: 2023-10-31 23:59</strong></p> 
+
+            </td>
+            
+        </tr>
+        
+        <tr>
+            <td>
+            Lecture 2
+            </td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+              <li>Python序列 <small>[<a href="./files/slides/2-Sequence.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                课程代码1 [<a href="./files/codes/lecture_2/lecture_2_1.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 课程代码2 [<a href="./files/codes/lecture_2/lecture_2_2.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习 [<a href="./files/exercise/list-string-exercise.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>]
+                
+            </td>
+        </tr>
+        
+        <tr>
+       
+            <td><strong>作业2</strong></td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+                第二次作业题 <small>[<a href="http://i.mooc.chaoxing.com/space/index?t=1699610084559" target="_blank">慕课平台测试</a>]</small>
+               
+            </td>
+
+            <td>
+                
+                -
+                
+            </td>
+
+            <td> 
+                
+               <p style="color:#FF0000"><strong>DDL: 2023-11-15 15:00</strong></p> 
+
+            </td>
+            
+        </tr>
+        
+        <tr>
+       
+            <td><strong>作业3</strong></td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+                第三次作业题 <small>[<a href="http://i.mooc.chaoxing.com/space/index?t=1699610084559" target="_blank">慕课平台测试</a>]</small>
+               
+            </td>
+
+            <td>
+                
+                -
+                
+            </td>
+
+            <td> 
+                
+               <p style="color:#FF0000"><strong>DDL: 2023-11-21 20:30</strong></p> 
+
+            </td>
+            
+        </tr>
+        
+        <tr>
+            <td>
+            Lecture 3
+            </td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+              <li>集合和字典 <small>[<a href="./files/slides/3-Set-Dict.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                课程代码 [<a href="./files/codes/lecture_3/lecture_3.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 字典实例 [<a href="./files/codes/lecture_3/telegraph_example.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习 [<a href="./files/exercise/set-dict-exercise.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]
+                
+            </td>
+        </tr>
+        
+        <tr>
+       
+            <td><strong>作业4</strong></td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+                第四次作业题 <small>[<a href="./files/homework/homework_4.pdf" target="_blank">题目</a>，<a href="./files/homework/homework_4.zip" target="_blank">材料</a>, <a href="./files/homework/homework_4_ans.zip" target="_blank">参考答案</a>]</small>
+               
+            </td>
+
+
+            <td>
+                
+                周一1-3节 [<a href="https://send2me.cn/8L62u1-B/Rru-KntWvorv8w" target="_blank">提交链接</a>]<br>
+                周二3-5节 [<a href="https://send2me.cn/jlxi0jwm/TmuFqbpkMlKogA" target="_blank">提交链接</a>]<br>
+                周二6-8节 [<a href="https://send2me.cn/7w2I2Npf/RkCXOoinMHi7nA" target="_blank">提交链接</a>]
+                
+            </td>
+
+            <td> 
+                
+                <p style="color:#FF0000"><strong>DDL: 2023-12-03 23:59:59</strong></p>
+
+            </td>
+            
+        </tr>
+        
+        <tr>
+            <td>
+            Lecture 4
+            </td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+              <li>流程控制 <small>[<a href="./files/slides/4-Condition-Loop.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                课程代码 [<a href="./files/codes/lecture_4/lecture_4.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习1 [<a href="./files/exercise/if-elif-else-exercise.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习2 [<a href="./files/exercise/loop-exercise.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>]
+                
+            </td>
+        </tr>
+        
+        
+        <tr>
+            <td>
+            Lecture 5
+            </td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+              <li>函数 <small>[<a href="./files/slides/5-Function.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                课程代码 [<a href="./files/codes/lecture_5/lecture_5.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习1 [<a href="./files/exercise/func-exercise-1.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 练习2 [<a href="./files/exercise/func-exercise-2.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>]
+                
+            </td>
+        </tr>
+        
+        <tr>
+       
+            <td><strong>作业5</strong></td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+                第五次作业题 <small>[<a href="./files/homework/homework_5.pdf" target="_blank">题目</a>，<a href="./files/homework/homework_5.zip" target="_blank">材料</a>, <a href="./files/homework/homework_5_answer.ipynb" target="_blank">参考答案</a>]</small>
+               
+            </td>
+
+
+            <td>
+                
+                周一1-3节 [<a href="https://send2me.cn/-5h7TQjy/Tc6xko74O453jg" target="_blank">提交链接</a>]<br>
+                周二3-5节 [<a href="https://send2me.cn/FWw3X87M/SDiRxnzmhoCvhA" target="_blank">提交链接</a>]<br>
+                周二6-8节 [<a href="https://send2me.cn/-uaUwlK1/Tb6tLHHDEKYI2Q" target="_blank">提交链接</a>]
+                
+            </td>
+
+            <td> 
+                
+                <p style="color:#FF0000"><strong>DDL: 2023-12-30 20:00:00</strong></p>
+
+            </td>
+            
+        </tr>
+        
+        
+        
+        <tr>
+            <td>
+            Lecture 6
+            </td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+              <li>文件读写 <small>[<a href="./files/slides/6-Files.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                课程代码 [<a href="./files/codes/lecture_6.zip" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>]
+                
+            </td>
+        </tr>
+        
+         <tr>
+       
+            <td><strong>作业6</strong></td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+                第六次作业题 <small>[<a href="./files/homework/homework_6.pdf" target="_blank">题目</a>，<a href="./files/homework/homework_6.zip" target="_blank">材料</a>, <a href="./files/homework/homework_6_answer.ipynb" target="_blank">参考答案</a>]</small>
+               
+            </td>
+
+
+            <td>
+                
+                周一1-3节 [<a href="https://send2me.cn/i9Pt8-Ev/TI6Qobdy0eY8cQ" target="_blank">提交链接</a>]<br>
+                周二3-5节 [<a href="https://send2me.cn/PmypZmYW/RGi2ofcG4qLzHQ" target="_blank">提交链接</a>]<br>
+                周二6-8节 [<a href="https://send2me.cn/UFdgAj3q/RKytZYc5jS1uHw" target="_blank">提交链接</a>]
+                
+            </td>
+
+            <td> 
+                
+                <p style="color:#FF0000"><strong>DDL: 2024-01-17 12:00:00</strong></p>
+
+            </td>
+            
+        </tr>
+        
+        <tr>
+            <td>
+            Lecture 7
+            </td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+              <li>代码组织与异常处理 <small>[<a href="./files/slides/7-module_pkg_exception.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
+           
+            </td>
+
+            <td>
+                -
+            </td>
+
+            <td> 
+                
+                课程代码1 [<a href="./files/codes/lecture_7/lecture_7_1.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] 课程代码2 [<a href="./files/codes/lecture_7/lecture_7_2.ipynb" target="_blank"><img src="./imgs/jupyter.png" height="20" width="20"></a>] <a href="./files/codes/lecture_7/example_pkg.zip" target="_blank">自定义包toy</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+            <strong>期末复习</strong>
+            </td>
+
+            <td>
+            -
+            </td>
+
+            <td>
+
+              <li>讲义合订本 <small>[<a href="./files/slides/all_slides.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
+              <li>讲义打印本 <small>[<a href="./files/slides/slides_printable.pdf" target="_blank"><img src="./imgs/pdf.png" height="20" width="20"></a>]</small></li>
+           
+            </td>
+
+            <td>
+                期末考试样题 <small>[<a href="http://i.mooc.chaoxing.com/space/index?t=1699610084559" target="_blank">慕课平台测试</a>]</small>
+            </td>
+
+            <td> 
+                
+                -
+                
+            </td>
+        </tr>
+        
+        -->
+ 
+        
+
+                                                          <!-- ----------分割线---------- -->
+                                                                 
+                                                             
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+
+
+        </tbody>
+    </table>
+</div>
+
+<!-- jQuery and Boostrap -->
+<script src="./files/jquery.min.js"></script>
+<script src="./files/bootstrap.min.js"></script>
+
+
+</body>
+</html>
